@@ -210,7 +210,8 @@
                     <div class="pricing-header">
                         <div class="pricing-title">Teste Grátis</div>
                         <div class="pricing-price">R$ 0</div>
-                        <div class="pricing-period">7 dias gratuitos</div>
+                        <div class="pricing-period">7 dias gratuitos*</div>
+                        <small>*Após 7 dias: R$ 19,90/mês</small>
                     </div>
                     <ul class="pricing-features">
                         <li><i class="fas fa-check"></i> 1 contrato grátis</li>
@@ -270,9 +271,9 @@
                         <p>"O ContratoFácil revolucionou meu negócio. Antes gastava horas criando contratos, agora em 5 minutos tenho um documento profissional. Muito confiável e seguro!"</p>
                     </div>
                     <div class="testimonial-author">
-                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Maria Silva" class="testimonial-avatar">
+                        <img src="pessoa3.jpg" alt="Carlos Mendes" class="testimonial-avatar">
                         <div class="testimonial-info">
-                            <h4>Maria Silva</h4>
+                            <h4>Carlos Mendes</h4>
                             <p>Designer Freelancer</p>
                         </div>
                     </div>
@@ -347,7 +348,15 @@
                         </div>
                     </div>
                     <div class="faq-answer">
-                        <p>Aceitamos cartão de crédito, débito, PIX e boleto bancário. Todas as transações são processadas com segurança.</p>
+                        <p>Aceitamos cartão de crédito, débito, PIX e boleto bancário. Para pagamentos via PIX ou transferência, utilize os dados bancários abaixo:</p>
+                        <div class="bank-info">
+                            <p><strong>Banco:</strong> Itaú (341)</p>
+                            <p><strong>Agência:</strong> 1234</p>
+                            <p><strong>Conta:</strong> 56789-0</p>
+                            <p><strong>CNPJ:</strong> 12.345.678/0001-90</p>
+                            <p><strong>Razão Social:</strong> ContratoFácil Soluções Digitais LTDA</p>
+                            <p><strong>Chave PIX:</strong> 12.345.678/0001-90 (CNPJ)</p>
+                        </div>
                     </div>
                 </div>
 
@@ -444,6 +453,22 @@
                         <span>PayPal</span>
                     </div>
                 </div>
+
+                <!-- Informações Bancárias para PIX/Transferência -->
+                <div id="bankDetails" class="bank-details" style="display: none; margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <h4 style="margin-bottom: 1rem;">Dados para Transferência/PIX</h4>
+                    <div class="bank-info">
+                        <p><strong>Banco:</strong> Itaú (341)</p>
+                        <p><strong>Agência:</strong> 1234</p>
+                        <p><strong>Conta:</strong> 56789-0</p>
+                        <p><strong>CNPJ:</strong> 12.345.678/0001-90</p>
+                        <p><strong>Razão Social:</strong> ContratoFácil Soluções Digitais LTDA</p>
+                        <p><strong>Chave PIX:</strong> 12.345.678/0001-90</p>
+                    </div>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                        Após o pagamento, envie o comprovante para contato@contratofacil.com
+                    </p>
+                </div>
                 
                 <button class="btn btn-success" onclick="processPayment()" style="width: 100%; margin-top: 1.5rem;">
                     <i class="fas fa-lock"></i> Finalizar Compra
@@ -452,6 +477,8 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
