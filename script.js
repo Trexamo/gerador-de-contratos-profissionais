@@ -1,4 +1,120 @@
-// Função para gerar o contrato PROFISSIONAL CORRETAMENTE PREENCHIDO
+// Variáveis globais
+let selectedPlan = 'avulsa';
+let selectedPaymentMethod = '';
+
+// Funções do FAQ
+function toggleFAQ(element) {
+    const item = element.parentElement;
+    const isActive = item.classList.contains('active');
+    
+    // Fecha todos os itens primeiro
+    document.querySelectorAll('.faq-item').forEach(faqItem => {
+        faqItem.classList.remove('active');
+    });
+    
+    // Abre o item clicado se não estava ativo
+    if (!isActive) {
+        item.classList.add('active');
+    }
+}
+
+// Função para obter nome do mês
+function getMonthName(monthIndex) {
+    const months = [
+        'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+        'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+    ];
+    return months[monthIndex];
+}
+
+// Função para formatar valor por extenso
+function formatarValorExtenso(valor) {
+    if (!valor || valor === '' || valor === '__________') {
+        return '_________________________';
+    }
+    
+    // Remove caracteres não numéricos, exceto vírgula e ponto
+    let valorLimpo = valor.toString().replace(/[^\d,.]/g, '');
+    
+    // Substitui ponto por vírgula se necessário
+    valorLimpo = valorLimpo.replace('.', ',');
+    
+    try {
+        // Converte para número
+        let valorNumero = parseFloat(valorLimpo.replace(',', '.'));
+        
+        if (isNaN(valorNumero) || valorNumero === 0) {
+            return '_________________________';
+        }
+        
+        // Função interna para converter números
+        function converterNumero(num) {
+            const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
+            const especiais = ['dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+            const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+            const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+            
+            if (num === 0) return '';
+            if (num === 100) return 'cem';
+            
+            let resultado = '';
+            
+            // Centenas
+            const c = Math.floor(num / 100);
+            if (c > 0) {
+                resultado += centenas[c];
+                num %= 100;
+                if (num > 0) resultado += ' e ';
+            }
+            
+            // Dezenas e unidades
+            if (num < 20 && num > 0) {
+                resultado += especiais[num - 10] || unidades[num];
+            } else {
+                const d = Math.floor(num / 10);
+                const u = num % 10;
+                if (d > 0) {
+                    resultado += dezenas[d];
+                    if (u > 0) resultado += ' e ' + unidades[u];
+                } else if (u > 0) {
+                    resultado += unidades[u];
+                }
+            }
+            
+            return resultado;
+        }
+        
+        let parteInteira = Math.floor(valorNumero);
+        let parteDecimal = Math.round((valorNumero - parteInteira) * 100);
+        
+        let extenso = '';
+        
+        if (parteInteira > 0) {
+            if (parteInteira === 1) {
+                extenso = 'um real';
+            } else {
+                extenso = converterNumero(parteInteira) + ' reais';
+            }
+        }
+        
+        if (parteDecimal > 0) {
+            if (extenso !== '') extenso += ' e ';
+            if (parteDecimal === 1) {
+                extenso += 'um centavo';
+            } else {
+                extenso += converterNumero(parteDecimal) + ' centavos';
+            }
+        }
+        
+        return extenso || '_________________________';
+        
+    } catch (e) {
+        console.error('Erro ao converter valor:', e);
+        return '_________________________';
+    }
+}
+
+// Função para gerar o contrato PROFISSIONAL
 function generateProfessionalContract() {
     // Obter valores do formulário
     const contractorName = document.getElementById('contractorName').value || '________________________';
@@ -21,8 +137,12 @@ function generateProfessionalContract() {
     // Formatar datas
     const formatDate = (dateString) => {
         if (!dateString) return '__/__/____';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('pt-BR');
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        } catch (e) {
+            return '__/__/____';
+        }
     };
 
     // Formatar método de pagamento
@@ -36,14 +156,10 @@ function generateProfessionalContract() {
         default: paymentMethodText = '________________________';
     }
 
-    // Formatar valor por extenso (função simplificada)
-    function valorPorExtenso(valor) {
-        if (!valor || valor === '__________') return '_________________________';
-        // Aqui você pode implementar uma função mais robusta para converter números em extenso
-        return `(${valor} reais)`;
-    }
+    // Formatar valor por extenso
+    const valorExtenso = formatarValorExtenso(serviceValue);
 
-    // Construir o contrato PROFISSIONAL CORRETAMENTE PREENCHIDO
+    // Construir o contrato PROFISSIONAL
     const contractHTML = `
         <div class="contract-header">
             <div class="contract-title">CONTRATO DE PRESTAÇÃO DE SERVIÇOS</div>
@@ -61,7 +177,7 @@ function generateProfessionalContract() {
 
             <div class="contract-clause">
                 <h4>CLÁUSULA SEGUNDA - DO VALOR E FORMA DE PAGAMENTO</h4>
-                <p>O <strong>CONTRATANTE</strong> obriga-se a pagar ao <strong>CONTRATADO(A)</strong> a importância de <strong>R$ ${serviceValue}</strong> ${valorPorExtenso(serviceValue)}, a ser pago na seguinte forma: <strong>${paymentMethodText}</strong>.</p>
+                <p>O <strong>CONTRATANTE</strong> obriga-se a pagar ao <strong>CONTRATADO(A)</strong> a importância de <strong>R$ ${serviceValue}</strong> (${valorExtenso}), a ser pago na seguinte forma: <strong>${paymentMethodText}</strong>.</p>
                 <p>O pagamento será efetuado mediante apresentação de nota fiscal ou recibo, ficando o CONTRATADO(A) obrigado(a) à quitação do tributo incidente na operação.</p>
             </div>
 
@@ -147,95 +263,471 @@ function generateProfessionalContract() {
     return contractHTML;
 }
 
-// Função auxiliar para obter nome do mês
-function getMonthName(monthIndex) {
-    const months = [
-        'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
-        'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
-    ];
-    return months[monthIndex];
-}
-
-// Função para formatar valor por extenso (mais robusta)
-function formatarValorExtenso(valor) {
-    if (!valor || isNaN(valor)) return '_________________________';
-    
-    const numeros = [
-        'zero', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove',
-        'dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 
-        'dezoito', 'dezenove'
-    ];
-    
-    const dezenas = [
-        '', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 
-        'oitenta', 'noventa'
-    ];
-    
-    const centenas = [
-        '', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 
-        'seiscentos', 'setecentos', 'oitocentos', 'novecentos'
-    ];
-    
-    let valorNumero = parseFloat(valor.replace(',', '.'));
-    let inteiro = Math.floor(valorNumero);
-    let decimal = Math.round((valorNumero - inteiro) * 100);
-    
-    if (inteiro === 0) {
-        return 'zero reais';
-    }
-    
-    let extenso = '';
-    
-    // Parte inteira
-    if (inteiro === 100) {
-        extenso = 'cem';
-    } else if (inteiro < 20) {
-        extenso = numeros[inteiro];
-    } else if (inteiro < 100) {
-        extenso = dezenas[Math.floor(inteiro / 10)];
-        if (inteiro % 10 !== 0) {
-            extenso += ' e ' + numeros[inteiro % 10];
-        }
-    } else {
-        extenso = centenas[Math.floor(inteiro / 100)];
-        let resto = inteiro % 100;
-        if (resto !== 0) {
-            if (resto < 20) {
-                extenso += ' e ' + numeros[resto];
-            } else {
-                extenso += ' e ' + dezenas[Math.floor(resto / 10)];
-                if (resto % 10 !== 0) {
-                    extenso += ' e ' + numeros[resto % 10];
-                }
-            }
-        }
-    }
-    
-    extenso += inteiro === 1 ? ' real' : ' reais';
-    
-    // Parte decimal
-    if (decimal > 0) {
-        extenso += ' e ';
-        if (decimal < 20) {
-            extenso += numeros[decimal];
-        } else {
-            extenso += dezenas[Math.floor(decimal / 10)];
-            if (decimal % 10 !== 0) {
-                extenso += ' e ' + numeros[decimal % 10];
-            }
-        }
-        extenso += decimal === 1 ? ' centavo' : ' centavos';
-    }
-    
-    return extenso;
-}
-
-// Atualizar a função valorPorExtenso para usar a nova formatação
-function valorPorExtenso(valor) {
-    if (!valor || valor === '__________') return '_________________________';
+// Update contract preview
+function updatePreview() {
     try {
-        return `(${formatarValorExtenso(valor)})`;
-    } catch (e) {
-        return '_________________________';
+        const contractPreview = document.getElementById('contractPreview');
+        if (contractPreview) {
+            contractPreview.innerHTML = generateProfessionalContract();
+        }
+    } catch (error) {
+        console.error('Erro ao atualizar preview:', error);
     }
+}
+
+// Payment modal functions
+function openPaymentModal(plan) {
+    selectedPlan = plan;
+    
+    // Verificar campos obrigatórios
+    const requiredFields = ['contractorName', 'contractorDoc', 'contractedName', 'contractedDoc', 'serviceDescription', 'serviceValue', 'startDate', 'contractCity'];
+    let isValid = true;
+    
+    requiredFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (!field || !field.value.trim()) {
+            isValid = false;
+            if (field) {
+                field.style.borderColor = 'var(--danger)';
+            }
+        } else if (field) {
+            field.style.borderColor = '#e0e0e0';
+        }
+    });
+
+    if (!isValid) {
+        showNotification('❌ Preencha todos os campos obrigatórios marcados com *');
+        return;
+    }
+    
+    // Configurar modal
+    const modalTitle = document.getElementById('modalTitle');
+    const modalPlanDescription = document.getElementById('modalPlanDescription');
+    const modalPrice = document.getElementById('modalPrice');
+    
+    if (modalTitle && modalPlanDescription && modalPrice) {
+        switch(plan) {
+            case 'free':
+                modalTitle.textContent = 'Teste Grátis - 7 Dias';
+                modalPlanDescription.textContent = 'Plano Teste Grátis - 1 contrato grátis por 7 dias';
+                modalPrice.textContent = 'Total: R$ 0,00 (Após 7 dias: R$ 19,90/mês)';
+                break;
+            case 'avulsa':
+                modalTitle.textContent = 'Comprar Contrato Avulso';
+                modalPlanDescription.textContent = '1 Contrato de Prestação de Serviços Personalizado';
+                modalPrice.textContent = 'Total: R$ 6,90';
+                break;
+            case 'basico':
+                modalTitle.textContent = 'Assinar Plano Básico';
+                modalPlanDescription.textContent = 'Plano Básico - 5 contratos por mês';
+                modalPrice.textContent = 'Total: R$ 9,90/mês';
+                break;
+            case 'profissional':
+                modalTitle.textContent = 'Assinar Plano Profissional';
+                modalPlanDescription.textContent = 'Plano Profissional - Contratos ilimitados';
+                modalPrice.textContent = 'Total: R$ 29,90/mês';
+                break;
+        }
+    }
+    
+    // Reset payment selection
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    const bankDetails = document.getElementById('bankDetails');
+    if (bankDetails) {
+        bankDetails.style.display = 'none';
+    }
+    
+    selectedPaymentMethod = '';
+    
+    const paymentModal = document.getElementById('paymentModal');
+    if (paymentModal) {
+        paymentModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closePaymentModal() {
+    const paymentModal = document.getElementById('paymentModal');
+    if (paymentModal) {
+        paymentModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+function selectPayment(element) {
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    if (element) {
+        element.classList.add('selected');
+        
+        // Mostrar dados bancários se for PIX
+        const bankDetails = document.getElementById('bankDetails');
+        const paymentText = element.querySelector('span') ? element.querySelector('span').textContent : '';
+        
+        if (bankDetails && paymentText === 'PIX') {
+            bankDetails.style.display = 'block';
+            selectedPaymentMethod = 'pix';
+        } else {
+            if (bankDetails) {
+                bankDetails.style.display = 'none';
+            }
+            selectedPaymentMethod = paymentText.toLowerCase();
+        }
+    }
+}
+
+// Função para gerar PDF
+function generatePDF() {
+    try {
+        const element = document.getElementById('contractPreview');
+        if (!element) {
+            showNotification('❌ Erro: Elemento do contrato não encontrado');
+            return;
+        }
+
+        // Verificar se html2pdf está disponível
+        if (typeof html2pdf === 'undefined') {
+            showNotification('❌ Biblioteca PDF não carregada. Baixando como HTML...');
+            downloadAsHTML();
+            return;
+        }
+
+        const opt = {
+            margin: [0.5, 0.5, 0.5, 0.5],
+            filename: `contrato-${new Date().getTime()}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+                scale: 2, 
+                useCORS: true,
+                logging: false
+            },
+            jsPDF: { 
+                unit: 'mm', 
+                format: 'a4', 
+                orientation: 'portrait' 
+            }
+        };
+
+        showNotification('📄 Gerando PDF...');
+        
+        html2pdf().set(opt).from(element).save().then(() => {
+            showNotification('✅ PDF baixado com sucesso!');
+        }).catch(error => {
+            console.error('Erro ao gerar PDF:', error);
+            showNotification('❌ Erro ao gerar PDF. Baixando como HTML...');
+            downloadAsHTML();
+        });
+        
+    } catch (error) {
+        console.error('Erro no generatePDF:', error);
+        showNotification('❌ Erro ao gerar PDF');
+    }
+}
+
+// Função para baixar como HTML (fallback)
+function downloadAsHTML() {
+    try {
+        const contractContent = generateProfessionalContract();
+        const fullHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Contrato Profissional - ContratoFácil</title>
+    <style>
+        body { 
+            font-family: 'Times New Roman', Times, serif; 
+            margin: 2.5cm; 
+            line-height: 1.6; 
+            font-size: 14px;
+            color: #000;
+        }
+        .contract-header { 
+            text-align: center; 
+            margin-bottom: 2rem; 
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #000;
+        }
+        .contract-title { 
+            font-size: 18px; 
+            font-weight: bold; 
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .contract-clause { 
+            margin-bottom: 20px; 
+        }
+        .contract-clause h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .signature-space {
+            border-top: 1px solid #000;
+            margin: 40px 0 10px 0;
+            padding-top: 10px;
+        }
+        @media print {
+            body { margin: 1.5cm; }
+        }
+    </style>
+</head>
+<body>
+    ${contractContent}
+</body>
+</html>`;
+
+        const blob = new Blob([fullHTML], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `contrato-${new Date().getTime()}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+    } catch (error) {
+        console.error('Erro no downloadAsHTML:', error);
+        showNotification('❌ Erro ao baixar contrato');
+    }
+}
+
+// Função para gerar Word
+function generateWord() {
+    try {
+        const contractContent = generateProfessionalContract();
+        
+        // Criar um blob com conteúdo HTML que pode ser aberto no Word
+        const fullHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Contrato Profissional</title>
+    <style>
+        body { 
+            font-family: 'Times New Roman', Times, serif; 
+            margin: 2.5cm; 
+            line-height: 1.6; 
+            font-size: 14px;
+            color: #000;
+        }
+        .contract-header { 
+            text-align: center; 
+            margin-bottom: 2rem; 
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #000;
+        }
+        .contract-title { 
+            font-size: 18px; 
+            font-weight: bold; 
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        .contract-clause { 
+            margin-bottom: 20px; 
+        }
+        .contract-clause h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .signature-space {
+            border-top: 1px solid #000;
+            margin: 40px 0 10px 0;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    ${contractContent}
+</body>
+</html>`;
+        
+        const blob = new Blob([fullHTML], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `contrato-${new Date().getTime()}.doc`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showNotification('✅ Documento Word baixado com sucesso!');
+        
+    } catch (error) {
+        console.error('Erro no generateWord:', error);
+        showNotification('❌ Erro ao gerar documento Word');
+    }
+}
+
+// Função para mostrar opções de download
+function showDownloadOptions() {
+    const modal = document.getElementById('paymentModal');
+    if (!modal) return;
+
+    const modalBody = modal.querySelector('.modal-body');
+    if (!modalBody) return;
+
+    modalBody.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: var(--success); margin-bottom: 1rem;">
+                <i class="fas fa-check-circle"></i> Pagamento Aprovado!
+            </h3>
+            <p>Seu contrato está pronto para download.</p>
+            
+            <div class="download-options">
+                <button class="btn btn-secondary" onclick="generatePDF()">
+                    <i class="fas fa-file-pdf"></i> Baixar PDF
+                </button>
+                <button class="btn btn-secondary" onclick="generateWord()">
+                    <i class="fas fa-file-word"></i> Baixar Word
+                </button>
+            </div>
+            
+            <button class="btn btn-success" onclick="closePaymentModal()" style="margin-top: 1.5rem; width: 100%;">
+                <i class="fas fa-check"></i> Concluir
+            </button>
+        </div>
+    `;
+}
+
+function processPayment() {
+    const selectedPayment = document.querySelector('.payment-option.selected');
+    if (!selectedPayment) {
+        showNotification('❌ Selecione uma forma de pagamento');
+        return;
+    }
+
+    showNotification('💳 Processando pagamento...');
+    
+    setTimeout(() => {
+        if (selectedPlan === 'free') {
+            showNotification('🎉 Teste grátis ativado! Você tem 7 dias gratuitos.');
+        } else {
+            showNotification('🎉 Pagamento aprovado com sucesso!');
+        }
+        
+        // Mostrar opções de download
+        showDownloadOptions();
+        
+    }, 2000);
+}
+
+function showNotification(message) {
+    // Remove notificação existente
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerHTML = `
+        <div>
+            <strong>${message}</strong>
+        </div>
+    `;
+    document.body.appendChild(notification);
+
+    // Animação de entrada
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+    }, 10);
+
+    // Remover após 5 segundos
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 5000);
+}
+
+// Fechar modal ao clicar fora
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('paymentModal');
+    if (event.target === modal) {
+        closePaymentModal();
+    }
+});
+
+// Tecla ESC para fechar modal
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closePaymentModal();
+    }
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    // Atualizar preview inicial
+    updatePreview();
+    
+    // Configurar datas
+    const today = new Date().toISOString().split('T')[0];
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    
+    if (startDateInput) {
+        startDateInput.min = today;
+    }
+    
+    if (startDateInput && endDateInput) {
+        startDateInput.addEventListener('change', function() {
+            endDateInput.min = this.value;
+        });
+    }
+    
+    // Atualizar preview em tempo real
+    const formInputs = document.querySelectorAll('#generator input, #generator select, #generator textarea');
+    formInputs.forEach(input => {
+        input.addEventListener('input', updatePreview);
+        input.addEventListener('change', updatePreview);
+    });
+
+    // Formatação automática do valor
+    const serviceValueInput = document.getElementById('serviceValue');
+    if (serviceValueInput) {
+        serviceValueInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = (value / 100).toFixed(2).replace('.', ',');
+            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            e.target.value = value;
+            updatePreview();
+        });
+    }
+
+    console.log('ContratoFácil inicializado com sucesso!');
+});
+
+// Fallback para caso o DOMContentLoaded já tenha ocorrido
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        // O código acima já vai executar
+    });
+} else {
+    // DOM já está pronto, executar inicialização
+    setTimeout(function() {
+        updatePreview();
+        
+        const today = new Date().toISOString().split('T')[0];
+        const startDateInput = document.getElementById('startDate');
+        if (startDateInput) {
+            startDateInput.min = today;
+        }
+    }, 100);
 }
