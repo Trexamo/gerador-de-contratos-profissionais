@@ -7,31 +7,33 @@ function toggleFAQ(element) {
     item.classList.toggle('active');
 }
 
-// Função para gerar o contrato profissional
+// Função para gerar o contrato PROFISSIONAL
 function generateProfessionalContract() {
     // Obter valores do formulário
-    const contractorName = document.getElementById('contractorName').value || '[NOME DO CONTRATANTE]';
-    const contractorDoc = document.getElementById('contractorDoc').value || '[CPF/CNPJ]';
-    const contractorProfession = document.getElementById('contractorProfession').value || '[PROFISSÃO]';
+    const contractorName = document.getElementById('contractorName').value || '________________________';
+    const contractorDoc = document.getElementById('contractorDoc').value || '________________________';
+    const contractorProfession = document.getElementById('contractorProfession').value || '________________________';
+    const contractorAddress = document.getElementById('contractorAddress').value || '______________________________________';
     
-    const contractedName = document.getElementById('contractedName').value || '[NOME DO CONTRATADO]';
-    const contractedDoc = document.getElementById('contractedDoc').value || '[CPF/CNPJ]';
-    const contractedProfession = document.getElementById('contractedProfession').value || '[PROFISSÃO]';
+    const contractedName = document.getElementById('contractedName').value || '________________________';
+    const contractedDoc = document.getElementById('contractedDoc').value || '________________________';
+    const contractedProfession = document.getElementById('contractedProfession').value || '________________________';
+    const contractedAddress = document.getElementById('contractedAddress').value || '______________________________________';
     
-    const serviceDescription = document.getElementById('serviceDescription').value || '[DESCRIÇÃO DO SERVIÇO]';
-    const serviceValue = document.getElementById('serviceValue').value || '0,00';
+    const serviceDescription = document.getElementById('serviceDescription').value || '________________________';
+    const serviceValue = document.getElementById('serviceValue').value || '__________';
     const paymentMethod = document.getElementById('paymentMethod').value;
     const startDate = document.getElementById('startDate').value;
     const endDate = document.getElementById('endDate').value;
-    const contractCity = document.getElementById('contractCity').value || '[CIDADE]';
-    
+    const contractCity = document.getElementById('contractCity').value || '________________________';
+
     // Formatar datas
     const formatDate = (dateString) => {
-        if (!dateString) return '[DATA]';
+        if (!dateString) return '__/__/____';
         const date = new Date(dateString);
         return date.toLocaleDateString('pt-BR');
     };
-    
+
     // Formatar método de pagamento
     let paymentMethodText = '';
     switch(paymentMethod) {
@@ -40,111 +42,109 @@ function generateProfessionalContract() {
         case 'pix': paymentMethodText = 'PIX'; break;
         case 'cartao': paymentMethodText = 'cartão de crédito'; break;
         case 'dinheiro': paymentMethodText = 'dinheiro'; break;
-        default: paymentMethodText = '[FORMA DE PAGAMENTO]';
+        default: paymentMethodText = '________________________';
     }
-    
-    // Gerar número do contrato
-    const contractNumber = Math.floor(1000 + Math.random() * 9000);
-    const currentYear = new Date().getFullYear();
-    
-    // Construir o contrato PREMIUM
+
+    // Construir o contrato PROFISSIONAL
     const contractHTML = `
-        <div class="contract-seal">CONTRATO<br>VÁLIDO</div>
-        
         <div class="contract-header">
             <div class="contract-title">CONTRATO DE PRESTAÇÃO DE SERVIÇOS</div>
-            <div class="contract-subtitle">Instrumento Particular de Prestação de Serviços Profissionais</div>
-            <div class="contract-number">Nº ${contractNumber}/${currentYear}</div>
         </div>
         
         <div class="contract-body">
-            <div class="contract-clause">
-                <h4>DAS PARTES CONTRATANTES</h4>
-                <p>Pelo presente instrumento particular, de um lado:</p>
-                <p><strong>CONTRATANTE:</strong> ${contractorName}, portador(a) do ${contractorDoc}, ${contractorProfession};</p>
-                <p>E de outro lado:</p>
-                <p><strong>CONTRATADO:</strong> ${contractedName}, portador(a) do ${contractedDoc}, ${contractedProfession}.</p>
-                <p>As partes acima identificadas têm, entre si, justo e acertado o presente Contrato de Prestação de Serviços.</p>
+            <div class="contract-intro">
+                <p>Pelo presente instrumento de <strong>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</strong> que celebram entre si, de um lado <strong>${contractorName}</strong>, nacionalidade <strong>________________________</strong>, estado civil <strong>________________________</strong>, profissão <strong>${contractorProfession}</strong>, portador do <strong>${contractorDoc}</strong>, residente e domiciliado à <strong>${contractorAddress}</strong>, doravante denominado <strong>CONTRATANTE</strong>, e de outro lado <strong>${contractedName}</strong>, nacionalidade <strong>________________________</strong>, estado civil <strong>________________________</strong>, profissão <strong>${contractedProfession}</strong>, portador do <strong>${contractedDoc}</strong>, residente e domiciliado à <strong>${contractedAddress}</strong>, doravante denominado <strong>CONTRATADO(A)</strong>, pelas cláusulas pactuadas a seguir:</p>
             </div>
 
             <div class="contract-clause">
-                <h4>DO OBJETO DO CONTRATO</h4>
-                <p>O presente contrato tem por objeto a prestação dos seguintes serviços especializados:</p>
-                <div class="service-description-box">
-                    "${serviceDescription}"
-                </div>
+                <h4>CLÁUSULA PRIMEIRA - DO OBJETO</h4>
+                <p>O presente contrato tem por OBJETO a prestação de serviço de <strong>${serviceDescription}</strong>, a ser realizado no período compreendido entre <strong>${formatDate(startDate)}</strong> e <strong>${formatDate(endDate)}</strong>, contendo as seguintes atividades:</p>
+                <ol>
+                    <li>_________________________________________________________</li>
+                    <li>_________________________________________________________</li>
+                    <li>_________________________________________________________</li>
+                    <li>_________________________________________________________</li>
+                </ol>
             </div>
 
             <div class="contract-clause">
-                <h4>DO PRAZO DE VIGÊNCIA</h4>
-                <p>Este contrato terá vigência a partir de <strong>${formatDate(startDate)}</strong>, com término previsto para <strong>${formatDate(endDate)}</strong>.</p>
+                <h4>CLÁUSULA SEGUNDA - DAS OBRIGAÇÕES DO CONTRATANTE</h4>
+                <p>O <strong>CONTRATANTE</strong> obriga-se a pagar ao <strong>CONTRATADO(A)</strong> a importância de <strong>R$ ${serviceValue}</strong> (_______________________________________), sendo <strong>R$ __________</strong> (________________________), referente a _________________________ e <strong>R$ __________</strong> (________________________), a ser pago na seguinte forma: <strong>${paymentMethodText}</strong>.</p>
+                <p>O pagamento será efetuado mediante apresentação de nota fiscal ou recibo, ficando o CONTRATADO(A) obrigado(a) à quitação do tributo incidente na operação.</p>
             </div>
 
             <div class="contract-clause">
-                <h4>DO VALOR E FORMA DE PAGAMENTO</h4>
-                <div class="highlight-box">
-                    <p>Valor total acordado: <span class="value-emphasis">R$ ${serviceValue}</span></p>
-                    <p>Forma de pagamento: <strong>${paymentMethodText}</strong></p>
-                </div>
+                <h4>CLÁUSULA TERCEIRA - DAS OBRIGAÇÕES DO CONTRATADO</h4>
+                <p>O <strong>CONTRATADO(A)</strong> obriga-se a:</p>
+                <ol>
+                    <li>Executar os serviços contratados com zelo, diligência e capacidade técnica adequada;</li>
+                    <li>Cumprir rigorosamente os prazos estabelecidos para a execução dos serviços;</li>
+                    <li>Fornecer todos os materiais, equipamentos e recursos necessários para a execução dos serviços, salvo estipulação em contrário;</li>
+                    <li>Comunicar imediatamente ao CONTRATANTE qualquer impedimento ou dificuldade que possa afetar o cumprimento do objeto deste contrato;</li>
+                    <li>Emitir nota fiscal ou recibo correspondente aos valores recebidos;</li>
+                    <li>Manter sigilo absoluto sobre todas as informações confidenciais a que tiver acesso.</li>
+                </ol>
             </div>
 
             <div class="contract-clause">
-                <h4>DAS OBRIGAÇÕES DAS PARTES</h4>
-                <p><strong>CONTRATADO se obriga a:</strong></p>
-                <ul>
-                    <li>Executar os serviços com qualidade profissional e técnica adequada</li>
-                    <li>Cumprir rigorosamente os prazos estabelecidos</li>
-                    <li>Manter absoluto sigilo sobre informações confidenciais</li>
-                    <li>Comunicar eventuais impedimentos ou dificuldades</li>
-                </ul>
-                
-                <p><strong>CONTRATANTE se obriga a:</strong></p>
-                <ul>
-                    <li>Fornecer todas as informações necessárias para execução dos serviços</li>
-                    <li>Efetuar os pagamentos nos prazos acordados</li>
-                    <li>Fornecer feedbacks e aprovações em tempo hábil</li>
-                </ul>
+                <h4>CLÁUSULA QUARTA - DO PRAZO DE VIGÊNCIA</h4>
+                <p>O presente contrato terá vigência a partir de <strong>${formatDate(startDate)}</strong> e será encerrado em <strong>${formatDate(endDate)}</strong>, podendo ser renovado ou prorrogado mediante acordo escrito entre as partes.</p>
             </div>
 
             <div class="contract-clause">
-                <h4>DA CONFIDENCIALIDADE</h4>
-                <p>As partes se comprometem a manter sigilo absoluto sobre todas as informações confidenciais a que tiverem acesso, obrigando-se a não divulgá-las sob qualquer circunstância.</p>
+                <h4>CLÁUSULA QUINTA - DA CONFIDENCIALIDADE</h4>
+                <p>As partes se obrigam a manter caráter confidencial sobre todas as informações a que tiverem acesso em razão deste contrato, obrigando-se a não divulgá-los, inclusive após seu término, pelo prazo de <strong>__________ anos</strong>, sob pena de responsabilização civil e criminal.</p>
             </div>
 
             <div class="contract-clause">
-                <h4>DA PROPRIEDADE INTELECTUAL</h4>
-                <p>Todo e qualquer direito de propriedade intelectual relativo aos serviços prestados será de propriedade exclusiva do CONTRATANTE, após o pagamento integral dos valores devidos.</p>
+                <h4>CLÁUSULA SEXTA - DA PROPRIEDADE INTELECTUAL</h4>
+                <p>Todo e qualquer direito de propriedade intelectual relativo aos serviços prestados, incluindo mas não se limitando a projetos, desenhos, especificações, relatórios e documentação técnica, será de propriedade exclusiva do <strong>CONTRATANTE</strong>, após o pagamento integral dos valores devidos.</p>
             </div>
 
             <div class="contract-clause">
-                <h4>DO FORO</h4>
-                <p>Para dirimir quaisquer controvérsias oriundas deste contrato, as partes elegem o foro da comarca de <strong>${contractCity}</strong>.</p>
+                <h4>CLÁUSULA SÉTIMA - DAS GARANTIAS</h4>
+                <p>O <strong>CONTRATADO(A)</strong> garante a qualidade dos serviços prestados e se obriga a reparar, sem custo adicional, quaisquer vícios, defeitos ou não conformidades apontados pelo <strong>CONTRATANTE</strong> no prazo de <strong>______ dias</strong> a partir da entrega ou conclusão dos serviços.</p>
+            </div>
+
+            <div class="contract-clause">
+                <h4>CLÁUSULA OITAVA - DA RESCISÃO CONTRATUAL</h4>
+                <p>Este contrato poderá ser rescindido nas seguintes hipóteses:</p>
+                <ol>
+                    <li>Por mútuo acordo entre as partes;</li>
+                    <li>Por inadimplemento de qualquer das obrigações assumidas por qualquer das partes;</li>
+                    <li>Por força maior ou caso fortuito que impossibilite o cumprimento do objeto;</li>
+                    <li>Por iniciativa de qualquer das partes, mediante aviso prévio de <strong>______ dias</strong>.</li>
+                </ol>
+                <p>Em caso de descumprimento dos prazos estabelecidos, o CONTRATADO(A) pagará multa moratória de <strong>______%</strong> sobre o valor do serviço por dia de atraso, limitada a <strong>______%</strong> do valor total do contrato.</p>
+            </div>
+
+            <div class="contract-clause">
+                <h4>CLÁUSULA NONA - DAS MULTAS E INDENIZAÇÕES</h4>
+                <p>Em caso de descumprimento de qualquer obrigação assumida neste instrumento, a parte inadimplente pagará à outra multa compensatória no valor de <strong>______%</strong> do valor total do contrato, sem prejuízo de perdas e danos.</p>
+            </div>
+
+            <div class="contract-clause">
+                <h4>CLÁUSULA DÉCIMA - DO FORO</h4>
+                <p>Para dirimir quaisquer controvérsias oriundas deste contrato, as partes elegem o foro da comarca de <strong>${contractCity}</strong>, com expressa renúncia a qualquer outro, por mais privilegiado que seja.</p>
             </div>
 
             <div class="signature-area">
-                <p style="text-align: center; font-style: italic; margin-bottom: 2rem;">
-                    E por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor e forma, para um único efeito.
-                </p>
+                <p>E por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor e forma, para um único efeito.</p>
                 
                 <div class="signature-line">
                     <div class="signature-box">
-                        <div class="signature-line-style"></div>
-                        <p class="signature-name">${contractorName}</p>
-                        <p class="signature-doc">${contractorDoc}</p>
-                        <p class="signature-role">CONTRATANTE</p>
+                        <p><strong>${contractCity}</strong>, _____ de __________________ de ______</p>
+                        <div class="signature-space"></div>
+                        <p>___________________________________</p>
+                        <p><strong>CONTRATANTE</strong></p>
                     </div>
                     
                     <div class="signature-box">
-                        <div class="signature-line-style"></div>
-                        <p class="signature-name">${contractedName}</p>
-                        <p class="signature-doc">${contractedDoc}</p>
-                        <p class="signature-role">CONTRATADO</p>
+                        <p>&nbsp;</p>
+                        <div class="signature-space"></div>
+                        <p>___________________________________</p>
+                        <p><strong>CONTRATADO(A)</strong></p>
                     </div>
-                </div>
-                
-                <div class="contract-footer">
-                    <p>${contractCity}, ${new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-                    <p style="margin-top: 5px;">Documento gerado eletronicamente via ContratoFácil - www.contratofacil.com</p>
                 </div>
             </div>
         </div>
@@ -159,7 +159,7 @@ function updatePreview() {
     contractPreview.innerHTML = generateProfessionalContract();
 }
 
-// Payment modal functions
+// Payment modal functions - CORRIGIDO PARA MOBILE
 function openPaymentModal(plan) {
     selectedPlan = plan;
     
@@ -178,7 +178,7 @@ function openPaymentModal(plan) {
     });
 
     if (!isValid) {
-        alert('❌ Por favor, preencha todos os campos obrigatórios marcados com *');
+        showNotification('❌ Preencha todos os campos obrigatórios marcados com *');
         return;
     }
     
@@ -211,10 +211,12 @@ function openPaymentModal(plan) {
     }
     
     document.getElementById('paymentModal').classList.add('active');
+    document.body.style.overflow = 'hidden'; // Previne scroll no mobile
 }
 
 function closePaymentModal() {
     document.getElementById('paymentModal').classList.remove('active');
+    document.body.style.overflow = 'auto'; // Restaura scroll
 }
 
 function selectPayment(element) {
@@ -244,7 +246,7 @@ function downloadContract() {
         showNotification('✅ Contrato baixado com sucesso!');
     } catch (error) {
         console.error('Erro no download:', error);
-        alert('❌ Erro ao baixar o contrato. Tente novamente.');
+        showNotification('❌ Erro ao baixar o contrato');
     }
 }
 
@@ -257,61 +259,43 @@ function generateContractContent() {
     <title>Contrato Profissional - ContratoFácil</title>
     <style>
         body { 
-            font-family: 'Georgia', 'Times New Roman', serif; 
+            font-family: 'Times New Roman', Times, serif; 
             margin: 2.5cm; 
-            line-height: 1.7; 
+            line-height: 1.6; 
             font-size: 14px;
-            color: #2c2c2c;
-            background: linear-gradient(135deg, #fffdf8 0%, #ffffff 100%);
+            color: #000;
         }
         .contract-header { 
             text-align: center; 
-            margin-bottom: 2.5rem; 
-            padding-bottom: 1.5rem;
-            border-bottom: 2px solid #d4af37;
+            margin-bottom: 2rem; 
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #000;
         }
         .contract-title { 
-            font-size: 22px; 
+            font-size: 18px; 
             font-weight: bold; 
             margin-bottom: 0.5rem;
             text-transform: uppercase;
-            color: #2c5aa0;
-            letter-spacing: 1.5px;
         }
         .contract-clause { 
             margin-bottom: 20px; 
-            padding: 20px;
-            background: #fafafa;
-            border-radius: 6px;
-            border-left: 4px solid #d4af37;
         }
         .contract-clause h4 {
-            font-size: 13px;
-            margin-bottom: 12px;
+            font-size: 14px;
+            margin-bottom: 10px;
             font-weight: bold;
-            color: #2c5aa0;
             text-transform: uppercase;
         }
-        .signature-line-style {
-            border-top: 2px solid #2c5aa0;
-            padding-top: 12px;
-            margin-top: 60px;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .service-description-box {
-            background: linear-gradient(135deg, #fff9e6, #fff);
-            border: 1px solid #ffeaa7;
-            border-radius: 6px;
-            padding: 18px;
-            margin: 12px 0;
-            font-style: italic;
-            color: #555;
-            border-left: 4px solid #fdcb6e;
+        .signature-space {
+            border-top: 1px solid #000;
+            margin: 40px 0 10px 0;
+            padding-top: 10px;
         }
         @media print {
             body { margin: 1.5cm; }
+        }
+        @media (max-width: 768px) {
+            body { margin: 1cm; }
         }
     </style>
 </head>
@@ -322,9 +306,14 @@ function generateContractContent() {
 }
 
 function showNotification(message) {
+    // Remove notificação existente
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+
     const notification = document.createElement('div');
     notification.className = 'notification';
-    notification.style.animation = 'slideIn 0.3s ease';
     notification.innerHTML = `
         <i class="fas fa-check-circle"></i>
         <div>
@@ -332,8 +321,17 @@ function showNotification(message) {
         </div>
     `;
     document.body.appendChild(notification);
+
+    // Animação de entrada
     setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+    }, 10);
+
+    // Remover após 5 segundos
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
         setTimeout(() => {
             if (document.body.contains(notification)) {
                 document.body.removeChild(notification);
@@ -345,18 +343,26 @@ function showNotification(message) {
 function processPayment() {
     const selectedPayment = document.querySelector('.payment-option.selected');
     if (!selectedPayment) {
-        alert('Por favor, selecione uma forma de pagamento.');
+        showNotification('❌ Selecione uma forma de pagamento');
         return;
     }
 
-    alert('💳 Processando pagamento...');
+    showNotification('💳 Processando pagamento...');
     
     setTimeout(() => {
         downloadContract();
-        alert('🎉 Pagamento aprovado! Contrato baixado com sucesso!');
+        showNotification('🎉 Pagamento aprovado! Contrato baixado.');
         closePaymentModal();
     }, 2000);
 }
+
+// Fechar modal ao clicar fora
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('paymentModal');
+    if (event.target === modal) {
+        closePaymentModal();
+    }
+});
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
@@ -374,4 +380,21 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('input', updatePreview);
         input.addEventListener('change', updatePreview);
     });
+
+    // Adicionar campo de endereço se não existir
+    if (!document.getElementById('contractorAddress')) {
+        const formSection = document.querySelector('.form-section');
+        const addressHTML = `
+            <div class="form-group">
+                <label for="contractorAddress">Endereço do Contratante</label>
+                <input type="text" id="contractorAddress" placeholder="Endereço completo">
+            </div>
+            <div class="form-group">
+                <label for="contractedAddress">Endereço do Contratado</label>
+                <input type="text" id="contractedAddress" placeholder="Endereço completo">
+            </div>
+        `;
+        const contractedNameField = document.getElementById('contractedName');
+        contractedNameField.parentNode.insertAdjacentHTML('afterend', addressHTML);
+    }
 });
