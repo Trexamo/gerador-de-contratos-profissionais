@@ -1,5 +1,6 @@
 // Variáveis globais
 let selectedPlan = 'avulsa';
+let selectedPaymentMethod = '';
 
 // Funções do FAQ
 function toggleFAQ(element) {
@@ -159,7 +160,7 @@ function updatePreview() {
     contractPreview.innerHTML = generateProfessionalContract();
 }
 
-// Payment modal functions - CORRIGIDO PARA MOBILE
+// Payment modal functions
 function openPaymentModal(plan) {
     selectedPlan = plan;
     
@@ -191,7 +192,7 @@ function openPaymentModal(plan) {
         case 'free':
             modalTitle.textContent = 'Teste Grátis - 7 Dias';
             modalPlanDescription.textContent = 'Plano Teste Grátis - 1 contrato grátis por 7 dias';
-            modalPrice.textContent = 'Total: R$ 0,00';
+            modalPrice.textContent = 'Total: R$ 0,00 (Após 7 dias: R$ 19,90/mês)';
             break;
         case 'avulsa':
             modalTitle.textContent = 'Comprar Contrato Avulso';
@@ -210,13 +211,20 @@ function openPaymentModal(plan) {
             break;
     }
     
+    // Reset payment selection
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    document.getElementById('bankDetails').style.display = 'none';
+    selectedPaymentMethod = '';
+    
     document.getElementById('paymentModal').classList.add('active');
-    document.body.style.overflow = 'hidden'; // Previne scroll no mobile
+    document.body.style.overflow = 'hidden';
 }
 
 function closePaymentModal() {
     document.getElementById('paymentModal').classList.remove('active');
-    document.body.style.overflow = 'auto'; // Restaura scroll
+    document.body.style.overflow = 'auto';
 }
 
 function selectPayment(element) {
@@ -224,85 +232,147 @@ function selectPayment(element) {
         option.classList.remove('selected');
     });
     element.classList.add('selected');
-}
-
-function downloadContract() {
-    try {
-        const contractContent = generateContractContent();
-        const blob = new Blob([contractContent], { 
-            type: 'text/html;charset=utf-8' 
-        });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const timestamp = new Date().getTime();
-        a.download = `contrato-profissional-${timestamp}.html`;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }, 100);
-        showNotification('✅ Contrato baixado com sucesso!');
-    } catch (error) {
-        console.error('Erro no download:', error);
-        showNotification('❌ Erro ao baixar o contrato');
+    
+    // Mostrar dados bancários se for PIX
+    const bankDetails = document.getElementById('bankDetails');
+    if (element.querySelector('span').textContent === 'PIX') {
+        bankDetails.style.display = 'block';
+        selectedPaymentMethod = 'pix';
+    } else {
+        bankDetails.style.display = 'none';
+        selectedPaymentMethod = element.querySelector('span').textContent.toLowerCase();
     }
 }
 
-function generateContractContent() {
-    const contractHTML = generateProfessionalContract();
-    return `<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Contrato Profissional - ContratoFácil</title>
-    <style>
-        body { 
-            font-family: 'Times New Roman', Times, serif; 
-            margin: 2.5cm; 
-            line-height: 1.6; 
-            font-size: 14px;
-            color: #000;
+// Função para gerar PDF
+function generatePDF() {
+    const element = document.getElementById('contractPreview');
+    const opt = {
+        margin: [0.5, 0.5, 0.5, 0.5],
+        filename: `contrato-${new Date().getTime()}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        showNotification('✅ PDF baixado com sucesso!');
+    });
+}
+
+// Função para gerar Word (simulação)
+function generateWord() {
+    const contractContent = generateProfessionalContract();
+    
+    // Criar um blob com conteúdo HTML que pode ser aberto no Word
+    const blob = new Blob([`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Contrato Profissional</title>
+            <style>
+                body { 
+                    font-family: 'Times New Roman', Times, serif; 
+                    margin: 2.5cm; 
+                    line-height: 1.6; 
+                    font-size: 14px;
+                    color: #000;
+                }
+                .contract-header { 
+                    text-align: center; 
+                    margin-bottom: 2rem; 
+                    padding-bottom: 1rem;
+                    border-bottom: 2px solid #000;
+                }
+                .contract-title { 
+                    font-size: 18px; 
+                    font-weight: bold; 
+                    margin-bottom: 0.5rem;
+                    text-transform: uppercase;
+                }
+                .contract-clause { 
+                    margin-bottom: 20px; 
+                }
+                .contract-clause h4 {
+                    font-size: 14px;
+                    margin-bottom: 10px;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                }
+                .signature-space {
+                    border-top: 1px solid #000;
+                    margin: 40px 0 10px 0;
+                    padding-top: 10px;
+                }
+            </style>
+        </head>
+        <body>
+            ${contractContent}
+        </body>
+        </html>
+    `], { type: 'application/msword' });
+    
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `contrato-${new Date().getTime()}.doc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    showNotification('✅ Documento Word baixado com sucesso!');
+}
+
+// Função para mostrar opções de download
+function showDownloadOptions() {
+    const modal = document.getElementById('paymentModal');
+    const modalBody = modal.querySelector('.modal-body');
+    
+    modalBody.innerHTML = `
+        <div style="text-align: center;">
+            <h3 style="color: var(--success); margin-bottom: 1rem;">
+                <i class="fas fa-check-circle"></i> Pagamento Aprovado!
+            </h3>
+            <p>Seu contrato está pronto para download.</p>
+            
+            <div class="download-options">
+                <button class="btn btn-secondary" onclick="generatePDF()">
+                    <i class="fas fa-file-pdf"></i> Baixar PDF
+                </button>
+                <button class="btn btn-secondary" onclick="generateWord()">
+                    <i class="fas fa-file-word"></i> Baixar Word
+                </button>
+            </div>
+            
+            <button class="btn btn-success" onclick="closePaymentModal()" style="margin-top: 1.5rem; width: 100%;">
+                <i class="fas fa-check"></i> Concluir
+            </button>
+        </div>
+    `;
+}
+
+function processPayment() {
+    const selectedPayment = document.querySelector('.payment-option.selected');
+    if (!selectedPayment) {
+        showNotification('❌ Selecione uma forma de pagamento');
+        return;
+    }
+
+    showNotification('💳 Processando pagamento...');
+    
+    setTimeout(() => {
+        if (selectedPlan === 'free') {
+            showNotification('🎉 Teste grátis ativado! Você tem 7 dias gratuitos.');
+        } else {
+            showNotification('🎉 Pagamento aprovado com sucesso!');
         }
-        .contract-header { 
-            text-align: center; 
-            margin-bottom: 2rem; 
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #000;
-        }
-        .contract-title { 
-            font-size: 18px; 
-            font-weight: bold; 
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-        .contract-clause { 
-            margin-bottom: 20px; 
-        }
-        .contract-clause h4 {
-            font-size: 14px;
-            margin-bottom: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .signature-space {
-            border-top: 1px solid #000;
-            margin: 40px 0 10px 0;
-            padding-top: 10px;
-        }
-        @media print {
-            body { margin: 1.5cm; }
-        }
-        @media (max-width: 768px) {
-            body { margin: 1cm; }
-        }
-    </style>
-</head>
-<body>
-    ${contractHTML}
-</body>
-</html>`;
+        
+        // Mostrar opções de download
+        showDownloadOptions();
+        
+    }, 2000);
 }
 
 function showNotification(message) {
@@ -315,7 +385,6 @@ function showNotification(message) {
     const notification = document.createElement('div');
     notification.className = 'notification';
     notification.innerHTML = `
-        <i class="fas fa-check-circle"></i>
         <div>
             <strong>${message}</strong>
         </div>
@@ -338,26 +407,6 @@ function showNotification(message) {
             }
         }, 300);
     }, 5000);
-}
-
-function processPayment() {
-    const selectedPayment = document.querySelector('.payment-option.selected');
-    if (!selectedPayment) {
-        showNotification('❌ Selecione uma forma de pagamento');
-        return;
-    }
-
-    showNotification('💳 Processando pagamento...');
-    
-    setTimeout(() => {
-        if (selectedPlan === 'free') {
-            showNotification('🎉 Teste grátis ativado! Contrato baixado.');
-        } else {
-            showNotification('🎉 Pagamento aprovado! Contrato baixado.');
-        }
-        downloadContract();
-        closePaymentModal();
-    }, 2000);
 }
 
 // Fechar modal ao clicar fora
