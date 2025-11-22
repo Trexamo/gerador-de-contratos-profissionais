@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ContratoFácil - Contratos Profissionais em 5 Minutos</title>
+    <link rel="icon" href="logo.jpg" type="image/jpeg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="logo.jpg" alt="ContratoFácil" class="logo-img">
+                    <span>ContratoFácil</span>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#home">Início</a></li>
+                        <li><a href="#features">Recursos</a></li>
+                        <li><a href="#generator">Criar Contrato</a></li>
+                        <li><a href="#pricing">Planos</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </nav>
+                <a href="#generator" class="btn">Criar Contrato Agora</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Contratos Profissionais em 5 Minutos</h1>
+            <p>Crie contratos de prestação de serviços personalizados, seguros e juridicamente válidos. Economize tempo e evite dores de cabeça.</p>
+            <div class="hero-buttons">
+                <a href="#generator" class="btn">Criar Meu Contrato</a>
+                <a href="#features" class="btn btn-outline">Ver Recursos</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Por que escolher o ContratoFácil?</h2>
+                <p>Oferecemos a solução mais completa para criação de contratos profissionais</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Rápido e Fácil</h3>
+                    <p>Crie contratos profissionais em apenas 5 minutos com nosso formulário intuitivo.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Juridicamente Válido</h3>
+                    <p>Modelos criados por especialistas jurídicos e atualizados conforme a legislação.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3>Totalmente Personalizável</h3>
+                    <p>Adapte cada cláusula do contrato às suas necessidades específicas.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-download"></i>
+                    </div>
+                    <h3>Download Imediato</h3>
+                    <p>Receba seu contrato em PDF e Word prontos para usar assim que finalizar.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Generator Section -->
+    <section class="generator" id="generator">
+        <div class="container">
+            <div class="section-title">
+                <h2>Crie Seu Contrato Agora</h2>
+                <p>Preencha os dados abaixo e visualize em tempo real seu contrato profissional</p>
+            </div>
+            <div class="generator-container">
+                <!-- Form Section -->
+                <div class="form-section">
+                    <h3>Informações do Contrato</h3>
+                    <div class="form-group">
+                        <label for="contractorName">Nome do Contratante *</label>
+                        <input type="text" id="contractorName" placeholder="Seu nome ou empresa">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contractorDoc">CPF/CNPJ do Contratante *</label>
+                            <input type="text" id="contractorDoc" placeholder="CPF ou CNPJ">
+                        </div>
+                        <div class="form-group">
+                            <label for="contractorProfession">Profissão do Contratante</label>
+                            <input type="text" id="contractorProfession" placeholder="Sua profissão">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contractedName">Nome do Contratado *</label>
+                        <input type="text" id="contractedName" placeholder="Nome do prestador">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contractedDoc">CPF/CNPJ do Contratado *</label>
+                            <input type="text" id="contractedDoc" placeholder="CPF ou CNPJ">
+                        </div>
+                        <div class="form-group">
+                            <label for="contractedProfession">Profissão do Contratado</label>
+                            <input type="text" id="contractedProfession" placeholder="Profissão do prestador">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="serviceDescription">Descrição do Serviço *</label>
+                        <textarea id="serviceDescription" rows="4" placeholder="Descreva detalhadamente o serviço a ser prestado"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="serviceValue">Valor do Serviço (R$) *</label>
+                            <input type="text" id="serviceValue" placeholder="0,00">
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentMethod">Forma de Pagamento</label>
+                            <select id="paymentMethod">
+                                <option value="transferencia">Transferência Bancária</option>
+                                <option value="boleto">Boleto</option>
+                                <option value="pix">PIX</option>
+                                <option value="cartao">Cartão de Crédito</option>
+                                <option value="dinheiro">Dinheiro</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="startDate">Data de Início *</label>
+                            <input type="date" id="startDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">Data de Término</label>
+                            <input type="date" id="endDate">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contractCity">Cidade de Vigência *</label>
+                        <input type="text" id="contractCity" placeholder="Cidade onde o contrato é válido">
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn" onclick="updatePreview()">
+                            <i class="fas fa-eye"></i> Atualizar Visualização
+                        </button>
+                        <button class="btn btn-success" onclick="openPaymentModal('avulsa')">
+                            <i class="fas fa-shopping-cart"></i> Comprar Avulso - R$ 9,99
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Preview Section -->
+                <div class="preview-section">
+                    <div class="preview-header">
+                        <h3>Pré-visualização</h3>
+                    </div>
+                    <div class="contract-preview" id="contractPreview">
+                        <!-- CONTRATO PROFISSIONAL SERÁ INSERIDO AQUI VIA JAVASCRIPT -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="section-title">
+                <h2>Planos e Preços</h2>
+                <p>Escolha o plano ideal para suas necessidades</p>
+            </div>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <div class="pricing-name">Básico</div>
+                        <div class="pricing-price">R$ 14,90</div>
+                        <div class="pricing-period">por mês</div>
+                        <div class="pricing-description">3 contratos mensais</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> 3 contratos por mês</li>
+                        <li><i class="fas fa-check"></i> Download em PDF</li>
+                        <li><i class="fas fa-check"></i> Modelos básicos</li>
+                        <li><i class="fas fa-check"></i> Suporte por email</li>
+                    </ul>
+                    <button class="btn" onclick="openPaymentModal('basico')">Escolher Plano</button>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <div class="pricing-header">
+                        <div class="pricing-name">Intermediário</div>
+                        <div class="pricing-price">R$ 29,90</div>
+                        <div class="pricing-period">por mês</div>
+                        <div class="pricing-description">10-20 contratos mensais</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> 10-20 contratos por mês</li>
+                        <li><i class="fas fa-check"></i> Download em PDF + Word</li>
+                        <li><i class="fas fa-check"></i> Todos os modelos</li>
+                        <li><i class="fas fa-check"></i> Revisão jurídica básica</li>
+                        <li><i class="fas fa-check"></i> Suporte prioritário</li>
+                    </ul>
+                    <button class="btn btn-success" onclick="openPaymentModal('intermediario')">Escolher Plano</button>
+                </div>
+                
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <div class="pricing-name">Ilimitado</div>
+                        <div class="pricing-price">R$ 49,90</div>
+                        <div class="pricing-period">por mês</div>
+                        <div class="pricing-description">Contratos ilimitados</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> Contratos ilimitados</li>
+                        <li><i class="fas fa-check"></i> Download em PDF + Word</li>
+                        <li><i class="fas fa-check"></i> Todos os modelos premium</li>
+                        <li><i class="fas fa-check"></i> Revisão jurídica completa</li>
+                        <li><i class="fas fa-check"></i> Consultoria mensal</li>
+                    </ul>
+                    <button class="btn" onclick="openPaymentModal('ilimitado')">Escolher Plano</button>
+                </div>
+            </div>
+
+            <div class="pricing-avulsa">
+                <h3>Não precisa de assinatura?</h3>
+                <p style="margin-bottom: 1.2rem;">Compre contratos avulsos quando precisar</p>
+                <div style="font-size: 2.2rem; font-weight: bold; color: var(--primary); margin-bottom: 1.2rem;">
+                    R$ 9,90 por contrato
+                </div>
+                <button class="btn btn-success" onclick="openPaymentModal('avulsa')">
+                    <i class="fas fa-shopping-cart"></i> Comprar Contrato Avulso
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tips Section -->
+    <section class="tips">
+        <div class="container">
+            <div class="section-title">
+                <h2>Dicas para um Contrato Perfeito</h2>
+                <p>Aprenda a criar contratos que protegem seu negócio</p>
+            </div>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Revise Sempre</h3>
+                    <p>Leia cuidadosamente todas as cláusulas antes de assinar qualquer contrato.</p>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h3>Personalize</h3>
+                    <p>Adapte o contrato à realidade do seu negócio e às necessidades específicas.</p>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Proteja-se</h3>
+                    <p>Inclua cláusulas de confidencialidade e propriedade intelectual quando necessário.</p>
+                </div>
+                <div class="tip-card">
+                    <div class="tip-icon">
+                        <i class="fas fa-file-contract"></i>
+                    </div>
+                    <h3>Detalhe o Serviço</h3>
+                    <p>Seja específico na descrição do serviço para evitar mal-entendidos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>O que nossos clientes dizem</h2>
+                <p>Profissionais que já criaram contratos conosco</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        "Precisava de um contrato urgente para um novo cliente e o ContratoFácil me salvou. Em 10 minutos tinha um documento profissional pronto."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="pessoa1.jpg" alt="Carlos Silva">
+                        </div>
+                        <div class="author-info">
+                            <h4>Carlos Silva</h4>
+                            <p>Desenvolvedor Freelancer</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        "A facilidade de criar contratos personalizados me surpreendeu. Agora tenho mais segurança nos meus projetos."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="pessoa2.jpg" alt="Pedro Santos">
+                        </div>
+                        <div class="author-info">
+                            <h4>Pedro Santos</h4>
+                            <p>Designer Gráfico</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        "As cláusulas são muito bem elaboradas e me dão tranquilidade nos meus trabalhos como consultor."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <img src="pessoa3.jpg" alt="Júlio Costa">
+                        </div>
+                        <div class="author-info">
+                            <h4>Júlio Costa</h4>
+                            <p>Consultor de Marketing</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <div class="section-title">
+                <h2>Perguntas Frequentes</h2>
+                <p>Tire suas dúvidas sobre nossos serviços</p>
+            </div>
+            
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        Os contratos são juridicamente válidos?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Sim, todos os nossos modelos são criados por especialistas jurídicos e estão em conformidade com a legislação brasileira. No entanto, para casos específicos ou de alto valor, recomendamos consultar um advogado.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        Como faço para baixar meu contrato?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Após o pagamento, você receberá um link para download imediato do contrato nos formatos PDF e Word (dependendo do plano escolhido). O arquivo estará pronto para uso.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        Posso cancelar minha assinatura?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Sim, você pode cancelar sua assinatura a qualquer momento através da sua área de cliente. O cancelamento será efetivo no final do período atual.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        E se eu tiver dúvidas sobre o contrato?
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Oferecemos suporte especializado para tirar dúvidas sobre o uso dos modelos. Para questões jurídicas específicas, recomendamos consultar um advogado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h4>ContratoFácil</h4>
+                    <p>Criação de contratos profissionais de forma rápida e segura.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Links Rápidos</h4>
+                    <ul>
+                        <li><a href="#home">Início</a></li>
+                        <li><a href="#features">Recursos</a></li>
+                        <li><a href="#generator">Criar Contrato</a></li>
+                        <li><a href="#pricing">Planos</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Contato</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> contato@contratofacil.com</li>
+                        <li><i class="fas fa-phone"></i> (11) 9999-9999</li>
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo, SP</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 ContratoFácil. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Finalizar Compra</h3>
+                <button class="close-modal" onclick="closePaymentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4 id="modalDescription">Resumo do Pedido</h4>
+                <p id="modalPlanDescription"></p>
+                <p><strong id="modalPrice">Total: R$ 9,90</strong></p>
+                
+                <h4 style="margin-top: 1.5rem;">Forma de Pagamento</h4>
+                <div class="payment-options">
+                    <div class="payment-option" onclick="selectPayment(this)">
+                        <div class="payment-icon">
+                            <i class="fab fa-cc-visa"></i>
+                        </div>
+                        <div>Cartão de Crédito</div>
+                    </div>
+                    <div class="payment-option" onclick="selectPayment(this)">
+                        <div class="payment-icon">
+                            <i class="fas fa-barcode"></i>
+                        </div>
+                        <div>Boleto Bancário</div>
+                    </div>
+                    <div class="payment-option" onclick="selectPayment(this)">
+                        <div class="payment-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div>PIX</div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-success" style="width: 100%; margin-top: 1.5rem;" onclick="processPayment()">
+                    <i class="fas fa-lock"></i> Finalizar Pagamento
+                </button>
+                
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.8rem; color: var(--gray);">
+                    Pagamento 100% seguro
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
