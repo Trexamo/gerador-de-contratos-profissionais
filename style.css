@@ -111,11 +111,6 @@ nav a:hover {
     box-shadow: 0 6px 20px rgba(255,107,0,0.4);
 }
 
-.btn-outline {
-    background: transparent;
-    border: 2px solid white;
-    color: white;
-}
 
 .btn-outline:hover {
     background: white;
