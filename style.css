@@ -874,3 +874,46 @@ footer {
         transform: translateY(-8px);
     }
 }
+
+/* Adicione estas regras ao seu CSS existente */
+
+.bank-info {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary);
+    margin-top: 1rem;
+}
+
+.bank-info p {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.bank-details {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.pricing-header small {
+    color: var(--danger);
+    font-weight: 600;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+.download-options {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.download-options .btn {
+    flex: 1;
+    min-width: 120px;
+}
