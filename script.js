@@ -1,14 +1,4 @@
-// Variáveis globais
-let selectedPlan = 'avulsa';
-let selectedPaymentMethod = '';
-
-// Funções do FAQ
-function toggleFAQ(element) {
-    const item = element.parentElement;
-    item.classList.toggle('active');
-}
-
-// Função para gerar o contrato PROFISSIONAL
+// Função para gerar o contrato PROFISSIONAL CORRETAMENTE PREENCHIDO
 function generateProfessionalContract() {
     // Obter valores do formulário
     const contractorName = document.getElementById('contractorName').value || '________________________';
@@ -46,7 +36,14 @@ function generateProfessionalContract() {
         default: paymentMethodText = '________________________';
     }
 
-    // Construir o contrato PROFISSIONAL
+    // Formatar valor por extenso (função simplificada)
+    function valorPorExtenso(valor) {
+        if (!valor || valor === '__________') return '_________________________';
+        // Aqui você pode implementar uma função mais robusta para converter números em extenso
+        return `(${valor} reais)`;
+    }
+
+    // Construir o contrato PROFISSIONAL CORRETAMENTE PREENCHIDO
     const contractHTML = `
         <div class="contract-header">
             <div class="contract-title">CONTRATO DE PRESTAÇÃO DE SERVIÇOS</div>
@@ -54,23 +51,17 @@ function generateProfessionalContract() {
         
         <div class="contract-body">
             <div class="contract-intro">
-                <p>Pelo presente instrumento de <strong>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</strong> que celebram entre si, de um lado <strong>${contractorName}</strong>, nacionalidade <strong>________________________</strong>, estado civil <strong>________________________</strong>, profissão <strong>${contractorProfession}</strong>, portador do <strong>${contractorDoc}</strong>, residente e domiciliado à <strong>${contractorAddress}</strong>, doravante denominado <strong>CONTRATANTE</strong>, e de outro lado <strong>${contractedName}</strong>, nacionalidade <strong>________________________</strong>, estado civil <strong>________________________</strong>, profissão <strong>${contractedProfession}</strong>, portador do <strong>${contractedDoc}</strong>, residente e domiciliado à <strong>${contractedAddress}</strong>, doravante denominado <strong>CONTRATADO(A)</strong>, pelas cláusulas pactuadas a seguir:</p>
+                <p>Pelo presente instrumento de <strong>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</strong> que celebram entre si, de um lado <strong>${contractorName}</strong>, nacionalidade brasileira, estado civil ______________, profissão <strong>${contractorProfession}</strong>, portador do documento <strong>${contractorDoc}</strong>, residente e domiciliado à <strong>${contractorAddress}</strong>, doravante denominado <strong>CONTRATANTE</strong>, e de outro lado <strong>${contractedName}</strong>, nacionalidade brasileira, estado civil ______________, profissão <strong>${contractedProfession}</strong>, portador do documento <strong>${contractedDoc}</strong>, residente e domiciliado à <strong>${contractedAddress}</strong>, doravante denominado <strong>CONTRATADO(A)</strong>, pelas cláusulas pactuadas a seguir:</p>
             </div>
 
             <div class="contract-clause">
                 <h4>CLÁUSULA PRIMEIRA - DO OBJETO</h4>
-                <p>O presente contrato tem por OBJETO a prestação de serviço de <strong>${serviceDescription}</strong>, a ser realizado no período compreendido entre <strong>${formatDate(startDate)}</strong> e <strong>${formatDate(endDate)}</strong>, contendo as seguintes atividades:</p>
-                <ol>
-                    <li>_________________________________________________________</li>
-                    <li>_________________________________________________________</li>
-                    <li>_________________________________________________________</li>
-                    <li>_________________________________________________________</li>
-                </ol>
+                <p>O presente contrato tem por OBJETO a prestação de serviço de <strong>${serviceDescription}</strong>, a ser realizado no período compreendido entre <strong>${formatDate(startDate)}</strong> e <strong>${formatDate(endDate)}</strong>.</p>
             </div>
 
             <div class="contract-clause">
-                <h4>CLÁUSULA SEGUNDA - DAS OBRIGAÇÕES DO CONTRATANTE</h4>
-                <p>O <strong>CONTRATANTE</strong> obriga-se a pagar ao <strong>CONTRATADO(A)</strong> a importância de <strong>R$ ${serviceValue}</strong> (_______________________________________), sendo <strong>R$ __________</strong> (________________________), referente a _________________________ e <strong>R$ __________</strong> (________________________), a ser pago na seguinte forma: <strong>${paymentMethodText}</strong>.</p>
+                <h4>CLÁUSULA SEGUNDA - DO VALOR E FORMA DE PAGAMENTO</h4>
+                <p>O <strong>CONTRATANTE</strong> obriga-se a pagar ao <strong>CONTRATADO(A)</strong> a importância de <strong>R$ ${serviceValue}</strong> ${valorPorExtenso(serviceValue)}, a ser pago na seguinte forma: <strong>${paymentMethodText}</strong>.</p>
                 <p>O pagamento será efetuado mediante apresentação de nota fiscal ou recibo, ficando o CONTRATADO(A) obrigado(a) à quitação do tributo incidente na operação.</p>
             </div>
 
@@ -94,7 +85,7 @@ function generateProfessionalContract() {
 
             <div class="contract-clause">
                 <h4>CLÁUSULA QUINTA - DA CONFIDENCIALIDADE</h4>
-                <p>As partes se obrigam a manter caráter confidencial sobre todas as informações a que tiverem acesso em razão deste contrato, obrigando-se a não divulgá-los, inclusive após seu término, pelo prazo de <strong>__________ anos</strong>, sob pena de responsabilização civil e criminal.</p>
+                <p>As partes se obrigam a manter caráter confidencial sobre todas as informações a que tiverem acesso em razão deste contrato, obrigando-se a não divulgá-los, inclusive após seu término, pelo prazo de 05 (cinco) anos, sob pena de responsabilização civil e criminal.</p>
             </div>
 
             <div class="contract-clause">
@@ -104,7 +95,7 @@ function generateProfessionalContract() {
 
             <div class="contract-clause">
                 <h4>CLÁUSULA SÉTIMA - DAS GARANTIAS</h4>
-                <p>O <strong>CONTRATADO(A)</strong> garante a qualidade dos serviços prestados e se obriga a reparar, sem custo adicional, quaisquer vícios, defeitos ou não conformidades apontados pelo <strong>CONTRATANTE</strong> no prazo de <strong>______ dias</strong> a partir da entrega ou conclusão dos serviços.</p>
+                <p>O <strong>CONTRATADO(A)</strong> garante a qualidade dos serviços prestados e se obriga a reparar, sem custo adicional, quaisquer vícios, defeitos ou não conformidades apontados pelo <strong>CONTRATANTE</strong> no prazo de 30 (trinta) dias a partir da entrega ou conclusão dos serviços.</p>
             </div>
 
             <div class="contract-clause">
@@ -114,14 +105,14 @@ function generateProfessionalContract() {
                     <li>Por mútuo acordo entre as partes;</li>
                     <li>Por inadimplemento de qualquer das obrigações assumidas por qualquer das partes;</li>
                     <li>Por força maior ou caso fortuito que impossibilite o cumprimento do objeto;</li>
-                    <li>Por iniciativa de qualquer das partes, mediante aviso prévio de <strong>______ dias</strong>.</li>
+                    <li>Por iniciativa de qualquer das partes, mediante aviso prévio de 30 (trinta) dias.</li>
                 </ol>
-                <p>Em caso de descumprimento dos prazos estabelecidos, o CONTRATADO(A) pagará multa moratória de <strong>______%</strong> sobre o valor do serviço por dia de atraso, limitada a <strong>______%</strong> do valor total do contrato.</p>
+                <p>Em caso de descumprimento dos prazos estabelecidos, o CONTRATADO(A) pagará multa moratória de 2% sobre o valor do serviço por dia de atraso, limitada a 20% do valor total do contrato.</p>
             </div>
 
             <div class="contract-clause">
                 <h4>CLÁUSULA NONA - DAS MULTAS E INDENIZAÇÕES</h4>
-                <p>Em caso de descumprimento de qualquer obrigação assumida neste instrumento, a parte inadimplente pagará à outra multa compensatória no valor de <strong>______%</strong> do valor total do contrato, sem prejuízo de perdas e danos.</p>
+                <p>Em caso de descumprimento de qualquer obrigação assumida neste instrumento, a parte inadimplente pagará à outra multa compensatória no valor de 10% do valor total do contrato, sem prejuízo de perdas e danos.</p>
             </div>
 
             <div class="contract-clause">
@@ -134,17 +125,19 @@ function generateProfessionalContract() {
                 
                 <div class="signature-line">
                     <div class="signature-box">
-                        <p><strong>${contractCity}</strong>, _____ de __________________ de ______</p>
+                        <p><strong>${contractCity}</strong>, ${new Date().getDate()} de ${getMonthName(new Date().getMonth())} de ${new Date().getFullYear()}</p>
                         <div class="signature-space"></div>
-                        <p>___________________________________</p>
+                        <p><strong>${contractorName}</strong></p>
                         <p><strong>CONTRATANTE</strong></p>
+                        <p>Documento: ${contractorDoc}</p>
                     </div>
                     
                     <div class="signature-box">
                         <p>&nbsp;</p>
                         <div class="signature-space"></div>
-                        <p>___________________________________</p>
+                        <p><strong>${contractedName}</strong></p>
                         <p><strong>CONTRATADO(A)</strong></p>
+                        <p>Documento: ${contractedDoc}</p>
                     </div>
                 </div>
             </div>
@@ -154,283 +147,95 @@ function generateProfessionalContract() {
     return contractHTML;
 }
 
-// Update contract preview
-function updatePreview() {
-    const contractPreview = document.getElementById('contractPreview');
-    contractPreview.innerHTML = generateProfessionalContract();
+// Função auxiliar para obter nome do mês
+function getMonthName(monthIndex) {
+    const months = [
+        'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+        'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+    ];
+    return months[monthIndex];
 }
 
-// Payment modal functions
-function openPaymentModal(plan) {
-    selectedPlan = plan;
+// Função para formatar valor por extenso (mais robusta)
+function formatarValorExtenso(valor) {
+    if (!valor || isNaN(valor)) return '_________________________';
     
-    // Verificar campos obrigatórios
-    const requiredFields = ['contractorName', 'contractorDoc', 'contractedName', 'contractedDoc', 'serviceDescription', 'serviceValue', 'startDate', 'contractCity'];
-    let isValid = true;
+    const numeros = [
+        'zero', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove',
+        'dez', 'onze', 'doze', 'treze', 'quatorze', 'quinze', 'dezesseis', 'dezessete', 
+        'dezoito', 'dezenove'
+    ];
     
-    requiredFields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
-        if (!field.value.trim()) {
-            isValid = false;
-            field.style.borderColor = 'var(--danger)';
-        } else {
-            field.style.borderColor = '#e0e0e0';
+    const dezenas = [
+        '', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 
+        'oitenta', 'noventa'
+    ];
+    
+    const centenas = [
+        '', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 
+        'seiscentos', 'setecentos', 'oitocentos', 'novecentos'
+    ];
+    
+    let valorNumero = parseFloat(valor.replace(',', '.'));
+    let inteiro = Math.floor(valorNumero);
+    let decimal = Math.round((valorNumero - inteiro) * 100);
+    
+    if (inteiro === 0) {
+        return 'zero reais';
+    }
+    
+    let extenso = '';
+    
+    // Parte inteira
+    if (inteiro === 100) {
+        extenso = 'cem';
+    } else if (inteiro < 20) {
+        extenso = numeros[inteiro];
+    } else if (inteiro < 100) {
+        extenso = dezenas[Math.floor(inteiro / 10)];
+        if (inteiro % 10 !== 0) {
+            extenso += ' e ' + numeros[inteiro % 10];
         }
-    });
-
-    if (!isValid) {
-        showNotification('❌ Preencha todos os campos obrigatórios marcados com *');
-        return;
-    }
-    
-    // Configurar modal
-    const modalTitle = document.getElementById('modalTitle');
-    const modalPlanDescription = document.getElementById('modalPlanDescription');
-    const modalPrice = document.getElementById('modalPrice');
-    
-    switch(plan) {
-        case 'free':
-            modalTitle.textContent = 'Teste Grátis - 7 Dias';
-            modalPlanDescription.textContent = 'Plano Teste Grátis - 1 contrato grátis por 7 dias';
-            modalPrice.textContent = 'Total: R$ 0,00 (Após 7 dias: R$ 19,90/mês)';
-            break;
-        case 'avulsa':
-            modalTitle.textContent = 'Comprar Contrato Avulso';
-            modalPlanDescription.textContent = '1 Contrato de Prestação de Serviços Personalizado';
-            modalPrice.textContent = 'Total: R$ 6,90';
-            break;
-        case 'basico':
-            modalTitle.textContent = 'Assinar Plano Básico';
-            modalPlanDescription.textContent = 'Plano Básico - 5 contratos por mês';
-            modalPrice.textContent = 'Total: R$ 9,90/mês';
-            break;
-        case 'profissional':
-            modalTitle.textContent = 'Assinar Plano Profissional';
-            modalPlanDescription.textContent = 'Plano Profissional - Contratos ilimitados';
-            modalPrice.textContent = 'Total: R$ 29,90/mês';
-            break;
-    }
-    
-    // Reset payment selection
-    document.querySelectorAll('.payment-option').forEach(option => {
-        option.classList.remove('selected');
-    });
-    document.getElementById('bankDetails').style.display = 'none';
-    selectedPaymentMethod = '';
-    
-    document.getElementById('paymentModal').classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-function closePaymentModal() {
-    document.getElementById('paymentModal').classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
-
-function selectPayment(element) {
-    document.querySelectorAll('.payment-option').forEach(option => {
-        option.classList.remove('selected');
-    });
-    element.classList.add('selected');
-    
-    // Mostrar dados bancários se for PIX
-    const bankDetails = document.getElementById('bankDetails');
-    if (element.querySelector('span').textContent === 'PIX') {
-        bankDetails.style.display = 'block';
-        selectedPaymentMethod = 'pix';
     } else {
-        bankDetails.style.display = 'none';
-        selectedPaymentMethod = element.querySelector('span').textContent.toLowerCase();
-    }
-}
-
-// Função para gerar PDF
-function generatePDF() {
-    const element = document.getElementById('contractPreview');
-    const opt = {
-        margin: [0.5, 0.5, 0.5, 0.5],
-        filename: `contrato-${new Date().getTime()}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(element).save().then(() => {
-        showNotification('✅ PDF baixado com sucesso!');
-    });
-}
-
-// Função para gerar Word (simulação)
-function generateWord() {
-    const contractContent = generateProfessionalContract();
-    
-    // Criar um blob com conteúdo HTML que pode ser aberto no Word
-    const blob = new Blob([`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Contrato Profissional</title>
-            <style>
-                body { 
-                    font-family: 'Times New Roman', Times, serif; 
-                    margin: 2.5cm; 
-                    line-height: 1.6; 
-                    font-size: 14px;
-                    color: #000;
+        extenso = centenas[Math.floor(inteiro / 100)];
+        let resto = inteiro % 100;
+        if (resto !== 0) {
+            if (resto < 20) {
+                extenso += ' e ' + numeros[resto];
+            } else {
+                extenso += ' e ' + dezenas[Math.floor(resto / 10)];
+                if (resto % 10 !== 0) {
+                    extenso += ' e ' + numeros[resto % 10];
                 }
-                .contract-header { 
-                    text-align: center; 
-                    margin-bottom: 2rem; 
-                    padding-bottom: 1rem;
-                    border-bottom: 2px solid #000;
-                }
-                .contract-title { 
-                    font-size: 18px; 
-                    font-weight: bold; 
-                    margin-bottom: 0.5rem;
-                    text-transform: uppercase;
-                }
-                .contract-clause { 
-                    margin-bottom: 20px; 
-                }
-                .contract-clause h4 {
-                    font-size: 14px;
-                    margin-bottom: 10px;
-                    font-weight: bold;
-                    text-transform: uppercase;
-                }
-                .signature-space {
-                    border-top: 1px solid #000;
-                    margin: 40px 0 10px 0;
-                    padding-top: 10px;
-                }
-            </style>
-        </head>
-        <body>
-            ${contractContent}
-        </body>
-        </html>
-    `], { type: 'application/msword' });
-    
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `contrato-${new Date().getTime()}.doc`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    showNotification('✅ Documento Word baixado com sucesso!');
-}
-
-// Função para mostrar opções de download
-function showDownloadOptions() {
-    const modal = document.getElementById('paymentModal');
-    const modalBody = modal.querySelector('.modal-body');
-    
-    modalBody.innerHTML = `
-        <div style="text-align: center;">
-            <h3 style="color: var(--success); margin-bottom: 1rem;">
-                <i class="fas fa-check-circle"></i> Pagamento Aprovado!
-            </h3>
-            <p>Seu contrato está pronto para download.</p>
-            
-            <div class="download-options">
-                <button class="btn btn-secondary" onclick="generatePDF()">
-                    <i class="fas fa-file-pdf"></i> Baixar PDF
-                </button>
-                <button class="btn btn-secondary" onclick="generateWord()">
-                    <i class="fas fa-file-word"></i> Baixar Word
-                </button>
-            </div>
-            
-            <button class="btn btn-success" onclick="closePaymentModal()" style="margin-top: 1.5rem; width: 100%;">
-                <i class="fas fa-check"></i> Concluir
-            </button>
-        </div>
-    `;
-}
-
-function processPayment() {
-    const selectedPayment = document.querySelector('.payment-option.selected');
-    if (!selectedPayment) {
-        showNotification('❌ Selecione uma forma de pagamento');
-        return;
-    }
-
-    showNotification('💳 Processando pagamento...');
-    
-    setTimeout(() => {
-        if (selectedPlan === 'free') {
-            showNotification('🎉 Teste grátis ativado! Você tem 7 dias gratuitos.');
-        } else {
-            showNotification('🎉 Pagamento aprovado com sucesso!');
-        }
-        
-        // Mostrar opções de download
-        showDownloadOptions();
-        
-    }, 2000);
-}
-
-function showNotification(message) {
-    // Remove notificação existente
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
-
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    notification.innerHTML = `
-        <div>
-            <strong>${message}</strong>
-        </div>
-    `;
-    document.body.appendChild(notification);
-
-    // Animação de entrada
-    setTimeout(() => {
-        notification.style.opacity = '1';
-        notification.style.transform = 'translateX(0)';
-    }, 10);
-
-    // Remover após 5 segundos
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            if (document.body.contains(notification)) {
-                document.body.removeChild(notification);
             }
-        }, 300);
-    }, 5000);
+        }
+    }
+    
+    extenso += inteiro === 1 ? ' real' : ' reais';
+    
+    // Parte decimal
+    if (decimal > 0) {
+        extenso += ' e ';
+        if (decimal < 20) {
+            extenso += numeros[decimal];
+        } else {
+            extenso += dezenas[Math.floor(decimal / 10)];
+            if (decimal % 10 !== 0) {
+                extenso += ' e ' + numeros[decimal % 10];
+            }
+        }
+        extenso += decimal === 1 ? ' centavo' : ' centavos';
+    }
+    
+    return extenso;
 }
 
-// Fechar modal ao clicar fora
-document.addEventListener('click', function(event) {
-    const modal = document.getElementById('paymentModal');
-    if (event.target === modal) {
-        closePaymentModal();
+// Atualizar a função valorPorExtenso para usar a nova formatação
+function valorPorExtenso(valor) {
+    if (!valor || valor === '__________') return '_________________________';
+    try {
+        return `(${formatarValorExtenso(valor)})`;
+    } catch (e) {
+        return '_________________________';
     }
-});
-
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-    updatePreview();
-    
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('startDate').min = today;
-    
-    document.getElementById('startDate').addEventListener('change', function() {
-        document.getElementById('endDate').min = this.value;
-    });
-    
-    const formInputs = document.querySelectorAll('#generator input, #generator select, #generator textarea');
-    formInputs.forEach(input => {
-        input.addEventListener('input', updatePreview);
-        input.addEventListener('change', updatePreview);
-    });
-});
+}
