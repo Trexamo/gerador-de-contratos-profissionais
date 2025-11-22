@@ -188,25 +188,25 @@ function openPaymentModal(plan) {
     const modalPrice = document.getElementById('modalPrice');
     
     switch(plan) {
+        case 'free':
+            modalTitle.textContent = 'Teste Grátis - 7 Dias';
+            modalPlanDescription.textContent = 'Plano Teste Grátis - 1 contrato grátis por 7 dias';
+            modalPrice.textContent = 'Total: R$ 0,00';
+            break;
         case 'avulsa':
             modalTitle.textContent = 'Comprar Contrato Avulso';
             modalPlanDescription.textContent = '1 Contrato de Prestação de Serviços Personalizado';
-            modalPrice.textContent = 'Total: R$ 9,90';
+            modalPrice.textContent = 'Total: R$ 6,90';
             break;
         case 'basico':
             modalTitle.textContent = 'Assinar Plano Básico';
-            modalPlanDescription.textContent = 'Plano Básico - 3 contratos por mês';
-            modalPrice.textContent = 'Total: R$ 14,90/mês';
+            modalPlanDescription.textContent = 'Plano Básico - 5 contratos por mês';
+            modalPrice.textContent = 'Total: R$ 9,90/mês';
             break;
-        case 'intermediario':
-            modalTitle.textContent = 'Assinar Plano Intermediário';
-            modalPlanDescription.textContent = 'Plano Intermediário - 10-20 contratos por mês';
+        case 'profissional':
+            modalTitle.textContent = 'Assinar Plano Profissional';
+            modalPlanDescription.textContent = 'Plano Profissional - Contratos ilimitados';
             modalPrice.textContent = 'Total: R$ 29,90/mês';
-            break;
-        case 'ilimitado':
-            modalTitle.textContent = 'Assinar Plano Ilimitado';
-            modalPlanDescription.textContent = 'Plano Ilimitado - Contratos ilimitados';
-            modalPrice.textContent = 'Total: R$ 49,90/mês';
             break;
     }
     
@@ -350,8 +350,12 @@ function processPayment() {
     showNotification('💳 Processando pagamento...');
     
     setTimeout(() => {
+        if (selectedPlan === 'free') {
+            showNotification('🎉 Teste grátis ativado! Contrato baixado.');
+        } else {
+            showNotification('🎉 Pagamento aprovado! Contrato baixado.');
+        }
         downloadContract();
-        showNotification('🎉 Pagamento aprovado! Contrato baixado.');
         closePaymentModal();
     }, 2000);
 }
@@ -380,21 +384,4 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('input', updatePreview);
         input.addEventListener('change', updatePreview);
     });
-
-    // Adicionar campo de endereço se não existir
-    if (!document.getElementById('contractorAddress')) {
-        const formSection = document.querySelector('.form-section');
-        const addressHTML = `
-            <div class="form-group">
-                <label for="contractorAddress">Endereço do Contratante</label>
-                <input type="text" id="contractorAddress" placeholder="Endereço completo">
-            </div>
-            <div class="form-group">
-                <label for="contractedAddress">Endereço do Contratado</label>
-                <input type="text" id="contractedAddress" placeholder="Endereço completo">
-            </div>
-        `;
-        const contractedNameField = document.getElementById('contractedName');
-        contractedNameField.parentNode.insertAdjacentHTML('afterend', addressHTML);
-    }
 });
