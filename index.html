@@ -20,7 +20,6 @@
                 <nav class="nav-menu">
                     <ul>
                         <li><a href="#home">Início</a></li>
-                        <li><a href="#features">Recursos</a></li>
                         <li><a href="#generator">Criar Contrato</a></li>
                         <li><a href="planos.html">Planos</a></li>
                         <li><a href="faq.html">FAQ</a></li>
@@ -42,6 +41,46 @@
             <div class="hero-buttons">
                 <a href="#generator" class="btn">Criar Meu Contrato</a>
                 <a href="planos.html" class="btn btn-outline">Ver Planos</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Por que escolher o ContratoFácil?</h2>
+                <p>Oferecemos a solução mais completa para criação de contratos profissionais</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Rápido e Fácil</h3>
+                    <p>Crie contratos profissionais em apenas 5 minutos com nosso formulário intuitivo.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gavel"></i>
+                    </div>
+                    <h3>Juridicamente Válido</h3>
+                    <p>Modelos criados por especialistas jurídicos e atualizados conforme a legislação.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    <h3>Totalmente Personalizável</h3>
+                    <p>Adapte cada cláusula do contrato às suas necessidades específicas.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3>Download Imediato</h3>
+                    <p>Receba seu contrato em PDF e Word prontos para usar assim que finalizar.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -121,6 +160,94 @@
                         </div>
                     </div>
                     
+                    <!-- Campos de Estado Civil -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contractorCivilState">Estado Civil do Contratante</label>
+                            <select id="contractorCivilState">
+                                <option value="">Selecione</option>
+                                <option value="solteiro(a)">Solteiro(a)</option>
+                                <option value="casado(a)">Casado(a)</option>
+                                <option value="divorciado(a)">Divorciado(a)</option>
+                                <option value="viúvo(a)">Viúvo(a)</option>
+                                <option value="união estável">União Estável</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contractedCivilState">Estado Civil do Contratado</label>
+                            <select id="contractedCivilState">
+                                <option value="">Selecione</option>
+                                <option value="solteiro(a)">Solteiro(a)</option>
+                                <option value="casado(a)">Casado(a)</option>
+                                <option value="divorciado(a)">Divorciado(a)</option>
+                                <option value="viúvo(a)">Viúvo(a)</option>
+                                <option value="união estável">União Estável</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Sistema de Assinatura - Contratante -->
+                    <div class="signature-options">
+                        <h4>Assinatura do Contratante</h4>
+                        
+                        <div class="signature-option" onclick="selectSignatureOption('contractor', 'upload')">
+                            <strong>Anexar Assinatura</strong>
+                            <p>Faça upload de uma imagem da sua assinatura (fundo branco)</p>
+                            <input type="file" id="contractorSignatureUpload" accept="image/*" style="display: none;">
+                            <canvas id="contractorSignatureCanvas" width="300" height="100" style="border: 1px solid #ccc; display: none;"></canvas>
+                        </div>
+                        
+                        <div class="signature-option" onclick="selectSignatureOption('contractor', 'draw')">
+                            <strong>Desenhar Assinatura</strong>
+                            <p>Use o mouse ou touch para desenhar sua assinatura</p>
+                            <canvas id="contractorSignatureDraw" width="300" height="100" style="border: 1px solid #ccc; display: none;"></canvas>
+                        </div>
+                        
+                        <div class="signature-preview" id="contractorSignaturePreview">
+                            <p style="color: #666;">Assinatura aparecerá aqui</p>
+                        </div>
+                        
+                        <div class="signature-actions" id="contractorSignatureConfirmation" style="display: none;">
+                            <button type="button" class="btn" onclick="clearSignature('contractor')">
+                                <i class="fas fa-redo"></i> Refazer
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="confirmSignature('contractor')">
+                                <i class="fas fa-check"></i> Confirmar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sistema de Assinatura - Contratado -->
+                    <div class="signature-options">
+                        <h4>Assinatura do Contratado</h4>
+                        
+                        <div class="signature-option" onclick="selectSignatureOption('contracted', 'upload')">
+                            <strong>Anexar Assinatura</strong>
+                            <p>Faça upload de uma imagem da sua assinatura (fundo branco)</p>
+                            <input type="file" id="contractedSignatureUpload" accept="image/*" style="display: none;">
+                            <canvas id="contractedSignatureCanvas" width="300" height="100" style="border: 1px solid #ccc; display: none;"></canvas>
+                        </div>
+                        
+                        <div class="signature-option" onclick="selectSignatureOption('contracted', 'draw')">
+                            <strong>Desenhar Assinatura</strong>
+                            <p>Use o mouse ou touch para desenhar sua assinatura</p>
+                            <canvas id="contractedSignatureDraw" width="300" height="100" style="border: 1px solid #ccc; display: none;"></canvas>
+                        </div>
+                        
+                        <div class="signature-preview" id="contractedSignaturePreview">
+                            <p style="color: #666;">Assinatura aparecerá aqui</p>
+                        </div>
+                        
+                        <div class="signature-actions" id="contractedSignatureConfirmation" style="display: none;">
+                            <button type="button" class="btn" onclick="clearSignature('contracted')">
+                                <i class="fas fa-redo"></i> Refazer
+                            </button>
+                            <button type="button" class="btn btn-success" onclick="confirmSignature('contracted')">
+                                <i class="fas fa-check"></i> Confirmar
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="startDate">Data de Início *</label>
@@ -160,46 +287,6 @@
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-title">
-                <h2>Por que escolher o ContratoFácil?</h2>
-                <p>Oferecemos a solução mais completa para criação de contratos profissionais</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>Rápido e Fácil</h3>
-                    <p>Crie contratos profissionais em apenas 5 minutos com nosso formulário intuitivo.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Juridicamente Válido</h3>
-                    <p>Modelos criados por especialistas jurídicos e atualizados conforme a legislação.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-edit"></i>
-                    </div>
-                    <h3>Totalmente Personalizável</h3>
-                    <p>Adapte cada cláusula do contrato às suas necessidades específicas.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-file-download"></i>
-                    </div>
-                    <h3>Download Imediato</h3>
-                    <p>Receba seu contrato em PDF e Word prontos para usar assim que finalizar.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Footer -->
     <footer>
         <div class="container">
@@ -212,9 +299,9 @@
                     <h3>Links Rápidos</h3>
                     <ul>
                         <li><a href="#home">Início</a></li>
-                        <li><a href="#features">Recursos</a></li>
                         <li><a href="#generator">Criar Contrato</a></li>
                         <li><a href="planos.html">Planos</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
@@ -230,7 +317,7 @@
                     <h3>Contato</h3>
                     <ul>
                         <li><i class="fas fa-phone"></i> (62) 99290-0737</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Goiãnia, GO</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Goiânia, GO</li>
                     </ul>
                 </div>
             </div>
@@ -251,6 +338,19 @@
                 <p id="modalPlanDescription">Plano selecionado</p>
                 <h4 id="modalPrice">Total: R$ 0,00</h4>
                 
+                <!-- BOTÃO DE TESTE -->
+                <div style="margin-bottom: 1.5rem; padding: 1rem; background: #e7f3ff; border-radius: 8px; border: 2px dashed #2c5aa0;">
+                    <h4 style="color: #2c5aa0; margin-bottom: 0.5rem; text-align: center;">
+                        <i class="fas fa-vial"></i> MODO TESTE
+                    </h4>
+                    <button class="btn" onclick="showDownloadOptions()" style="width: 100%; background: #2c5aa0;">
+                        <i class="fas fa-play-circle"></i> Testar Download (Sem Pagar)
+                    </button>
+                    <p style="font-size: 0.8rem; color: #666; text-align: center; margin-top: 0.5rem;">
+                        Use este botão para testar o sistema sem pagar
+                    </p>
+                </div>
+                
                 <div class="payment-options">
                     <div class="payment-option" onclick="selectPayment(this, 'pix')">
                         <div class="payment-icon">
@@ -269,9 +369,9 @@
                 <!-- Informações para PIX -->
                 <div id="pixDetails" class="bank-details" style="display: none; margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
                     <h4 style="margin-bottom: 1rem;">Pagamento via PIX</h4>
-                    <p style="margin-bottom: 1rem;">Valor: <strong>R$ 6,99</strong></p>
+                    <p style="margin-bottom: 1rem;">Valor: <strong id="pixValue">R$ 6,99</strong></p>
                     <div style="text-align: center; margin: 1.5rem 0;">
-                        <a href="https://mpago.la/1FgMNje" class="btn btn-success" target="_blank" style="width: 100%;">
+                        <a href="#" id="pixLink" class="btn btn-success" target="_blank" style="width: 100%;">
                             <i class="fas fa-qrcode"></i> Pagar com PIX Agora
                         </a>
                     </div>
@@ -283,9 +383,9 @@
                 <!-- Informações para Cartão -->
                 <div id="cardDetails" class="bank-details" style="display: none; margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
                     <h4 style="margin-bottom: 1rem;">Pagamento com Cartão</h4>
-                    <p style="margin-bottom: 1rem;">Valor: <strong>R$ 6,99</strong></p>
+                    <p style="margin-bottom: 1rem;">Valor: <strong id="cardValue">R$ 6,99</strong></p>
                     <div style="text-align: center; margin: 1.5rem 0;">
-                        <a href="https://mpago.la/1FgMNje" class="btn btn-success" target="_blank" style="width: 100%;">
+                        <a href="#" id="cardLink" class="btn btn-success" target="_blank" style="width: 100%;">
                             <i class="fas fa-credit-card"></i> Pagar com Cartão
                         </a>
                     </div>
