@@ -319,6 +319,91 @@ header {
     gap: 1rem;
 }
 
+/* Sistema de Assinaturas */
+.signature-options {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: var(--border-radius);
+    border: 2px solid #e9ecef;
+}
+
+.signature-options h4 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.signature-option {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    border: 2px solid #e9ecef;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.signature-option:hover {
+    border-color: var(--primary);
+    background: #f0f7ff;
+}
+
+.signature-option.selected {
+    border-color: var(--primary);
+    background: #e7f3ff;
+}
+
+.signature-option strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--dark);
+}
+
+.signature-option p {
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin: 0;
+}
+
+.signature-preview {
+    margin-top: 1rem;
+    text-align: center;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    background: white;
+    padding: 1rem;
+}
+
+.signature-preview img {
+    max-width: 100%;
+    max-height: 80px;
+    object-fit: contain;
+}
+
+.signature-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.signature-actions .btn {
+    flex: 1;
+}
+
+/* Canvas de Assinatura */
+.signature-canvas {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: white;
+    cursor: crosshair;
+    margin-top: 0.5rem;
+}
+
 .preview-section {
     background: white;
     border-radius: var(--border-radius);
@@ -457,72 +542,6 @@ header {
     color: var(--gray);
 }
 
-/* Testimonials */
-.testimonials {
-    padding: 4rem 0;
-    background: white;
-}
-
-.testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-}
-
-.testimonial-card {
-    background: var(--light);
-    border-radius: var(--border-radius);
-    padding: 1.5rem;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
-}
-
-.testimonial-card:hover {
-    transform: translateY(-3px);
-}
-
-.testimonial-content {
-    font-style: italic;
-    margin-bottom: 1.5rem;
-    position: relative;
-}
-
-.testimonial-content::before {
-    content: '"';
-    font-size: 3rem;
-    color: rgba(44, 90, 160, 0.1);
-    position: absolute;
-    top: -15px;
-    left: -5px;
-    font-family: Georgia, serif;
-}
-
-.testimonial-author {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.testimonial-avatar {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid var(--primary);
-}
-
-.testimonial-info h4 {
-    font-weight: 600;
-    margin-bottom: 0.2rem;
-    font-size: 0.9rem;
-}
-
-.testimonial-info p {
-    color: var(--gray);
-    font-size: 0.8rem;
-}
-
 /* FAQ Section */
 .faq {
     padding: 4rem 0;
@@ -636,6 +655,20 @@ footer {
     color: #000;
     min-height: 500px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    /* Proteção contra cópia */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.contract-preview * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .contract-header {
@@ -698,22 +731,42 @@ footer {
     border-top: 2px solid #000;
 }
 
-.signature-line {
+.signature-line-improved {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-top: 30px;
+    gap: 3rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #000;
 }
 
-.signature-box {
+.signature-box-improved {
     text-align: center;
+    padding: 1rem;
 }
 
 .signature-space {
     border-top: 1px solid #000;
-    margin: 40px 0 10px 0;
-    padding-top: 10px;
-    width: 100%;
+    margin: 2rem 0 1rem 0;
+    padding-top: 0.5rem;
+    font-weight: bold;
+}
+
+.signature-name {
+    margin-top: 0.5rem;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.signature-role {
+    font-style: italic;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.signature-document {
+    font-size: 0.9em;
+    color: #555;
 }
 
 /* Modal */
@@ -971,6 +1024,14 @@ footer {
         grid-template-columns: 1fr;
     }
 
+    .signature-options {
+        padding: 1rem;
+    }
+
+    .signature-actions {
+        flex-direction: column;
+    }
+
     .preview-section {
         position: relative;
         top: 0;
@@ -987,6 +1048,11 @@ footer {
     }
 
     /* Pricing Mobile */
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
     .pricing-card.featured {
         transform: scale(1);
     }
@@ -1017,7 +1083,7 @@ footer {
         font-size: 12px;
     }
 
-    .signature-line {
+    .signature-line-improved {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
@@ -1030,12 +1096,6 @@ footer {
 
     .feature-card {
         padding: 1.5rem;
-    }
-
-    /* Testimonials Mobile */
-    .testimonials-grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
     }
 
     /* Footer Mobile */
@@ -1071,5 +1131,14 @@ footer {
     .contract-preview {
         padding: 0.8rem;
         font-size: 11px;
+    }
+    
+    .pricing-card {
+        padding: 1.5rem;
+    }
+    
+    .signature-canvas {
+        width: 100% !important;
+        height: 80px !important;
     }
 }
