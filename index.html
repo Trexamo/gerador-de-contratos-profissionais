@@ -17,17 +17,19 @@
                     <img src="logo.jpg" alt="ContratoFácil" class="logo-img">
                     <span>ContratoFácil</span>
                 </div>
-                <nav>
+                <nav class="nav-menu">
                     <ul>
                         <li><a href="#home">Início</a></li>
                         <li><a href="#features">Recursos</a></li>
                         <li><a href="#generator">Criar Contrato</a></li>
-                        <li><a href="#pricing">Planos</a></li>
-                        <li><a href="#testimonials">Depoimentos</a></li>
-                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="planos.html">Planos</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
                     </ul>
                 </nav>
-                <a href="#generator" class="btn">Criar Contrato Agora</a>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <a href="#generator" class="btn mobile-hidden">Criar Contrato Agora</a>
             </div>
         </div>
     </header>
@@ -39,47 +41,7 @@
             <p>Crie contratos de prestação de serviços personalizados, seguros e juridicamente válidos. Economize tempo e evite dores de cabeça.</p>
             <div class="hero-buttons">
                 <a href="#generator" class="btn">Criar Meu Contrato</a>
-                <a href="#pricing" class="btn btn-outline">Ver Planos</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <div class="container">
-            <div class="section-title">
-                <h2>Por que escolher o ContratoFácil?</h2>
-                <p>Oferecemos a solução mais completa para criação de contratos profissionais</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h3>Rápido e Fácil</h3>
-                    <p>Crie contratos profissionais em apenas 5 minutos com nosso formulário intuitivo.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Juridicamente Válido</h3>
-                    <p>Modelos criados por especialistas jurídicos e atualizados conforme a legislação.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-edit"></i>
-                    </div>
-                    <h3>Totalmente Personalizável</h3>
-                    <p>Adapte cada cláusula do contrato às suas necessidades específicas.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-file-download"></i>
-                    </div>
-                    <h3>Download Imediato</h3>
-                    <p>Receba seu contrato em PDF e Word prontos para usar assim que finalizar.</p>
-                </div>
+                <a href="planos.html" class="btn btn-outline">Ver Planos</a>
             </div>
         </div>
     </section>
@@ -198,178 +160,41 @@
         </div>
     </section>
 
-    <!-- Pricing Section -->
-    <section class="pricing" id="pricing">
+    <!-- Features Section -->
+    <section class="features" id="features">
         <div class="container">
             <div class="section-title">
-                <h2>Planos e Preços</h2>
-                <p>Escolha o plano ideal para suas necessidades</p>
+                <h2>Por que escolher o ContratoFácil?</h2>
+                <p>Oferecemos a solução mais completa para criação de contratos profissionais</p>
             </div>
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <div class="pricing-header">
-                        <div class="pricing-title">Teste Grátis</div>
-                        <div class="pricing-price">R$ 0</div>
-                        <div class="pricing-period">7 dias gratuitos*</div>
-                        <small>*Após 7 dias: R$ 10,99/mês</small>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
                     </div>
-                    <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> 1 contrato grátis</li>
-                        <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
-                        <li><i class="fas fa-check"></i> Download em PDF</li>
-                        <li class="disabled"><i class="fas fa-times"></i> Suporte prioritário</li>
-                        <li class="disabled"><i class="fas fa-times"></i> Contratos ilimitados</li>
-                    </ul>
-                    <button class="btn btn-outline" onclick="openPaymentModal('free')">Experimentar Grátis</button>
+                    <h3>Rápido e Fácil</h3>
+                    <p>Crie contratos profissionais em apenas 5 minutos com nosso formulário intuitivo.</p>
                 </div>
-
-                <div class="pricing-card featured">
-                    <div class="pricing-header">
-                        <div class="pricing-title">Básico</div>
-                        <div class="pricing-price">R$ 9,99</div>
-                        <div class="pricing-period">por mês</div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
                     </div>
-                    <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> Até 5 contratos/mês</li>
-                        <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
-                        <li><i class="fas fa-check"></i> Download em PDF e Word</li>
-                        <li><i class="fas fa-check"></i> Suporte por email</li>
-                        <li class="disabled"><i class="fas fa-times"></i> Contratos ilimitados</li>
-                    </ul>
-                    <button class="btn" onclick="openPaymentModal('basico')">Assinar Agora</button>
+                    <h3>Juridicamente Válido</h3>
+                    <p>Modelos criados por especialistas jurídicos e atualizados conforme a legislação.</p>
                 </div>
-
-                <div class="pricing-card">
-                    <div class="pricing-header">
-                        <div class="pricing-title">Profissional</div>
-                        <div class="pricing-price">R$ 29,99</div>
-                        <div class="pricing-period">por mês</div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-edit"></i>
                     </div>
-                    <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> Contratos ilimitados</li>
-                        <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
-                        <li><i class="fas fa-check"></i> Download em PDF e Word</li>
-                        <li><i class="fas fa-check"></i> Suporte prioritário</li>
-                        <li><i class="fas fa-check"></i> Armazenamento na nuvem</li>
-                    </ul>
-                    <button class="btn" onclick="openPaymentModal('profissional')">Assinar Agora</button>
+                    <h3>Totalmente Personalizável</h3>
+                    <p>Adapte cada cláusula do contrato às suas necessidades específicas.</p>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section class="testimonials" id="testimonials">
-        <div class="container">
-            <div class="section-title">
-                <h2>O que nossos clientes dizem</h2>
-                <p>Confira as experiências de quem já usa o ContratoFácil</p>
-            </div>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <p>"O ContratoFácil revolucionou meu negócio. Antes gastava horas criando contratos, agora em 5 minutos tenho um documento profissional. Muito confiável e seguro!"</p>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-download"></i>
                     </div>
-                    <div class="testimonial-author">
-                        <img src="pessoa3.jpg" alt="Carlos Mendes" class="testimonial-avatar">
-                        <div class="testimonial-info">
-                            <h4>Carlos Mendes</h4>
-                            <p>Designer Freelancer</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <p>"Como consultor, preciso de contratos personalizados para cada cliente. O ContratoFácil me dá essa flexibilidade com segurança jurídica. Site muito confiável!"</p>
-                    </div>
-                    <div class="testimonial-author">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="João Santos" class="testimonial-avatar">
-                        <div class="testimonial-info">
-                            <h4>João Santos</h4>
-                            <p>Consultor de TI</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <p>"Já usei vários serviços similares, mas o ContratoFácil é o mais completo. Os contratos são realmente profissionais e o suporte é excelente. Recomendo!"</p>
-                    </div>
-                    <div class="testimonial-author">
-                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Ana Costa" class="testimonial-avatar">
-                        <div class="testimonial-info">
-                            <h4>Ana Costa</h4>
-                            <p>Arquiteta</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- FAQ Section -->
-    <section class="faq" id="faq">
-        <div class="container">
-            <div class="section-title">
-                <h2>Perguntas Frequentes</h2>
-                <p>Tire suas dúvidas sobre o ContratoFácil</p>
-            </div>
-            <div class="faq-container">
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFAQ(this)">
-                        <span>Os contratos são juridicamente válidos?</span>
-                        <div class="faq-toggle">
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Sim, todos os nossos modelos são criados por especialistas jurídicos e estão em conformidade com a legislação brasileira. São documentos válidos e executáveis.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFAQ(this)">
-                        <span>Posso cancelar a qualquer momento?</span>
-                        <div class="faq-toggle">
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Sim, todos os planos são mensais e podem ser cancelados a qualquer momento sem taxas adicionais ou fidelidade.</p>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFAQ(this)">
-                        <span>Quais formas de pagamento são aceitas?</span>
-                        <div class="faq-toggle">
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Aceitamos cartão de crédito, débito, PIX e boleto bancário. Para pagamentos via PIX ou transferência, utilize os dados bancários abaixo:</p>
-                        <div class="bank-info">
-                            <p><strong>Banco:</strong> Itaú (341)</p>
-                            <p><strong>Agência:</strong> 1234</p>
-                            <p><strong>Conta:</strong> 56789-0</p>
-                            <p><strong>CNPJ:</strong> 12.345.678/0001-90</p>
-                            <p><strong>Razão Social:</strong> ContratoFácil Soluções Digitais LTDA</p>
-                            <p><strong>Chave PIX:</strong> 12.345.678/0001-90 (CNPJ)</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFAQ(this)">
-                        <span>Preciso de algum conhecimento jurídico?</span>
-                        <div class="faq-toggle">
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                    </div>
-                    <div class="faq-answer">
-                        <p>Não! Nosso sistema é intuitivo e guia você passo a passo. Basta preencher as informações solicitadas e o contrato é gerado automaticamente.</p>
-                    </div>
+                    <h3>Download Imediato</h3>
+                    <p>Receba seu contrato em PDF e Word prontos para usar assim que finalizar.</p>
                 </div>
             </div>
         </div>
@@ -389,13 +214,13 @@
                         <li><a href="#home">Início</a></li>
                         <li><a href="#features">Recursos</a></li>
                         <li><a href="#generator">Criar Contrato</a></li>
-                        <li><a href="#pricing">Planos</a></li>
+                        <li><a href="planos.html">Planos</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
                     <h3>Suporte</h3>
                     <ul>
-                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
                         <li><a href="#">Contato</a></li>
                         <li><a href="#">Política de Privacidade</a></li>
                         <li><a href="#">Termos de Uso</a></li>
@@ -428,57 +253,49 @@
                 <h4 id="modalPrice">Total: R$ 0,00</h4>
                 
                 <div class="payment-options">
-                    <div class="payment-option" onclick="selectPayment(this)">
-                        <div class="payment-icon">
-                            <i class="fab fa-cc-visa"></i>
-                        </div>
-                        <span>Cartão de Crédito</span>
-                    </div>
-                    <div class="payment-option" onclick="selectPayment(this)">
-                        <div class="payment-icon">
-                            <i class="fas fa-barcode"></i>
-                        </div>
-                        <span>Boleto</span>
-                    </div>
-                    <div class="payment-option" onclick="selectPayment(this)">
+                    <div class="payment-option" onclick="selectPayment(this, 'pix')">
                         <div class="payment-icon">
                             <i class="fas fa-mobile-alt"></i>
                         </div>
                         <span>PIX</span>
                     </div>
-                    <div class="payment-option" onclick="selectPayment(this)">
+                    <div class="payment-option" onclick="selectPayment(this, 'cartao')">
                         <div class="payment-icon">
-                            <i class="fab fa-paypal"></i>
+                            <i class="fab fa-cc-visa"></i>
                         </div>
-                        <span>PayPal</span>
+                        <span>Cartão</span>
                     </div>
                 </div>
 
-                <!-- Informações Bancárias para PIX/Transferência -->
-                <div id="bankDetails" class="bank-details" style="display: none; margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
-                    <h4 style="margin-bottom: 1rem;">Dados para Transferência/PIX</h4>
-                    <div class="bank-info">
-                        <p><strong>Banco:</strong> Itaú (341)</p>
-                        <p><strong>Agência:</strong> 1234</p>
-                        <p><strong>Conta:</strong> 56789-0</p>
-                        <p><strong>CNPJ:</strong> 12.345.678/0001-90</p>
-                        <p><strong>Razão Social:</strong> ContratoFácil Soluções Digitais LTDA</p>
-                        <p><strong>Chave PIX:</strong> 12.345.678/0001-90</p>
+                <!-- Informações para PIX -->
+                <div id="pixDetails" class="bank-details" style="display: none; margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <h4 style="margin-bottom: 1rem;">Pagamento via PIX</h4>
+                    <p style="margin-bottom: 1rem;">Valor: <strong>R$ 6,99</strong></p>
+                    <div style="text-align: center; margin: 1.5rem 0;">
+                        <a href="https://mpago.la/1FgMNje" class="btn btn-success" target="_blank" style="width: 100%;">
+                            <i class="fas fa-qrcode"></i> Pagar com PIX Agora
+                        </a>
                     </div>
-                    <p style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
-                        Após o pagamento, envie o comprovante para contato@contratofacil.com
+                    <p style="font-size: 0.9rem; color: #666; text-align: center;">
+                        Você será redirecionado para o Mercado Pago
                     </p>
                 </div>
-                
-                <button class="btn btn-success" onclick="processPayment()" style="width: 100%; margin-top: 1.5rem;">
-                    <i class="fas fa-lock"></i> Finalizar Compra
-                </button>
+
+                <!-- Informações para Cartão -->
+                <div id="cardDetails" class="bank-details" style="display: none; margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <h4 style="margin-bottom: 1rem;">Pagamento com Cartão</h4>
+                    <p style="margin-bottom: 1rem;">Valor: <strong>R$ 6,99</strong></p>
+                    <div style="text-align: center; margin: 1.5rem 0;">
+                        <a href="https://mpago.la/1FgMNje" class="btn btn-success" target="_blank" style="width: 100%;">
+                            <i class="fas fa-credit-card"></i> Pagar com Cartão
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.1.0/docx.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
