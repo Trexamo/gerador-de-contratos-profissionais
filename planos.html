@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planos - ContratoFácil</title>
+    <link rel="icon" href="logo.jpg" type="image/jpeg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="logo.jpg" alt="ContratoFácil" class="logo-img">
+                    <span>ContratoFácil</span>
+                </div>
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#features">Recursos</a></li>
+                        <li><a href="index.html#generator">Criar Contrato</a></li>
+                        <li><a href="#pricing" class="active">Planos</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </nav>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <a href="index.html#generator" class="btn mobile-hidden">Criar Contrato Agora</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing" style="padding-top: 8rem;">
+        <div class="container">
+            <div class="section-title">
+                <h2>Planos e Preços</h2>
+                <p>Escolha o plano ideal para suas necessidades</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <div class="pricing-title">Teste Grátis</div>
+                        <div class="pricing-price">R$ 0</div>
+                        <div class="pricing-period">7 dias gratuitos*</div>
+                        <small>*Após 7 dias: R$ 10,99/mês</small>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> 1 contrato grátis</li>
+                        <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
+                        <li><i class="fas fa-check"></i> Download em PDF</li>
+                        <li class="disabled"><i class="fas fa-times"></i> Suporte prioritário</li>
+                        <li class="disabled"><i class="fas fa-times"></i> Contratos ilimitados</li>
+                    </ul>
+                    <button class="btn btn-outline" onclick="openPaymentModal('free')">Experimentar Grátis</button>
+                </div>
+
+                <div class="pricing-card featured">
+                    <div class="pricing-header">
+                        <div class="pricing-title">Básico</div>
+                        <div class="pricing-price">R$ 9,99</div>
+                        <div class="pricing-period">por mês</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> Até 5 contratos/mês</li>
+                        <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
+                        <li><i class="fas fa-check"></i> Download em PDF e Word</li>
+                        <li><i class="fas fa-check"></i> Suporte por email</li>
+                        <li class="disabled"><i class="fas fa-times"></i> Contratos ilimitados</li>
+                    </ul>
+                    <button class="btn" onclick="openPaymentModal('basico')">Assinar Agora</button>
+                </div>
+
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <div class="pricing-title">Profissional</div>
+                        <div class="pricing-price">R$ 29,99</div>
+                        <div class="pricing-period">por mês</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li><i class="fas fa-check"></i> Contratos ilimitados</li>
+                        <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
+                        <li><i class="fas fa-check"></i> Download em PDF e Word</li>
+                        <li><i class="fas fa-check"></i> Suporte prioritário</li>
+                        <li><i class="fas fa-check"></i> Armazenamento na nuvem</li>
+                    </ul>
+                    <button class="btn" onclick="openPaymentModal('profissional')">Assinar Agora</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>O que nossos clientes dizem</h2>
+                <p>Confira as experiências de quem já usa o ContratoFácil</p>
+            </div>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"O ContratoFácil revolucionou meu negócio. Antes gastava horas criando contratos, agora em 5 minutos tenho um documento profissional. Muito confiável e seguro!"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="pessoa3.jpg" alt="Carlos Mendes" class="testimonial-avatar">
+                        <div class="testimonial-info">
+                            <h4>Carlos Mendes</h4>
+                            <p>Designer Freelancer</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"Como consultor, preciso de contratos personalizados para cada cliente. O ContratoFácil me dá essa flexibilidade com segurança jurídica. Site muito confiável!"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="João Santos" class="testimonial-avatar">
+                        <div class="testimonial-info">
+                            <h4>João Santos</h4>
+                            <p>Consultor de TI</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p>"Já usei vários serviços similares, mas o ContratoFácil é o mais completo. Os contratos são realmente profissionais e o suporte é excelente. Recomendo!"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80" alt="Ana Costa" class="testimonial-avatar">
+                        <div class="testimonial-info">
+                            <h4>Ana Costa</h4>
+                            <p>Arquiteta</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>ContratoFácil</h3>
+                    <p>Criando contratos profissionais de forma simples e segura desde 2024.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#features">Recursos</a></li>
+                        <li><a href="index.html#generator">Criar Contrato</a></li>
+                        <li><a href="#pricing">Planos</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Suporte</h3>
+                    <ul>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="#">Contato</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                        <li><a href="#">Termos de Uso</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contato</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> contato@contratofacil.com</li>
+                        <li><i class="fas fa-phone"></i> (11) 9999-9999</li>
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo, SP</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ContratoFácil. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
