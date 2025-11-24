@@ -1142,3 +1142,114 @@ footer {
         height: 80px !important;
     }
 }
+
+/* Estilo para contrato em tela cheia */
+.contract-fullscreen {
+    background: white;
+    padding: 2rem;
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 1.6;
+    font-size: 14px;
+    color: #000;
+    max-height: 70vh;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+}
+
+.contract-fullscreen .contract-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #000;
+}
+
+.contract-fullscreen .contract-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.contract-fullscreen .contract-intro {
+    margin-bottom: 1.5rem;
+    text-align: justify;
+}
+
+.contract-fullscreen .contract-body {
+    font-size: 13px;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+.contract-fullscreen .contract-clause {
+    margin-bottom: 20px;
+}
+
+.contract-fullscreen .contract-clause h4 {
+    font-size: 13px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #000;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 3px;
+}
+
+.contract-fullscreen .contract-clause p {
+    margin-bottom: 10px;
+    text-indent: 20px;
+}
+
+.contract-fullscreen .contract-clause ol {
+    margin: 12px 0;
+    padding-left: 30px;
+}
+
+.contract-fullscreen .contract-clause li {
+    margin-bottom: 6px;
+    line-height: 1.5;
+}
+
+.contract-fullscreen .signature-area {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #000;
+}
+
+.contract-fullscreen .signature-line-improved {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #000;
+}
+
+.contract-fullscreen .signature-box-improved {
+    text-align: center;
+    padding: 1rem;
+}
+
+.contract-fullscreen .signature-space {
+    border-top: 1px solid #000;
+    margin: 2rem 0 1rem 0;
+    padding-top: 0.5rem;
+    font-weight: bold;
+}
+
+.contract-fullscreen .signature-name {
+    margin-top: 0.5rem;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.contract-fullscreen .signature-role {
+    font-style: italic;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.contract-fullscreen .signature-document {
+    font-size: 0.9em;
+    color: #555;
+}
