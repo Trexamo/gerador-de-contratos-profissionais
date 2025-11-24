@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - ContratoFácil</title>
+    <link rel="icon" href="logo.jpg" type="image/jpeg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="logo.jpg" alt="ContratoFácil" class="logo-img">
+                    <span>ContratoFácil</span>
+                </div>
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#features">Recursos</a></li>
+                        <li><a href="index.html#generator">Criar Contrato</a></li>
+                        <li><a href="planos.html">Planos</a></li>
+                        <li><a href="#faq" class="active">FAQ</a></li>
+                    </ul>
+                </nav>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <a href="index.html#generator" class="btn mobile-hidden">Criar Contrato Agora</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- FAQ Section -->
+    <section class="faq" id="faq" style="padding-top: 8rem;">
+        <div class="container">
+            <div class="section-title">
+                <h2>Perguntas Frequentes</h2>
+                <p>Tire suas dúvidas sobre o ContratoFácil</p>
+            </div>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Os contratos são juridicamente válidos?</span>
+                        <div class="faq-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Sim, todos os nossos modelos são criados por especialistas jurídicos e estão em conformidade com a legislação brasileira. São documentos válidos e executáveis.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Posso cancelar a qualquer momento?</span>
+                        <div class="faq-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Sim, todos os planos são mensais e podem ser cancelados a qualquer momento sem taxas adicionais ou fidelidade.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Quais formas de pagamento são aceitas?</span>
+                        <div class="faq-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Aceitamos cartão de crédito, débito, PIX e boleto bancário. Para pagamentos via PIX ou transferência, utilize os dados bancários abaixo:</p>
+                        <div class="bank-info">
+                            <p><strong>Banco:</strong> Itaú (341)</p>
+                            <p><strong>Agência:</strong> 1234</p>
+                            <p><strong>Conta:</strong> 56789-0</p>
+                            <p><strong>CNPJ:</strong> 12.345.678/0001-90</p>
+                            <p><strong>Razão Social:</strong> ContratoFácil Soluções Digitais LTDA</p>
+                            <p><strong>Chave PIX:</strong> 12.345.678/0001-90 (CNPJ)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>Preciso de algum conhecimento jurídico?</span>
+                        <div class="faq-toggle">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Não! Nosso sistema é intuitivo e guia você passo a passo. Basta preencher as informações solicitadas e o contrato é gerado automaticamente.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>ContratoFácil</h3>
+                    <p>Criando contratos profissionais de forma simples e segura desde 2024.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#features">Recursos</a></li>
+                        <li><a href="index.html#generator">Criar Contrato</a></li>
+                        <li><a href="planos.html">Planos</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Suporte</h3>
+                    <ul>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#">Contato</a></li>
+                        <li><a href="#">Política de Privacidade</a></li>
+                        <li><a href="#">Termos de Uso</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contato</h3>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> contato@contratofacil.com</li>
+                        <li><i class="fas fa-phone"></i> (11) 9999-9999</li>
+                        <li><i class="fas fa-map-marker-alt"></i> São Paulo, SP</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ContratoFácil. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
