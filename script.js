@@ -1,11 +1,19 @@
 // Variáveis globais
 let selectedPlan = 'avulsa';
 let selectedPaymentMethod = '';
+let contractorSignature = null;
+let contractedSignature = null;
+let isDrawing = false;
+let currentCanvas = null;
+let lastX = 0;
+let lastY = 0;
+let activeFAQ = null;
 
 // Inicialização quando DOM carregar
 document.addEventListener('DOMContentLoaded', function() {
     initMobileMenu();
     updatePreview();
+    initSignatureSystem();
     
     // Configurar datas
     const today = new Date().toISOString().split('T')[0];
@@ -83,19 +91,286 @@ function initMobileMenu() {
     }
 }
 
+// Sistema de Assinaturas
+function initSignatureSystem() {
+    // Upload de assinatura - Contratante
+    const contractorUpload = document.getElementById('contractorSignatureUpload');
+    const contractorPreview = document.getElementById('contractorSignaturePreview');
+    
+    if (contractorUpload && contractorPreview) {
+        contractorUpload.addEventListener('change', function(e) {
+            handleSignatureUpload(e, 'contractor');
+        });
+    }
+
+    // Upload de assinatura - Contratado
+    const contractedUpload = document.getElementById('contractedSignatureUpload');
+    const contractedPreview = document.getElementById('contractedSignaturePreview');
+    
+    if (contractedUpload && contractedPreview) {
+        contractedUpload.addEventListener('change', function(e) {
+            handleSignatureUpload(e, 'contracted');
+        });
+    }
+
+    // Inicializar canvas de desenho
+    initSignatureCanvas('contractor');
+    initSignatureCanvas('contracted');
+}
+
+function handleSignatureUpload(event, type) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Verificar se é imagem
+    if (!file.type.match('image.*')) {
+        showNotification('❌ Por favor, selecione uma imagem válida');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            // Criar canvas temporário para processamento
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = 300;
+            tempCanvas.height = 100;
+            
+            // Desenhar imagem no canvas
+            tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // Salvar assinatura
+            if (type === 'contractor') {
+                contractorSignature = tempCanvas.toDataURL();
+            } else {
+                contractedSignature = tempCanvas.toDataURL();
+            }
+            
+            // Atualizar preview
+            updateSignaturePreview(type);
+            
+            // Mostrar opções de confirmação
+            showSignatureConfirmation(type);
+            
+            showNotification('✅ Assinatura carregada com sucesso!');
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function initSignatureCanvas(type) {
+    const canvas = document.getElementById(`${type}SignatureDraw`);
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    
+    // Configurar canvas
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    // Eventos do mouse
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+    
+    // Eventos touch para mobile
+    canvas.addEventListener('touchstart', handleTouchStart);
+    canvas.addEventListener('touchmove', handleTouchMove);
+    canvas.addEventListener('touchend', stopDrawing);
+
+    function startDrawing(e) {
+        isDrawing = true;
+        currentCanvas = type;
+        const rect = canvas.getBoundingClientRect();
+        lastX = e.clientX - rect.left;
+        lastY = e.clientY - rect.top;
+    }
+
+    function draw(e) {
+        if (!isDrawing || currentCanvas !== type) return;
+        
+        const rect = canvas.getBoundingClientRect();
+        const currentX = e.clientX - rect.left;
+        const currentY = e.clientY - rect.top;
+        
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(currentX, currentY);
+        ctx.stroke();
+        
+        lastX = currentX;
+        lastY = currentY;
+    }
+
+    function stopDrawing() {
+        if (isDrawing && currentCanvas === type) {
+            isDrawing = false;
+            updateSignaturePreview(type);
+            showSignatureConfirmation(type);
+        }
+    }
+
+    function handleTouchStart(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousedown', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+    }
+
+    function handleTouchMove(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+    }
+}
+
+function selectSignatureOption(type, method) {
+    // Resetar seleção visual
+    document.querySelectorAll('.signature-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Selecionar a opção clicada
+    event.target.closest('.signature-option').classList.add('selected');
+    
+    if (method === 'upload') {
+        document.getElementById(`${type}SignatureUpload`).click();
+    } else {
+        // Mostrar canvas de desenho
+        const canvas = document.getElementById(`${type}SignatureDraw`);
+        if (canvas) {
+            canvas.style.display = 'block';
+            // Limpar canvas
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+}
+
+function updateSignaturePreview(type) {
+    const preview = document.getElementById(`${type}SignaturePreview`);
+    let signatureData = null;
+
+    if (type === 'contractor') {
+        signatureData = contractorSignature;
+    } else {
+        signatureData = contractedSignature;
+    }
+
+    if (!signatureData) {
+        // Tentar obter do canvas de desenho
+        const canvas = document.getElementById(`${type}SignatureDraw`);
+        if (canvas) {
+            signatureData = canvas.toDataURL();
+            // Salvar assinatura
+            if (type === 'contractor') {
+                contractorSignature = signatureData;
+            } else {
+                contractedSignature = signatureData;
+            }
+        }
+    }
+
+    if (preview && signatureData) {
+        preview.innerHTML = `
+            <div style="text-align: center;">
+                <img src="${signatureData}" alt="Assinatura ${type}" style="max-width: 100%; max-height: 80px; border: 1px solid #ddd; border-radius: 4px;">
+                <p style="margin-top: 0.5rem; font-size: 0.8rem; color: #666;">Pré-visualização da assinatura</p>
+            </div>
+        `;
+    }
+    
+    updatePreview();
+}
+
+function showSignatureConfirmation(type) {
+    const confirmation = document.getElementById(`${type}SignatureConfirmation`);
+    if (confirmation) {
+        confirmation.style.display = 'flex';
+    }
+}
+
+function clearSignature(type) {
+    // Limpar canvas de desenho
+    const drawCanvas = document.getElementById(`${type}SignatureDraw`);
+    if (drawCanvas) {
+        const ctx = drawCanvas.getContext('2d');
+        ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+        drawCanvas.style.display = 'none';
+    }
+    
+    // Limpar upload
+    const uploadInput = document.getElementById(`${type}SignatureUpload`);
+    if (uploadInput) {
+        uploadInput.value = '';
+    }
+    
+    // Limpar preview
+    const preview = document.getElementById(`${type}SignaturePreview`);
+    if (preview) {
+        preview.innerHTML = '<p style="color: #666;">Assinatura aparecerá aqui</p>';
+    }
+    
+    // Esconder confirmação
+    const confirmation = document.getElementById(`${type}SignatureConfirmation`);
+    if (confirmation) {
+        confirmation.style.display = 'none';
+    }
+    
+    // Limpar seleção visual
+    document.querySelectorAll('.signature-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Limpar variáveis
+    if (type === 'contractor') {
+        contractorSignature = null;
+    } else {
+        contractedSignature = null;
+    }
+    
+    updatePreview();
+    showNotification('🔄 Assinatura removida');
+}
+
+function confirmSignature(type) {
+    showNotification('✅ Assinatura confirmada!');
+    const confirmation = document.getElementById(`${type}SignatureConfirmation`);
+    if (confirmation) {
+        confirmation.style.display = 'none';
+    }
+}
+
 // Funções do FAQ
 function toggleFAQ(element) {
     const item = element.parentElement;
-    const isActive = item.classList.contains('active');
     
-    // Fecha todos os itens primeiro
-    document.querySelectorAll('.faq-item').forEach(faqItem => {
-        faqItem.classList.remove('active');
-    });
+    // Fecha o FAQ ativo se for diferente do clicado
+    if (activeFAQ && activeFAQ !== item) {
+        activeFAQ.classList.remove('active');
+    }
     
-    // Abre o item clicado se não estava ativo
-    if (!isActive) {
-        item.classList.add('active');
+    // Alterna o FAQ clicado
+    item.classList.toggle('active');
+    
+    // Atualiza o FAQ ativo
+    if (item.classList.contains('active')) {
+        activeFAQ = item;
+    } else {
+        activeFAQ = null;
     }
 }
 
@@ -199,11 +474,13 @@ function generateProfessionalContract() {
     const contractorDoc = document.getElementById('contractorDoc')?.value || '________________________';
     const contractorProfession = document.getElementById('contractorProfession')?.value || '________________________';
     const contractorAddress = document.getElementById('contractorAddress')?.value || '______________________________________';
+    const contractorCivilState = document.getElementById('contractorCivilState')?.value || '______________';
     
     const contractedName = document.getElementById('contractedName')?.value || '________________________';
     const contractedDoc = document.getElementById('contractedDoc')?.value || '________________________';
     const contractedProfession = document.getElementById('contractedProfession')?.value || '________________________';
     const contractedAddress = document.getElementById('contractedAddress')?.value || '______________________________________';
+    const contractedCivilState = document.getElementById('contractedCivilState')?.value || '______________';
     
     const serviceDescription = document.getElementById('serviceDescription')?.value || '________________________';
     const serviceValue = document.getElementById('serviceValue')?.value || '__________';
@@ -245,7 +522,7 @@ function generateProfessionalContract() {
         
         <div class="contract-body">
             <div class="contract-intro">
-                <p>Pelo presente instrumento de <strong>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</strong> que celebram entre si, de um lado <strong>${contractorName}</strong>, nacionalidade brasileira, estado civil ______________, profissão <strong>${contractorProfession}</strong>, portador do documento <strong>${contractorDoc}</strong>, residente e domiciliado à <strong>${contractorAddress}</strong>, doravante denominado <strong>CONTRATANTE</strong>, e de outro lado <strong>${contractedName}</strong>, nacionalidade brasileira, estado civil ______________, profissão <strong>${contractedProfession}</strong>, portador do documento <strong>${contractedDoc}</strong>, residente e domiciliado à <strong>${contractedAddress}</strong>, doravante denominado <strong>CONTRATADO(A)</strong>, pelas cláusulas pactuadas a seguir:</p>
+                <p>Pelo presente instrumento de <strong>CONTRATO DE PRESTAÇÃO DE SERVIÇOS</strong> que celebram entre si, de um lado <strong>${contractorName}</strong>, nacionalidade brasileira, estado civil <strong>${contractorCivilState}</strong>, profissão <strong>${contractorProfession}</strong>, portador do documento <strong>${contractorDoc}</strong>, residente e domiciliado à <strong>${contractorAddress}</strong>, doravante denominado <strong>CONTRATANTE</strong>, e de outro lado <strong>${contractedName}</strong>, nacionalidade brasileira, estado civil <strong>${contractedCivilState}</strong>, profissão <strong>${contractedProfession}</strong>, portador do documento <strong>${contractedDoc}</strong>, residente e domiciliado à <strong>${contractedAddress}</strong>, doravante denominado <strong>CONTRATADO(A)</strong>, pelas cláusulas pactuadas a seguir:</p>
             </div>
 
             <div class="contract-clause">
@@ -317,21 +594,23 @@ function generateProfessionalContract() {
             <div class="signature-area">
                 <p>E por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor e forma, para um único efeito.</p>
                 
-                <div class="signature-line">
-                    <div class="signature-box">
+                <div class="signature-line-improved">
+                    <div class="signature-box-improved">
                         <p><strong>${contractCity}</strong>, ${new Date().getDate()} de ${getMonthName(new Date().getMonth())} de ${new Date().getFullYear()}</p>
                         <div class="signature-space"></div>
-                        <p><strong>${contractorName}</strong></p>
-                        <p><strong>CONTRATANTE</strong></p>
-                        <p>Documento: ${contractorDoc}</p>
+                        ${contractorSignature ? `<div style="text-align: center; margin: 10px 0;"><img src="${contractorSignature}" style="max-width: 200px; max-height: 60px; border: 1px solid #ddd;"></div>` : '<div style="height: 60px; margin: 10px 0;"></div>'}
+                        <div class="signature-name">${contractorName}</div>
+                        <div class="signature-role">CONTRATANTE</div>
+                        <div class="signature-document">Documento: ${contractorDoc}</div>
                     </div>
                     
-                    <div class="signature-box">
+                    <div class="signature-box-improved">
                         <p>&nbsp;</p>
                         <div class="signature-space"></div>
-                        <p><strong>${contractedName}</strong></p>
-                        <p><strong>CONTRATADO(A)</strong></p>
-                        <p>Documento: ${contractedDoc}</p>
+                        ${contractedSignature ? `<div style="text-align: center; margin: 10px 0;"><img src="${contractedSignature}" style="max-width: 200px; max-height: 60px; border: 1px solid #ddd;"></div>` : '<div style="height: 60px; margin: 10px 0;"></div>'}
+                        <div class="signature-name">${contractedName}</div>
+                        <div class="signature-role">CONTRATADO(A)</div>
+                        <div class="signature-document">Documento: ${contractedDoc}</div>
                     </div>
                 </div>
             </div>
@@ -350,6 +629,7 @@ function updatePreview() {
         }
     } catch (error) {
         console.error('Erro ao atualizar preview:', error);
+        showNotification('❌ Erro ao atualizar visualização do contrato');
     }
 }
 
@@ -361,11 +641,13 @@ function openPaymentModal(plan) {
     if (plan === 'avulsa') {
         const requiredFields = ['contractorName', 'contractorDoc', 'contractedName', 'contractedDoc', 'serviceDescription', 'serviceValue', 'startDate', 'contractCity'];
         let isValid = true;
+        let emptyFields = [];
         
         requiredFields.forEach(fieldId => {
             const field = document.getElementById(fieldId);
             if (!field || !field.value.trim()) {
                 isValid = false;
+                emptyFields.push(fieldId);
                 if (field) {
                     field.style.borderColor = 'var(--danger)';
                 }
@@ -376,6 +658,12 @@ function openPaymentModal(plan) {
 
         if (!isValid) {
             showNotification('❌ Preencha todos os campos obrigatórios marcados com *');
+            // Scroll para o primeiro campo vazio
+            const firstEmptyField = document.getElementById(emptyFields[0]);
+            if (firstEmptyField) {
+                firstEmptyField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstEmptyField.focus();
+            }
             return;
         }
     }
@@ -384,30 +672,54 @@ function openPaymentModal(plan) {
     const modalTitle = document.getElementById('modalTitle');
     const modalPlanDescription = document.getElementById('modalPlanDescription');
     const modalPrice = document.getElementById('modalPrice');
+    const pixValue = document.getElementById('pixValue');
+    const cardValue = document.getElementById('cardValue');
+    const pixLink = document.getElementById('pixLink');
+    const cardLink = document.getElementById('cardLink');
     
     if (modalTitle && modalPlanDescription && modalPrice) {
+        let price = '0,00';
+        let pixUrl = '#';
+        let cardUrl = '#';
+        
         switch(plan) {
             case 'free':
                 modalTitle.textContent = 'Teste Grátis - 7 Dias';
-                modalPlanDescription.textContent = 'Plano Teste Grátis - 1 contrato grátis por 7 dias';
+                modalPlanDescription.textContent = 'Plano Teste Grátis - 3 contratos profissionais por 7 dias';
                 modalPrice.textContent = 'Total: R$ 0,00 (Após 7 dias: R$ 10,99/mês)';
+                price = '0,00';
                 break;
             case 'avulsa':
                 modalTitle.textContent = 'Comprar Contrato Avulso';
                 modalPlanDescription.textContent = '1 Contrato de Prestação de Serviços Personalizado';
                 modalPrice.textContent = 'Total: R$ 6,99';
+                price = '6,99';
+                pixUrl = 'https://mpago.la/1FgMNje';
+                cardUrl = 'https://mpago.la/1FgMNje';
                 break;
             case 'basico':
                 modalTitle.textContent = 'Assinar Plano Básico';
                 modalPlanDescription.textContent = 'Plano Básico - 5 contratos por mês';
                 modalPrice.textContent = 'Total: R$ 9,99/mês';
+                price = '9,99';
+                pixUrl = 'https://mpago.li/1LcKs1M';
+                cardUrl = 'https://mpago.li/1LcKs1M';
                 break;
             case 'profissional':
                 modalTitle.textContent = 'Assinar Plano Profissional';
                 modalPlanDescription.textContent = 'Plano Profissional - Contratos ilimitados';
                 modalPrice.textContent = 'Total: R$ 29,99/mês';
+                price = '29,99';
+                pixUrl = 'https://mpago.li/1xTcy3g';
+                cardUrl = 'https://mpago.li/1xTcy3g';
                 break;
         }
+        
+        // Atualizar links de pagamento
+        if (pixValue) pixValue.textContent = `R$ ${price}`;
+        if (cardValue) cardValue.textContent = `R$ ${price}`;
+        if (pixLink) pixLink.href = pixUrl;
+        if (cardLink) cardLink.href = cardUrl;
     }
     
     // Reset payment selection
@@ -416,8 +728,10 @@ function openPaymentModal(plan) {
     });
     
     // Esconder detalhes de pagamento
-    document.getElementById('pixDetails').style.display = 'none';
-    document.getElementById('cardDetails').style.display = 'none';
+    const pixDetails = document.getElementById('pixDetails');
+    const cardDetails = document.getElementById('cardDetails');
+    if (pixDetails) pixDetails.style.display = 'none';
+    if (cardDetails) cardDetails.style.display = 'none';
     
     selectedPaymentMethod = '';
     
@@ -445,72 +759,71 @@ function selectPayment(element, type) {
         element.classList.add('selected');
         
         // Esconder todos os detalhes primeiro
-        document.getElementById('pixDetails').style.display = 'none';
-        document.getElementById('cardDetails').style.display = 'none';
+        const pixDetails = document.getElementById('pixDetails');
+        const cardDetails = document.getElementById('cardDetails');
+        if (pixDetails) pixDetails.style.display = 'none';
+        if (cardDetails) cardDetails.style.display = 'none';
         
         // Mostrar detalhes específicos
         if (type === 'pix') {
-            document.getElementById('pixDetails').style.display = 'block';
+            if (pixDetails) pixDetails.style.display = 'block';
             selectedPaymentMethod = 'pix';
         } else if (type === 'cartao') {
-            document.getElementById('cardDetails').style.display = 'block';
+            if (cardDetails) cardDetails.style.display = 'block';
             selectedPaymentMethod = 'cartao';
         }
     }
 }
 
-// Função para gerar PDF
-function generatePDF() {
-    try {
-        const element = document.getElementById('contractPreview');
-        if (!element) {
-            showNotification('❌ Erro: Elemento do contrato não encontrado');
-            return;
-        }
-
-        // Verificar se html2pdf está disponível
-        if (typeof html2pdf === 'undefined') {
-            showNotification('❌ Biblioteca PDF não carregada. Baixando como HTML...');
-            downloadAsHTML();
-            return;
-        }
-
-        const opt = {
-            margin: [0.5, 0.5, 0.5, 0.5],
-            filename: `contrato-${new Date().getTime()}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2, 
-                useCORS: true,
-                logging: false
-            },
-            jsPDF: { 
-                unit: 'mm', 
-                format: 'a4', 
-                orientation: 'portrait' 
-            }
-        };
-
-        showNotification('📄 Gerando PDF...');
-        
-        html2pdf().set(opt).from(element).save().then(() => {
-            showNotification('✅ PDF baixado com sucesso!');
-        }).catch(error => {
-            console.error('Erro ao gerar PDF:', error);
-            showNotification('❌ Erro ao gerar PDF. Baixando como HTML...');
-            downloadAsHTML();
-        });
-        
-    } catch (error) {
-        console.error('Erro no generatePDF:', error);
-        showNotification('❌ Erro ao gerar PDF');
-    }
+// Função para ativar teste grátis
+function activateFreeTrial() {
+    showNotification('🎉 Teste grátis ativado! Você tem 7 dias gratuitos com 3 contratos profissionais.');
+    // Redirecionar para o gerador de contratos
+    setTimeout(() => {
+        window.location.href = 'index.html#generator';
+    }, 2000);
 }
 
-// Função para baixar como HTML (fallback)
-function downloadAsHTML() {
+// Função para mostrar contrato em tela cheia
+function showContractFullscreen() {
+    const contractContent = generateProfessionalContract();
+    
+    // Criar modal para exibir o contrato
+    const fullscreenModal = document.createElement('div');
+    fullscreenModal.className = 'modal active';
+    fullscreenModal.style.zIndex = '3000';
+    fullscreenModal.innerHTML = `
+        <div class="modal-content" style="max-width: 90%; max-height: 90%;">
+            <div class="modal-header">
+                <h3>Contrato Gerado - ContratoFácil</h3>
+                <button class="close-modal" onclick="this.closest('.modal').remove()">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 0;">
+                <div class="contract-fullscreen">
+                    ${contractContent}
+                </div>
+                <div style="padding: 1.5rem; text-align: center; border-top: 1px solid #e0e0e0;">
+                    <button class="btn btn-success" onclick="generateWord()">
+                        <i class="fas fa-file-word"></i> Baixar em Word
+                    </button>
+                    <button class="btn" onclick="this.closest('.modal').remove()" style="margin-left: 1rem;">
+                        <i class="fas fa-times"></i> Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(fullscreenModal);
+    document.body.style.overflow = 'hidden';
+}
+
+// Função para gerar Word
+function generateWord() {
     try {
         const contractContent = generateProfessionalContract();
+        
+        // Criar um blob com conteúdo HTML que pode ser aberto no Word
         const fullHTML = `
 <!DOCTYPE html>
 <html>
@@ -546,82 +859,51 @@ function downloadAsHTML() {
             font-weight: bold;
             text-transform: uppercase;
         }
+        .contract-clause p {
+            margin-bottom: 10px;
+            text-indent: 20px;
+        }
+        .contract-clause ol {
+            margin: 12px 0;
+            padding-left: 30px;
+        }
+        .contract-clause li {
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+        .signature-line-improved {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #000;
+        }
+        .signature-box-improved {
+            text-align: center;
+            padding: 1rem;
+        }
         .signature-space {
             border-top: 1px solid #000;
-            margin: 40px 0 10px 0;
-            padding-top: 10px;
+            margin: 2rem 0 1rem 0;
+            padding-top: 0.5rem;
+        }
+        .signature-name {
+            margin-top: 0.5rem;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .signature-role {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        .signature-document {
+            font-size: 0.9em;
+            color: #555;
         }
         @media print {
             body { margin: 1.5cm; }
-        }
-    </style>
-</head>
-<body>
-    ${contractContent}
-</body>
-</html>`;
-
-        const blob = new Blob([fullHTML], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `contrato-${new Date().getTime()}.html`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-    } catch (error) {
-        console.error('Erro no downloadAsHTML:', error);
-        showNotification('❌ Erro ao baixar contrato');
-    }
-}
-
-// Função para gerar Word
-function generateWord() {
-    try {
-        const contractContent = generateProfessionalContract();
-        
-        // Criar um blob com conteúdo HTML que pode ser aberto no Word
-        const fullHTML = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Contrato Profissional</title>
-    <style>
-        body { 
-            font-family: 'Times New Roman', Times, serif; 
-            margin: 2.5cm; 
-            line-height: 1.6; 
-            font-size: 14px;
-            color: #000;
-        }
-        .contract-header { 
-            text-align: center; 
-            margin-bottom: 2rem; 
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #000;
-        }
-        .contract-title { 
-            font-size: 18px; 
-            font-weight: bold; 
-            margin-bottom: 0.5rem;
-            text-transform: uppercase;
-        }
-        .contract-clause { 
-            margin-bottom: 20px; 
-        }
-        .contract-clause h4 {
-            font-size: 14px;
-            margin-bottom: 10px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-        .signature-space {
-            border-top: 1px solid #000;
-            margin: 40px 0 10px 0;
-            padding-top: 10px;
         }
     </style>
 </head>
@@ -661,11 +943,11 @@ function showDownloadOptions() {
             <h3 style="color: var(--success); margin-bottom: 1rem;">
                 <i class="fas fa-check-circle"></i> Pagamento Aprovado!
             </h3>
-            <p>Seu contrato está pronto para download.</p>
+            <p>Seu contrato está pronto para visualização e download.</p>
             
             <div class="download-options">
-                <button class="btn btn-secondary" onclick="generatePDF()">
-                    <i class="fas fa-file-pdf"></i> Baixar PDF
+                <button class="btn btn-secondary" onclick="showContractFullscreen()">
+                    <i class="fas fa-eye"></i> Visualizar Contrato
                 </button>
                 <button class="btn btn-secondary" onclick="generateWord()">
                     <i class="fas fa-file-word"></i> Baixar Word
@@ -745,5 +1027,23 @@ document.addEventListener('click', function(event) {
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closePaymentModal();
+    }
+});
+
+// Prevenir cópia do conteúdo do contrato
+document.addEventListener('copy', function(e) {
+    const contractPreview = document.getElementById('contractPreview');
+    if (contractPreview && contractPreview.contains(e.target)) {
+        e.preventDefault();
+        showNotification('❌ Cópia do conteúdo do contrato não é permitida');
+    }
+});
+
+// Prevenir clique direito no contrato
+document.addEventListener('contextmenu', function(e) {
+    const contractPreview = document.getElementById('contractPreview');
+    if (contractPreview && contractPreview.contains(e.target)) {
+        e.preventDefault();
+        showNotification('❌ Ação não permitida no contrato');
     }
 });
