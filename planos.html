@@ -20,7 +20,6 @@
                 <nav class="nav-menu">
                     <ul>
                         <li><a href="index.html">Início</a></li>
-                        <li><a href="index.html#features">Recursos</a></li>
                         <li><a href="index.html#generator">Criar Contrato</a></li>
                         <li><a href="#pricing" class="active">Planos</a></li>
                         <li><a href="faq.html">FAQ</a></li>
@@ -29,7 +28,7 @@
                 <div class="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </div>
-                <a href="Página inicial.html#generator" class="btn mobile-hidden">Criar Contrato Agora</a>
+                <a href="index.html#generator" class="btn mobile-hidden">Criar Contrato Agora</a>
             </div>
         </div>
     </header>
@@ -46,16 +45,19 @@
                     <div class="pricing-header">
                         <div class="pricing-title">Teste Grátis</div>
                         <div class="pricing-price">R$ 0</div>
-                        <div class="pricing-period">7 dias gratuitos*</div>
+                        <div class="pricing-period">7 dias gratuitos</div>
                         <small>*Após 7 dias: R$ 10,99/mês</small>
                     </div>
                     <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> 1 contrato grátis</li>
+                        <li><i class="fas fa-check"></i> 3 contratos profissionais</li>
                         <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
-                        <li><i class="fas fa-check"></i> Download em PDF</li>
-                        <li class="disabled"><i class="fas fa-times"></i> Suporte prioritário</li>
+                        <li><i class="fas fa-check"></i> Download em PDF e Word</li>
+                        <li><i class="fas fa-check"></i> Suporte por email</li>
                         <li class="disabled"><i class="fas fa-times"></i> Contratos ilimitados</li>
                     </ul>
+                    <button class="btn" onclick="activateFreeTrial()">
+                        <i class="fas fa-play-circle"></i> Teste Grátis
+                    </button>
                 </div>
 
                 <div class="pricing-card featured">
@@ -71,7 +73,14 @@
                         <li><i class="fas fa-check"></i> Suporte por email</li>
                         <li class="disabled"><i class="fas fa-times"></i> Contratos ilimitados</li>
                     </ul>
-                    <button class="btn" onclick="openPaymentModal('basico')">Assinar Agora</button>
+                    <button class="btn" onclick="openPaymentModal('basico')">
+                        <i class="fas fa-crown"></i> Assinar Agora
+                    </button>
+                    <div style="margin-top: 0.5rem;">
+                        <button class="btn btn-outline" onclick="activateFreeTrial()" style="width: 100%;">
+                            <i class="fas fa-play-circle"></i> Teste Grátis
+                        </button>
+                    </div>
                 </div>
 
                 <div class="pricing-card">
@@ -87,12 +96,18 @@
                         <li><i class="fas fa-check"></i> Suporte prioritário</li>
                         <li><i class="fas fa-check"></i> Armazenamento na nuvem</li>
                     </ul>
-                    <button class="btn" onclick="openPaymentModal('profissional')">Assinar Agora</button>
+                    <button class="btn" onclick="openPaymentModal('profissional')">
+                        <i class="fas fa-star"></i> Assinar Agora
+                    </button>
+                    <div style="margin-top: 0.5rem;">
+                        <button class="btn btn-outline" onclick="activateFreeTrial()" style="width: 100%;">
+                            <i class="fas fa-play-circle"></i> Teste Grátis
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
-
 
     <!-- Footer -->
     <footer>
@@ -106,9 +121,9 @@
                     <h3>Links Rápidos</h3>
                     <ul>
                         <li><a href="index.html">Início</a></li>
-                        <li><a href="index.html#features">Recursos</a></li>
                         <li><a href="index.html#generator">Criar Contrato</a></li>
                         <li><a href="#pricing">Planos</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
@@ -124,7 +139,7 @@
                     <h3>Contato</h3>
                     <ul>
                         <li><i class="fas fa-envelope"></i> luhkaimn@gmail.com</li>
-                        <li><i class="fas fa-phone"></i> (62) 6299290-0737</li>
+                        <li><i class="fas fa-phone"></i> (62) 99290-0737</li>
                         <li><i class="fas fa-map-marker-alt"></i> Goiás, GO</li>
                     </ul>
                 </div>
@@ -134,6 +149,60 @@
             </div>
         </div>
     </footer>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Finalizar Compra</h3>
+                <button class="close-modal" onclick="closePaymentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="modalPlanDescription">Plano selecionado</p>
+                <h4 id="modalPrice">Total: R$ 0,00</h4>
+                
+                <div class="payment-options">
+                    <div class="payment-option" onclick="selectPayment(this, 'pix')">
+                        <div class="payment-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <span>PIX</span>
+                    </div>
+                    <div class="payment-option" onclick="selectPayment(this, 'cartao')">
+                        <div class="payment-icon">
+                            <i class="fab fa-cc-visa"></i>
+                        </div>
+                        <span>Cartão</span>
+                    </div>
+                </div>
+
+                <!-- Informações para PIX -->
+                <div id="pixDetails" class="bank-details" style="display: none; margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <h4 style="margin-bottom: 1rem;">Pagamento via PIX</h4>
+                    <p style="margin-bottom: 1rem;">Valor: <strong id="pixValue">R$ 0,00</strong></p>
+                    <div style="text-align: center; margin: 1.5rem 0;">
+                        <a href="#" id="pixLink" class="btn btn-success" target="_blank" style="width: 100%;">
+                            <i class="fas fa-qrcode"></i> Pagar com PIX Agora
+                        </a>
+                    </div>
+                    <p style="font-size: 0.9rem; color: #666; text-align: center;">
+                        Você será redirecionado para o Mercado Pago
+                    </p>
+                </div>
+
+                <!-- Informações para Cartão -->
+                <div id="cardDetails" class="bank-details" style="display: none; margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <h4 style="margin-bottom: 1rem;">Pagamento com Cartão</h4>
+                    <p style="margin-bottom: 1rem;">Valor: <strong id="cardValue">R$ 0,00</strong></p>
+                    <div style="text-align: center; margin: 1.5rem 0;">
+                        <a href="#" id="cardLink" class="btn btn-success" target="_blank" style="width: 100%;">
+                            <i class="fas fa-credit-card"></i> Pagar com Cartão
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
