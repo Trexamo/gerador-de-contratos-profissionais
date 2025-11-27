@@ -7,6 +7,10 @@
     <link rel="icon" href="logo.jpg" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Sign-In -->
+    <meta name="google-signin-client_id" content="395303260900-usl0idov344ud7qo9ptr82mnmqfidebd.apps.googleusercontent.com">
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <!-- Header -->
@@ -23,12 +27,31 @@
                         <li><a href="#generator">Criar Contrato</a></li>
                         <li><a href="planos.html">Planos</a></li>
                         <li><a href="faq.html">FAQ</a></li>
+                        <!-- Área do usuário (aparece quando logado) -->
+                        <li id="userNav" style="display: none;">
+                            <a href="#user" class="user-menu">
+                                <i class="fas fa-user"></i>
+                                <span id="userNameNav"></span>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
                 <div class="mobile-menu-toggle">
                     <i class="fas fa-bars"></i>
                 </div>
-                <a href="#generator" class="btn mobile-hidden">Criar Contrato Agora</a>
+                
+                <!-- Botão de login/usuário -->
+                <div id="loginButton" class="mobile-hidden">
+                    <button class="btn-login" onclick="showLoginModal()">
+                        <i class="fas fa-sign-in-alt"></i> Entrar
+                    </button>
+                </div>
+                
+                <div id="userButton" class="mobile-hidden" style="display: none;">
+                    <button class="btn-login" onclick="showUserMenu()">
+                        <i class="fas fa-user"></i> Minha Conta
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -40,7 +63,7 @@
             <p>Crie contratos de prestação de serviços personalizados, seguros e juridicamente válidos. Economize tempo e evite dores de cabeça.</p>
             <div class="hero-buttons">
                 <a href="#generator" class="btn">Criar Meu Contrato</a>
-                <a href="planos.html" class="btn btn-outline">Ver Planos</a>
+                <a href="planos.html" class="btn-login">Ver Planos</a>
             </div>
         </div>
     </section>
@@ -79,7 +102,90 @@
                         <i class="fas fa-download"></i>
                     </div>
                     <h3>Download Imediato</h3>
-                    <p>Receba seu contrato em PDF e Word prontos para usar assim que finalizar.</p>
+                    <p>Receba seu contrato em Word editável pronto para usar assim que finalizar.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção de Login (aparece quando não logado) -->
+    <section id="loginSection" class="login-promo" style="display: none;">
+        <div class="container">
+            <div class="login-promo-content">
+                <div class="login-info">
+                    <h2>Crie sua conta gratuitamente</h2>
+                    <p>Faça login para acessar todos os recursos e salvar seus contratos</p>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Salve seus contratos na nuvem</li>
+                        <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
+                        <li><i class="fas fa-check"></i> Histórico de contratos gerados</li>
+                        <li><i class="fas fa-check"></i> Teste grátis por 7 dias</li>
+                    </ul>
+                </div>
+                <div class="login-box">
+                    <h3>Entre com Google</h3>
+                    <p>É rápido, fácil e seguro</p>
+                    
+                    <div id="g_id_onload"
+                         data-client_id="395303260900-usl0idov344ud7qo9ptr82mnmqfidebd.apps.googleusercontent.com"
+                         data-context="signin"
+                         data-ux_mode="popup"
+                         data-callback="handleGoogleSignIn"
+                         data-auto_prompt="false">
+                    </div>
+
+                    <div class="g_id_signin"
+                         data-type="standard"
+                         data-shape="rectangular"
+                         data-theme="filled_blue"
+                         data-text="signin_with"
+                         data-size="large"
+                         data-logo_alignment="left"
+                         data-width="300">
+                    </div>
+                    
+                    <p class="login-terms">
+                        Ao entrar, você concorda com nossos <a href="#">Termos de Serviço</a> e <a href="#">Política de Privacidade</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção do Usuário (aparece quando logado) -->
+    <section id="userSection" class="user-dashboard" style="display: none;">
+        <div class="container">
+            <div class="user-welcome">
+                <div class="user-info">
+                    <img id="userAvatar" src="" alt="Avatar" class="user-avatar">
+                    <div class="user-details">
+                        <h2>Bem-vindo, <span id="userName"></span>!</h2>
+                        <p id="userEmail"></p>
+                        <div class="user-plan">
+                            <span class="plan-badge" id="userPlan">Plano Gratuito</span>
+                            <span class="plan-expiry" id="planExpiry">Expira em 7 dias</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <button class="btn-logout" onclick="signOut()">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
+                </div>
+            </div>
+            
+            <div class="user-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="contractsCount">0</div>
+                    <div class="stat-label">Contratos Gerados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="remainingContracts">3</div>
+                    <div class="stat-label">Contratos Restantes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="daysLeft">7</div>
+                    <div class="stat-label">Dias Restantes</div>
                 </div>
             </div>
         </div>
@@ -92,7 +198,20 @@
                 <h2>Crie Seu Contrato Agora</h2>
                 <p>Preencha os dados abaixo e visualize em tempo real seu contrato profissional</p>
             </div>
-            <div class="generator-container">
+            
+            <!-- Aviso de login necessário -->
+            <div id="loginRequired" class="login-required" style="display: none;">
+                <div class="login-required-content">
+                    <i class="fas fa-lock"></i>
+                    <h3>Login Necessário</h3>
+                    <p>Faça login para criar e baixar contratos</p>
+                    <button class="btn-login" onclick="showLoginModal()">
+                        <i class="fas fa-sign-in-alt"></i> Fazer Login
+                    </button>
+                </div>
+            </div>
+            
+            <div class="generator-container" id="generatorForm" style="display: none;">
                 <!-- Form Section -->
                 <div class="form-section">
                     <h3>Informações do Contrato</h3>
@@ -389,6 +508,44 @@
                             <i class="fas fa-credit-card"></i> Pagar com Cartão
                         </a>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Entrar no ContratoFácil</h3>
+                <button class="close-modal" onclick="closeLoginModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="login-modal-content">
+                    <h4>Entre com Google</h4>
+                    <p>É rápido, fácil e seguro</p>
+                    
+                    <div id="g_id_onload_modal"
+                         data-client_id="395303260900-usl0idov344ud7qo9ptr82mnmqfidebd.apps.googleusercontent.com"
+                         data-context="signin"
+                         data-ux_mode="popup"
+                         data-callback="handleGoogleSignIn"
+                         data-auto_prompt="false">
+                    </div>
+
+                    <div class="g_id_signin"
+                         data-type="standard"
+                         data-shape="rectangular"
+                         data-theme="filled_blue"
+                         data-text="signin_with"
+                         data-size="large"
+                         data-logo_alignment="left"
+                         data-width="300">
+                    </div>
+                    
+                    <p class="login-terms">
+                        Ao entrar, você concorda com nossos <a href="#">Termos de Serviço</a> e <a href="#">Política de Privacidade</a>
+                    </p>
                 </div>
             </div>
         </div>
