@@ -12,18 +12,116 @@ let currentCanvas = null;
 let lastX = 0;
 let lastY = 0;
 let activeFAQ = null;
+let currentSignatureType = null;
+let currentSignatureMethod = null;
 
 // Estado do usuário
 let currentUser = null;
 
+// Preços dos planos
+const planPrices = {
+    'avulsa': 6.99,
+    'basico': 9.99,
+    'profissional': 29.99
+};
+
+// =============================================
+// INICIALIZAÇÃO DO SISTEMA
+// =============================================
+
 // Inicialização quando DOM carregar
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 ContratoFácil inicializando...');
+    
     initMobileMenu();
+    initEnhancedMobileMenu();
     updatePreview();
     initSignatureSystem();
+    initMobileSignatureSystem();
     checkUserLogin();
+    optimizeForMobile();
+    setupEventListeners();
+    initDateSettings();
     
-    // Configurar datas
+    // Replace notification function for mobile
+    if (isMobileDevice()) {
+        window.showNotification = showMobileNotification;
+    }
+    
+    console.log('✅ ContratoFácil inicializado com sucesso!');
+});
+
+// Configurar event listeners
+function setupEventListeners() {
+    // Atualizar preview em tempo real
+    const formInputs = document.querySelectorAll('#generator input, #generator select, #generator textarea');
+    formInputs.forEach(input => {
+        input.addEventListener('input', updatePreview);
+        input.addEventListener('change', updatePreview);
+    });
+
+    // Formatação automática do valor
+    const serviceValueInput = document.getElementById('serviceValue');
+    if (serviceValueInput) {
+        serviceValueInput.addEventListener('input', function(e) {
+            formatCurrencyInput(e);
+            updatePreview();
+        });
+    }
+
+    // Fechar modais ao clicar fora
+    document.addEventListener('click', function(event) {
+        const paymentModal = document.getElementById('paymentModal');
+        if (event.target === paymentModal) {
+            closePaymentModal();
+        }
+        
+        const loginModal = document.getElementById('loginModal');
+        if (event.target === loginModal) {
+            closeLoginModal();
+        }
+        
+        const upgradeModal = document.querySelector('.modal.upgrade-modal');
+        if (event.target === upgradeModal) {
+            upgradeModal.remove();
+            document.body.style.overflow = 'auto';
+        }
+    });
+
+    // Tecla ESC para fechar modal
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closePaymentModal();
+            closeLoginModal();
+            const upgradeModal = document.querySelector('.modal.upgrade-modal');
+            if (upgradeModal) {
+                upgradeModal.remove();
+                document.body.style.overflow = 'auto';
+            }
+        }
+    });
+
+    // Prevenir cópia do conteúdo do contrato
+    document.addEventListener('copy', function(e) {
+        const contractPreview = document.getElementById('contractPreview');
+        if (contractPreview && contractPreview.contains(e.target)) {
+            e.preventDefault();
+            showNotification('❌ Cópia do conteúdo do contrato não é permitida');
+        }
+    });
+
+    // Prevenir clique direito no contrato
+    document.addEventListener('contextmenu', function(e) {
+        const contractPreview = document.getElementById('contractPreview');
+        if (contractPreview && contractPreview.contains(e.target)) {
+            e.preventDefault();
+            showNotification('❌ Ação não permitida no contrato');
+        }
+    });
+}
+
+// Configurar datas
+function initDateSettings() {
     const today = new Date().toISOString().split('T')[0];
     const startDateInput = document.getElementById('startDate');
     const endDateInput = document.getElementById('endDate');
@@ -43,30 +141,133 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             updatePreview();
         });
+        
+        // Set initial end date
+        if (startDateInput.value && !endDateInput.value) {
+            const endDate = new Date(startDateInput.value);
+            endDate.setMonth(endDate.getMonth() + 1);
+            endDateInput.value = endDate.toISOString().split('T')[0];
+        }
+    }
+}
+
+// =============================================
+// SISTEMA DE CONVERSÃO - FUNÇÕES NOVAS
+// =============================================
+
+// Scroll para o gerador após o vídeo
+function scrollToGenerator() {
+    document.getElementById('generator').scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+    });
+    showNotification('🎯 Agora crie seu contrato profissional!');
+}
+
+// Sistema de controle de acesso aprimorado
+function canGenerateContract() {
+    if (!currentUser) {
+        showNotification('🔐 Faça login para acessar o gerador profissional');
+        showLoginModal();
+        return false;
     }
     
-    // Atualizar preview em tempo real
-    const formInputs = document.querySelectorAll('#generator input, #generator select, #generator textarea');
-    formInputs.forEach(input => {
-        input.addEventListener('input', updatePreview);
-        input.addEventListener('change', updatePreview);
-    });
-
-    // Formatação automática do valor
-    const serviceValueInput = document.getElementById('serviceValue');
-    if (serviceValueInput) {
-        serviceValueInput.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            value = (value / 100).toFixed(2);
-            value = value.replace('.', ',');
-            value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-            e.target.value = value;
-            updatePreview();
-        });
+    // Usuário free só pode visualizar, não baixar
+    if (currentUser.plan === 'free') {
+        return 'view_only';
     }
+    
+    return true;
+}
 
-    console.log('ContratoFácil inicializado com sucesso!');
-});
+// Modal de upgrade persuasivo
+function showUpgradeModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal active upgrade-modal';
+    modal.style.zIndex = '3000';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>🚀 Upgrade Necessário</h3>
+                <button class="close-modal" onclick="this.closest('.modal').remove(); document.body.style.overflow='auto'">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="upgrade-content">
+                    <div class="upgrade-header">
+                        <h4>Seu Contrato Está Quase Pronto!</h4>
+                        <p>Você já criou um contrato profissional. Agora falta pouco para ter acesso completo:</p>
+                    </div>
+                    
+                    <div class="benefits-grid">
+                        <div class="benefit-card">
+                            <i class="fas fa-download"></i>
+                            <strong>Download Imediato</strong>
+                            <p>Baixe em Word e PDF</p>
+                        </div>
+                        <div class="benefit-card">
+                            <i class="fas fa-edit"></i>
+                            <strong>Edição Completa</strong>
+                            <p>Modifique quando quiser</p>
+                        </div>
+                        <div class="benefit-card">
+                            <i class="fas fa-shield-alt"></i>
+                            <strong>Proteção Total</strong>
+                            <p>Cláusulas jurídicas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="upgrade-options">
+                        <div class="upgrade-option featured">
+                            <div class="option-header">
+                                <h5>💎 MAIS POPULAR</h5>
+                                <div class="price">R$ 6,99</div>
+                                <div class="period">por contrato</div>
+                            </div>
+                            <ul>
+                                <li>✅ Download imediato</li>
+                                <li>✅ Contrato editável</li>
+                                <li>✅ Formato Word + PDF</li>
+                                <li>✅ Reutilizável</li>
+                            </ul>
+                            <button class="btn btn-success" onclick="openPaymentModal('avulsa'); this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%;">
+                                <i class="fas fa-bolt"></i> Comprar Agora
+                            </button>
+                        </div>
+                        
+                        <div class="upgrade-option">
+                            <div class="option-header">
+                                <h5>🚀 PROFISSIONAL</h5>
+                                <div class="price">R$ 29,99</div>
+                                <div class="period">por mês</div>
+                            </div>
+                            <ul>
+                                <li>✅ Contratos Ilimitados</li>
+                                <li>✅ Todos os modelos</li>
+                                <li>✅ Suporte prioritário</li>
+                                <li>✅ Armazenamento</li>
+                            </ul>
+                            <button class="btn" onclick="openPaymentModal('profissional'); this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%;">
+                                <i class="fas fa-crown"></i> Assinar Plano
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-warning">
+                        <p>⚠️ <strong>Não arrisque:</strong> Um contrato mal elaborado pode custar muito mais que R$ 6,99</p>
+                    </div>
+                    
+                    <div class="upgrade-footer">
+                        <button class="btn-login" onclick="this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%; margin-top: 1rem;">
+                            <i class="fas fa-eye"></i> Continuar Visualizando Gratuitamente
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+}
 
 // =============================================
 // SISTEMA DE LOGIN E AUTENTICAÇÃO
@@ -76,8 +277,14 @@ document.addEventListener('DOMContentLoaded', function() {
 function checkUserLogin() {
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
-        currentUser = JSON.parse(savedUser);
-        updateUIAfterLogin();
+        try {
+            currentUser = JSON.parse(savedUser);
+            updateUIAfterLogin();
+        } catch (e) {
+            console.error('Erro ao carregar usuário:', e);
+            localStorage.removeItem('currentUser');
+            updateUIAfterLogout();
+        }
     } else {
         updateUIAfterLogout();
     }
@@ -99,9 +306,10 @@ function handleGoogleSignIn(response) {
             picture: userData.picture,
             plan: 'free',
             contractsGenerated: 0,
-            remainingContracts: 3,
-            trialEndDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-            joinDate: new Date().toISOString()
+            remainingContracts: 999, // Visualizações ilimitadas
+            trialEndDate: null, // Sem trial, só visualização
+            joinDate: new Date().toISOString(),
+            lastLogin: new Date().toISOString()
         };
         
         // Salva no localStorage
@@ -113,7 +321,7 @@ function handleGoogleSignIn(response) {
         // Fecha o modal
         closeLoginModal();
         
-        showNotification('🎉 Login realizado com sucesso!');
+        showNotification('🎉 Login realizado com sucesso! Agora você pode visualizar contratos gratuitamente.');
         
     } catch (error) {
         console.error('Erro no login:', error);
@@ -164,7 +372,7 @@ function updateUIAfterLogin() {
     if (loginSection) loginSection.style.display = 'none';
     if (userSection) userSection.style.display = 'block';
     if (loginRequired) loginRequired.style.display = 'none';
-    if (generatorForm) generatorForm.style.display = 'block';
+    if (generatorForm) generatorForm.style.display = 'grid';
     
     // Atualizar dashboard do usuário
     updateUserDashboard();
@@ -199,11 +407,15 @@ function updateUserDashboard() {
     
     // Atualizar avatar
     const userAvatar = document.getElementById('userAvatar');
-    if (userAvatar && currentUser.picture) {
-        userAvatar.src = currentUser.picture;
-        userAvatar.onerror = function() {
-            this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiMyYzlhYTAiLz4KPHBhdGggZD0iTTQwIDQ0QzQ2LjYgNDQgNTIgMzguNiA1MiAzMkM1MiAyNS40IDQ2LjYgMjAgNDAgMjBDMzMuNCAyMCAyOCAyNS40IDI4IDMyQzI4IDM4LjYgMzMuNCA0NCA0MCA0NFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yOCA1MkMyOCA1OC42IDMzLjQgNjQgNDAgNjRDNDYuNiA2NCA1MiA1OC42IDUyIDUyVjUySDI4VjUyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+';
-        };
+    if (userAvatar) {
+        if (currentUser.picture) {
+            userAvatar.src = currentUser.picture;
+            userAvatar.onerror = function() {
+                this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiMyYzlhYTAiLz4KPHBhdGggZD0iTTQwIDQ0QzQ2LjYgNDQgNTIgMzguNiA1MiAzMkM1MiAyNS40IDQ2LjYgMjAgNDAgMjBDMzMuNCAyMCAyOCAyNS40IDI4IDMyQzI4IDM4LjYgMzMuNCA0NCA0MCA0NFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yOCA1MkMyOCA1OC42IDMzLjQgNjQgNDAgNjRDNDYuNiA2NCA1MiA1OC42IDUyIDUyVjUySDI4VjUyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+';
+            };
+        } else {
+            userAvatar.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiMyYzlhYTAiLz4KPHBhdGggZD0iTTQwIDQ0QzQ2LjYgNDQgNTIgMzguNiA1MiAzMkM1MiAyNS40IDQ2LjYgMjAgNDAgMjBDMzMuNCAyMCAyOCAyNS40IDI4IDMyQzI4IDM4LjYgMzMuNCA0NCA0MCA0NFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yOCA1MkMyOCA1OC42IDMzLjQgNjQgNDAgNjRDNDYuNiA2NCA1MiA1OC42IDUyIDUyVjUySDI4VjUyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+';
+        }
     }
     
     // Atualizar nome e email
@@ -234,19 +446,9 @@ function updatePlanInfo() {
         userPlan.className = 'plan-badge ' + currentUser.plan;
     }
     
-    if (planExpiry && currentUser.trialEndDate) {
-        const endDate = new Date(currentUser.trialEndDate);
-        const today = new Date();
-        const diffTime = endDate - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays > 0) {
-            planExpiry.textContent = `Expira em ${diffDays} dias`;
-            planExpiry.style.color = 'var(--success)';
-        } else {
-            planExpiry.textContent = 'Expirado';
-            planExpiry.style.color = 'var(--danger)';
-        }
+    if (planExpiry) {
+        planExpiry.textContent = 'Visualização Gratuita';
+        planExpiry.style.color = 'var(--success)';
     }
     
     if (contractsCount) {
@@ -255,17 +457,13 @@ function updatePlanInfo() {
     
     if (remainingContracts) {
         const remaining = currentUser.plan === 'free' ? 
-                         (currentUser.remainingContracts || 0) :
+                         'Ilimitado' :
                          currentUser.plan === 'basico' ? 5 : 'Ilimitado';
         remainingContracts.textContent = remaining;
     }
     
-    if (daysLeft && currentUser.trialEndDate) {
-        const endDate = new Date(currentUser.trialEndDate);
-        const today = new Date();
-        const diffTime = endDate - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        daysLeft.textContent = Math.max(0, diffDays);
+    if (daysLeft) {
+        daysLeft.textContent = '∞';
     }
 }
 
@@ -299,6 +497,9 @@ function signOut() {
     // Fazer logout do Google
     if (window.google && google.accounts && google.accounts.id) {
         google.accounts.id.disableAutoSelect();
+        google.accounts.id.revoke(localStorage.getItem('currentUser'), done => {
+            console.log('Google Sign-In revogado');
+        });
     }
     
     // Atualizar UI
@@ -307,30 +508,18 @@ function signOut() {
     showNotification('👋 Logout realizado com sucesso!');
 }
 
-// Verificar se usuário pode gerar contrato
-function canGenerateContract() {
+// Verificar se usuário pode baixar contrato
+function canDownloadContract() {
     if (!currentUser) {
-        showNotification('❌ Faça login para gerar contratos');
+        showNotification('❌ Faça login para baixar contratos');
         showLoginModal();
         return false;
     }
     
-    // Verificar se ainda tem contratos disponíveis
-    if (currentUser.plan === 'free' && currentUser.remainingContracts <= 0) {
-        showNotification('❌ Você atingiu o limite de contratos do plano gratuito');
-        openPaymentModal('basico');
+    // Usuário free não pode baixar, só visualizar
+    if (currentUser.plan === 'free') {
+        showUpgradeModal();
         return false;
-    }
-    
-    // Verificar se o trial não expirou
-    if (currentUser.plan === 'free' && currentUser.trialEndDate) {
-        const endDate = new Date(currentUser.trialEndDate);
-        const today = new Date();
-        if (today > endDate) {
-            showNotification('❌ Seu período de teste expirou. Faça upgrade!');
-            openPaymentModal('basico');
-            return false;
-        }
     }
     
     return true;
@@ -341,11 +530,6 @@ function incrementContractCount() {
     if (!currentUser) return;
     
     currentUser.contractsGenerated = (currentUser.contractsGenerated || 0) + 1;
-    
-    if (currentUser.plan === 'free') {
-        currentUser.remainingContracts = Math.max(0, (currentUser.remainingContracts || 3) - 1);
-    }
-    
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
     updatePlanInfo();
 }
@@ -363,8 +547,8 @@ function updateUserPlan(planType) {
     // Configurar limites conforme o plano
     switch(planType) {
         case 'free':
-            currentUser.remainingContracts = 3;
-            currentUser.trialEndDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+            currentUser.remainingContracts = 999; // Visualizações ilimitadas
+            currentUser.trialEndDate = null;
             break;
         case 'basico':
             currentUser.remainingContracts = 5;
@@ -398,9 +582,11 @@ function initMobileMenu() {
             if (navMenu.classList.contains('active')) {
                 icon.classList.remove('fa-bars');
                 icon.classList.add('fa-times');
+                document.body.style.overflow = 'hidden';
             } else {
                 icon.classList.remove('fa-times');
                 icon.classList.add('fa-bars');
+                document.body.style.overflow = 'auto';
             }
         });
         
@@ -410,8 +596,52 @@ function initMobileMenu() {
                 navMenu.classList.remove('active');
                 menuToggle.querySelector('i').classList.remove('fa-times');
                 menuToggle.querySelector('i').classList.add('fa-bars');
+                document.body.style.overflow = 'auto';
             });
         });
+    }
+}
+
+// Enhanced mobile menu
+function initEnhancedMobileMenu() {
+    const menuToggle = document.querySelector('.mobile-menu-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (menuToggle && navMenu) {
+        let isOpen = false;
+        
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            isOpen = !isOpen;
+            
+            if (isOpen) {
+                navMenu.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                menuToggle.querySelector('i').classList.replace('fa-bars', 'fa-times');
+            } else {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (isOpen && !navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close menu on link click
+        const navLinks = navMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', closeMobileMenu);
+        });
+        
+        function closeMobileMenu() {
+            navMenu.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            menuToggle.querySelector('i').classList.replace('fa-times', 'fa-bars');
+            isOpen = false;
+        }
     }
 }
 
@@ -451,6 +681,11 @@ function handleSignatureUpload(event, type) {
         return;
     }
 
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        showNotification('❌ A imagem deve ser menor que 5MB');
+        return;
+    }
+
     const reader = new FileReader();
     reader.onload = function(e) {
         const img = new Image();
@@ -460,6 +695,10 @@ function handleSignatureUpload(event, type) {
             tempCanvas.width = 300;
             tempCanvas.height = 100;
             
+            // Limpar canvas
+            tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // Desenhar imagem no canvas
             tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
             
             if (type === 'contractor') {
@@ -473,7 +712,13 @@ function handleSignatureUpload(event, type) {
             
             showNotification('✅ Assinatura carregada com sucesso!');
         };
+        img.onerror = function() {
+            showNotification('❌ Erro ao carregar a imagem');
+        };
         img.src = e.target.result;
+    };
+    reader.onerror = function() {
+        showNotification('❌ Erro ao ler o arquivo');
     };
     reader.readAsDataURL(file);
 }
@@ -484,16 +729,22 @@ function initSignatureCanvas(type) {
 
     const ctx = canvas.getContext('2d');
     
+    // Configurar estilo do pincel
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     
+    // Limpar canvas inicial
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Event listeners para desktop
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mouseout', stopDrawing);
     
+    // Event listeners para mobile
     canvas.addEventListener('touchstart', handleTouchStart);
     canvas.addEventListener('touchmove', handleTouchMove);
     canvas.addEventListener('touchend', stopDrawing);
@@ -504,6 +755,10 @@ function initSignatureCanvas(type) {
         const rect = canvas.getBoundingClientRect();
         lastX = e.clientX - rect.left;
         lastY = e.clientY - rect.top;
+        
+        // Começar um novo caminho
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
     }
 
     function draw(e) {
@@ -513,8 +768,6 @@ function initSignatureCanvas(type) {
         const currentX = e.clientX - rect.left;
         const currentY = e.clientY - rect.top;
         
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
         ctx.lineTo(currentX, currentY);
         ctx.stroke();
         
@@ -525,6 +778,7 @@ function initSignatureCanvas(type) {
     function stopDrawing() {
         if (isDrawing && currentCanvas === type) {
             isDrawing = false;
+            ctx.beginPath(); // Resetar o caminho
             updateSignaturePreview(type);
             showSignatureConfirmation(type);
         }
@@ -552,21 +806,42 @@ function initSignatureCanvas(type) {
 }
 
 function selectSignatureOption(type, method) {
+    // Remover seleção de todas as opções
     document.querySelectorAll('.signature-option').forEach(option => {
         option.classList.remove('selected');
     });
     
+    // Selecionar a opção clicada
     event.target.closest('.signature-option').classList.add('selected');
+    
+    currentSignatureType = type;
+    currentSignatureMethod = method;
     
     if (method === 'upload') {
         document.getElementById(`${type}SignatureUpload`).click();
     } else {
         const canvas = document.getElementById(`${type}SignatureDraw`);
+        const uploadInput = document.getElementById(`${type}SignatureUpload`);
+        
         if (canvas) {
             canvas.style.display = 'block';
+            // Limpar canvas
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
+        
+        if (uploadInput) {
+            uploadInput.value = '';
+        }
+        
+        // Limpar assinatura atual
+        if (type === 'contractor') {
+            contractorSignature = null;
+        } else {
+            contractedSignature = null;
+        }
+        
+        updateSignaturePreview(type);
     }
 }
 
@@ -580,14 +855,22 @@ function updateSignaturePreview(type) {
         signatureData = contractedSignature;
     }
 
+    // Se não tem signatureData, verificar se tem desenho no canvas
     if (!signatureData) {
         const canvas = document.getElementById(`${type}SignatureDraw`);
-        if (canvas) {
-            signatureData = canvas.toDataURL();
-            if (type === 'contractor') {
-                contractorSignature = signatureData;
-            } else {
-                contractedSignature = signatureData;
+        if (canvas && canvas.style.display !== 'none') {
+            // Verificar se o canvas tem conteúdo
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const hasContent = imageData.data.some(channel => channel !== 0);
+            
+            if (hasContent) {
+                signatureData = canvas.toDataURL();
+                if (type === 'contractor') {
+                    contractorSignature = signatureData;
+                } else {
+                    contractedSignature = signatureData;
+                }
             }
         }
     }
@@ -599,6 +882,8 @@ function updateSignaturePreview(type) {
                 <p style="margin-top: 0.5rem; font-size: 0.8rem; color: #666;">Pré-visualização da assinatura</p>
             </div>
         `;
+    } else if (preview) {
+        preview.innerHTML = '<p style="color: #666; text-align: center;">Assinatura aparecerá aqui</p>';
     }
     
     updatePreview();
@@ -626,7 +911,7 @@ function clearSignature(type) {
     
     const preview = document.getElementById(`${type}SignaturePreview`);
     if (preview) {
-        preview.innerHTML = '<p style="color: #666;">Assinatura aparecerá aqui</p>';
+        preview.innerHTML = '<p style="color: #666; text-align: center;">Assinatura aparecerá aqui</p>';
     }
     
     const confirmation = document.getElementById(`${type}SignatureConfirmation`);
@@ -634,15 +919,20 @@ function clearSignature(type) {
         confirmation.style.display = 'none';
     }
     
+    // Remover seleção de todas as opções
     document.querySelectorAll('.signature-option').forEach(option => {
         option.classList.remove('selected');
     });
     
+    // Limpar variáveis
     if (type === 'contractor') {
         contractorSignature = null;
     } else {
         contractedSignature = null;
     }
+    
+    currentSignatureType = null;
+    currentSignatureMethod = null;
     
     updatePreview();
     showNotification('🔄 Assinatura removida');
@@ -653,6 +943,12 @@ function confirmSignature(type) {
     const confirmation = document.getElementById(`${type}SignatureConfirmation`);
     if (confirmation) {
         confirmation.style.display = 'none';
+    }
+    
+    // Esconder o canvas após confirmação
+    const canvas = document.getElementById(`${type}SignatureDraw`);
+    if (canvas) {
+        canvas.style.display = 'none';
     }
 }
 
@@ -786,6 +1082,11 @@ function validateContractData() {
             errors.push(fieldName);
             if (field) {
                 field.style.borderColor = 'var(--danger)';
+                // Adicionar animação de shake
+                field.style.animation = 'shake 0.5s ease-in-out';
+                setTimeout(() => {
+                    field.style.animation = '';
+                }, 500);
             }
         } else if (field) {
             field.style.borderColor = '#e0e0e0';
@@ -796,12 +1097,21 @@ function validateContractData() {
     const contractorDoc = document.getElementById('contractorDoc')?.value;
     const contractedDoc = document.getElementById('contractedDoc')?.value;
     
-    if (contractorDoc && !validateCPFCNPJ(contractorDoc)) {
+    if (contractorDoc && contractorDoc.trim() && !validateCPFCNPJ(contractorDoc)) {
         errors.push('CPF/CNPJ do Contratante inválido');
     }
     
-    if (contractedDoc && !validateCPFCNPJ(contractedDoc)) {
+    if (contractedDoc && contractedDoc.trim() && !validateCPFCNPJ(contractedDoc)) {
         errors.push('CPF/CNPJ do Contratado inválido');
+    }
+
+    // Validação de valor do serviço
+    const serviceValue = document.getElementById('serviceValue')?.value;
+    if (serviceValue && serviceValue.trim()) {
+        const valorNumerico = parseFloat(serviceValue.replace(/[^\d,]/g, '').replace(',', '.'));
+        if (isNaN(valorNumerico) || valorNumerico <= 0) {
+            errors.push('Valor do serviço deve ser maior que zero');
+        }
     }
 
     return errors;
@@ -887,6 +1197,24 @@ function validateCNPJ(cnpj) {
     if (result !== parseInt(digits.charAt(1))) return false;
 
     return true;
+}
+
+// Formatar input de currency
+function formatCurrencyInput(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    // Se estiver vazio, não faz nada
+    if (value === '') {
+        e.target.value = '';
+        return;
+    }
+    
+    // Converte para número e formata
+    value = (parseInt(value) / 100).toFixed(2);
+    value = value.replace('.', ',');
+    value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    
+    e.target.value = value;
 }
 
 // =============================================
@@ -975,151 +1303,53 @@ function generateProfessionalContractPlus() {
                 <p><strong>CONTRATADO(A):</strong> ${contractedName}, ${contractedCivilState}, ${contractedProfession}, portador(a) do ${contractedDoc.length === 11 ? 'CPF' : 'CNPJ'} nº ${contractedDoc}, residente e domiciliado(a) na ${contractedAddress}.</p>
             </div>
 
-            <!-- CLÁUSULA 2 - DEFINIÇÕES -->
+            <!-- CLÁUSULA 2 - OBJETO -->
             <div class="contract-clause">
-                <h4>CLÁUSULA SEGUNDA - DEFINIÇÕES E INTERPRETAÇÃO</h4>
-                <p>Para os efeitos deste instrumento, consideram-se:</p>
-                <ol>
-                    <li><strong>Serviços:</strong> atividades descritas na Cláusula Terceira;</li>
-                    <li><strong>Prazo de Execução:</strong> período para realização dos serviços;</li>
-                    <li><strong>Entregáveis:</strong> produtos ou resultados dos serviços;</li>
-                    <li><strong>Valor Contratual:</strong> contraprestação pelos serviços.</li>
-                </ol>
-            </div>
-
-            <!-- CLÁUSULA 3 - OBJETO -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA TERCEIRA - DO OBJETO CONTRATUAL</h4>
+                <h4>CLÁUSULA SEGUNDA - DO OBJETO CONTRATUAL</h4>
                 <p>Constitui objeto do presente contrato a prestação dos seguintes serviços: <strong>${serviceDescription}</strong>.</p>
-                <p><strong>Especificações Técnicas:</strong> Os serviços serão executados conforme padrões técnicos e de qualidade do mercado, observadas as melhores práticas da atividade.</p>
             </div>
 
-            <!-- CLÁUSULA 4 - PRAZOS -->
+            <!-- CLÁUSULA 3 - PRAZOS -->
             <div class="contract-clause">
-                <h4>CLÁUSULA QUARTA - DOS PRAZOS E ENTREGÁVEIS</h4>
-                <p><strong>4.1.</strong> O prazo para execução dos serviços é de <strong>${calculateDays()}</strong> dias, iniciando-se em <strong>${formatDate(startDate)}</strong> e terminando em <strong>${formatDate(endDate)}</strong>.</p>
-                <p><strong>4.2.</strong> Os prazos poderão ser prorrogados mediante acordo escrito entre as partes, desde que justificado por motivos de força maior ou caso fortuito.</p>
-                <p><strong>4.3.</strong> Considera-se entregue o serviço mediante aceitação formal pelo CONTRATANTE, que se manifestará no prazo de 5 (cinco) dias úteis.</p>
+                <h4>CLÁUSULA TERCEIRA - DOS PRAZOS E ENTREGÁVEIS</h4>
+                <p><strong>3.1.</strong> O prazo para execução dos serviços é de <strong>${calculateDays()}</strong> dias, iniciando-se em <strong>${formatDate(startDate)}</strong> e terminando em <strong>${formatDate(endDate)}</strong>.</p>
             </div>
 
-            <!-- CLÁUSULA 5 - VALOR E PAGAMENTO -->
+            <!-- CLÁUSULA 4 - VALOR E PAGAMENTO -->
             <div class="contract-clause">
-                <h4>CLÁUSULA QUINTA - DO VALOR E CONDIÇÕES DE PAGAMENTO</h4>
-                <p><strong>5.1.</strong> Pelo fiel cumprimento deste contrato, o CONTRATANTE pagará ao CONTRATADO(A) a importância de <strong>R$ ${serviceValue}</strong> (${valorExtenso}).</p>
-                <p><strong>5.2.</strong> O pagamento será efetuado mediante: <strong>${paymentMethodText}</strong>.</p>
-                <p><strong>5.3.</strong> O CONTRATADO(A) obriga-se a emitir nota fiscal ou recibo correspondente, arcando com todos os tributos incidentes sobre a operação.</p>
-                <p><strong>5.4.</strong> Em caso de atraso no pagamento, incidirá multa moratória de 2% (dois por cento) sobre o valor devido, mais juros de 1% (um por cento) ao mês.</p>
+                <h4>CLÁUSULA QUARTA - DO VALOR E CONDIÇÕES DE PAGAMENTO</h4>
+                <p><strong>4.1.</strong> Pelo fiel cumprimento deste contrato, o CONTRATANTE pagará ao CONTRATADO(A) a importância de <strong>R$ ${serviceValue}</strong> (${valorExtenso}).</p>
+                <p><strong>4.2.</strong> O pagamento será efetuado mediante: <strong>${paymentMethodText}</strong>.</p>
             </div>
 
-            <!-- CLÁUSULA 6 - OBRIGAÇÕES DO CONTRATADO -->
+            <!-- CLÁUSULA 5 - OBRIGAÇÕES -->
             <div class="contract-clause">
-                <h4>CLÁUSULA SEXTA - DAS OBRIGAÇÕES DO CONTRATADO</h4>
-                <p>O CONTRATADO(A) obriga-se a:</p>
-                <ol>
-                    <li>Executar os serviços com zelo, diligência e capacidade técnica adequada;</li>
-                    <li>Cumprir rigorosamente os prazos estabelecidos;</li>
-                    <li>Fornecer todos os materiais, equipamentos e recursos necessários, salvo estipulação em contrário;</li>
-                    <li>Comunicar imediatamente qualquer impedimento para o cumprimento do objeto;</li>
-                    <li>Emitir documentação fiscal correspondente;</li>
-                    <li>Manter sigilo absoluto sobre informações confidenciais;</li>
-                    <li>Prestar contas detalhadas dos recursos eventualmente adiantados;</li>
-                    <li>Cumprir todas as normas técnicas e legais aplicáveis à atividade.</li>
-                </ol>
+                <h4>CLÁUSULA QUINTA - DAS OBRIGAÇÕES DAS PARTES</h4>
+                <p><strong>5.1.</strong> O CONTRATADO(A) obriga-se a executar os serviços com zelo, diligência e capacidade técnica adequada.</p>
+                <p><strong>5.2.</strong> O CONTRATANTE obriga-se a fornecer todas as informações necessárias e efetuar o pagamento nos prazos ajustados.</p>
             </div>
 
-            <!-- CLÁUSULA 7 - OBRIGAÇÕES DO CONTRATANTE -->
+            <!-- CLÁUSULA 6 - CONFIDENCIALIDADE -->
             <div class="contract-clause">
-                <h4>CLÁUSULA SÉTIMA - DAS OBRIGAÇÕES DO CONTRATANTE</h4>
-                <p>O CONTRATANTE obriga-se a:</p>
-                <ol>
-                    <li>Fornecer todas as informações necessárias para a execução dos serviços;</li>
-                    <li>Colaborar com o CONTRATADO(A) para o bom andamento dos trabalhos;</li>
-                    <li>Efetuar o pagamento nos prazos e condições ajustados;</li>
-                    <li>Fornecer ambiente adequado quando necessário para a execução;</li>
-                    <li>Manter sigilo sobre informações técnicas e comerciais do CONTRATADO(A);</li>
-                    <li>Manifestar-se sobre a aceitação dos serviços no prazo estabelecido.</li>
-                </ol>
+                <h4>CLÁUSULA SEXTA - DA CONFIDENCIALIDADE</h4>
+                <p>As partes obrigam-se a manter sigilo sobre todas as informações confidenciais a que tiverem acesso.</p>
             </div>
 
-            <!-- CLÁUSULA 8 - CONFIDENCIALIDADE -->
+            <!-- CLÁUSULA 7 - RESCISÃO -->
             <div class="contract-clause">
-                <h4>CLÁUSULA OITAVA - DA CONFIDENCIALIDADE</h4>
-                <p><strong>8.1.</strong> As partes obrigam-se a manter estrito sigilo sobre todas as informações confidenciais a que tiverem acesso, inclusive após o término do contrato.</p>
-                <p><strong>8.2.</strong> A obrigação de confidencialidade permanecerá por prazo indeterminado, aplicando-se multa de 50% (cinquenta por cento) do valor do contrato em caso de violação.</p>
+                <h4>CLÁUSULA SÉTIMA - DA RESCISÃO CONTRATUAL</h4>
+                <p>Este contrato poderá ser rescindido por mútuo acordo, inadimplemento ou caso fortuito que impossibilite o cumprimento.</p>
             </div>
 
-            <!-- CLÁUSULA 9 - PROPRIEDADE INTELECTUAL -->
+            <!-- CLÁUSULA 8 - FORO -->
             <div class="contract-clause">
-                <h4>CLÁUSULA NONA - DA PROPRIEDADE INTELECTUAL</h4>
-                <p><strong>9.1.</strong> Todos os direitos de propriedade intelectual relativos aos serviços prestados serão de propriedade exclusiva do CONTRATANTE, após o pagamento integral.</p>
-                <p><strong>9.2.</strong> O CONTRATADO(A) cede desde já todos os direitos autorais e de propriedade industrial sobre os trabalhos desenvolvidos.</p>
+                <h4>CLÁUSULA OITAVA - DO FORO</h4>
+                <p>Para dirimir quaisquer controvérsias, as partes elegem o foro da comarca de <strong>${contractCity}</strong>.</p>
             </div>
 
-            <!-- CLÁUSULA 10 - GARANTIAS -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA DÉCIMA - DAS GARANTIAS</h4>
-                <p><strong>10.1.</strong> O CONTRATADO(A) garante a qualidade dos serviços e obriga-se a reparar, sem custo adicional, quaisquer vícios ou defeitos apontados no prazo de 30 (trinta) dias.</p>
-                <p><strong>10.2.</strong> A garantia cobre todos os vícios aparentes e ocultos, exceto os decorrentes de uso inadequado pelo CONTRATANTE.</p>
-            </div>
-
-            <!-- CLÁUSULA 11 - RESCISÃO -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA DÉCIMA PRIMEIRA - DA RESCISÃO CONTRATUAL</h4>
-                <p>Este contrato poderá ser rescindido nas seguintes hipóteses:</p>
-                <ol>
-                    <li>Por mútuo acordo entre as partes;</li>
-                    <li>Por inadimplemento de qualquer obrigação assumida;</li>
-                    <li>Por força maior ou caso fortuito que impossibilite o cumprimento;</li>
-                    <li>Por iniciativa unilateral, mediante aviso prévio de 30 (trinta) dias;</li>
-                    <li>Por falência, insolvência ou dissolução de qualquer das partes.</li>
-                </ol>
-            </div>
-
-            <!-- CLÁUSULA 12 - MULTAS E INDENIZAÇÕES -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA DÉCIMA SEGUNDA - DAS MULTAS E INDENIZAÇÕES</h4>
-                <p><strong>12.1.</strong> Em caso de descumprimento de prazos, o CONTRATADO(A) pagará multa de 2% (dois por cento) por dia de atraso, limitada a 20% (vinte por cento) do valor do contrato.</p>
-                <p><strong>12.2.</strong> Por descumprimento de qualquer obrigação, a parte inadimplente pagará multa compensatória de 10% (dez por cento) do valor total, sem prejuízo de perdas e danos.</p>
-            </div>
-
-            <!-- CLÁUSULA 13 - LIMITAÇÃO DE RESPONSABILIDADE -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA DÉCIMA TERCEIRA - LIMITAÇÃO DE RESPONSABILIDADE</h4>
-                <p><strong>13.1.</strong> A responsabilidade total do CONTRATADO(A) por quaisquer danos diretos ficará limitada ao valor total deste contrato.</p>
-                <p><strong>13.2.</strong> As partes excluem reciprocamente a responsabilidade por danos indiretos, lucros cessantes ou danos emergentes.</p>
-            </div>
-
-            <!-- CLÁUSULA 14 - NÃO VÍNCULO EMPREGATÍCIO -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA DÉCIMA QUARTA - NÃO CONSTITUIÇÃO DE VÍNCULO EMPREGATÍCIO</h4>
-                <p><strong>14.1.</strong> Fica expressamente estabelecido que não há qualquer vínculo empregatício entre as partes, sendo este contrato de natureza estritamente civil-comercial.</p>
-                <p><strong>14.2.</strong> O CONTRATADO(A) atua como profissional autônomo, responsável por seus próprios encargos tributários e previdenciários.</p>
-            </div>
-
-            <!-- CLÁUSULA 15 - FORÇA MAIOR -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA DÉCIMA QUINTA - CASO FORTUITO E FORÇA MAIOR</h4>
-                <p><strong>15.1.</strong> As partes estarão isentas de responsabilidade pelo não cumprimento das obrigações quando decorrente de caso fortuito ou força maior.</p>
-                <p><strong>15.2.</strong> Consideram-se caso fortuito ou força maior: catástrofes naturais, guerras, atos de autoridade, greves, pandemias e outros eventos imprevisíveis.</p>
-            </div>
-
-            <!-- CLÁUSULA 16 - ELEIÇÃO DE FORO -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA DÉCIMA SEXTA - DO FORO</h4>
-                <p>Para dirimir quaisquer controvérsias decorrentes deste contrato, as partes elegem o foro da comarca de <strong>${contractCity}</strong>, com expressa renúncia a qualquer outro, por mais privilegiado que seja.</p>
-            </div>
-
-            <!-- CLÁUSULA 17 - DISPOSIÇÕES GERAIS -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA DÉCIMA SÉTIMA - DISPOSIÇÕES GERAIS</h4>
-                <p><strong>17.1.</strong> As eventuais alterações neste contrato somente produzirão efeitos se realizadas por escrito e assinadas por ambas as partes.</p>
-                <p><strong>17.2.</strong> A tolerância de qualquer das partes quanto ao descumprimento de obrigação não importará em novação ou renúncia de direitos.</p>
-                <p><strong>17.3.</strong> As cláusulas deste contrato são independentes, de modo que a nulidade de uma não afetará as demais.</p>
-            </div>
-
-            <!-- ÁREA DE ASSINATURAS MELHORADA -->
+            <!-- ÁREA DE ASSINATURAS -->
             <div class="signature-area">
-                <p>E por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor e forma, para um único efeito, na presença das testemunhas abaixo.</p>
+                <p>E por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor e forma.</p>
                 
                 <div class="signature-line-improved">
                     <div class="signature-box-improved">
@@ -1134,14 +1364,6 @@ function generateProfessionalContractPlus() {
                         <div class="signature-name">${contractorName}</div>
                         <div class="signature-role">CONTRATANTE</div>
                         <div class="signature-document">${contractorDoc.length === 11 ? 'CPF' : 'CNPJ'}: ${contractorDoc}</div>
-                        
-                        <!-- Testemunha 1 -->
-                        <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 10px;">
-                            <div style="height: 60px; border-bottom: 1px solid #000;"></div>
-                            <div class="signature-name">_________________________</div>
-                            <div class="signature-role">Testemunha</div>
-                            <div class="signature-document">CPF: __________________</div>
-                        </div>
                     </div>
                     
                     <div class="signature-box-improved">
@@ -1156,22 +1378,13 @@ function generateProfessionalContractPlus() {
                         <div class="signature-name">${contractedName}</div>
                         <div class="signature-role">CONTRATADO(A)</div>
                         <div class="signature-document">${contractedDoc.length === 11 ? 'CPF' : 'CNPJ'}: ${contractedDoc}</div>
-                        
-                        <!-- Testemunha 2 -->
-                        <div style="margin-top: 30px; border-top: 1px solid #ccc; padding-top: 10px;">
-                            <div style="height: 60px; border-bottom: 1px solid #000;"></div>
-                            <div class="signature-name">_________________________</div>
-                            <div class="signature-role">Testemunha</div>
-                            <div class="signature-document">CPF: __________________</div>
-                        </div>
                     </div>
                 </div>
 
-                <!-- RODAPÉ PROFISSIONAL -->
+                <!-- RODAPÉ -->
                 <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #000; text-align: center; font-size: 0.8rem; color: #666;">
-                    <p><strong>Contrato gerado eletronicamente por ContratoFácil</strong></p>
-                    <p>Documento juridicamente válido - Processo nº: CF${Date.now().toString().slice(-8)}</p>
-                    <p>Data e hora da geração: ${new Date().toLocaleString('pt-BR')}</p>
+                    <p><strong>Contrato gerado por ContratoFácil</strong></p>
+                    <p>Documento juridicamente válido</p>
                 </div>
             </div>
         </div>
@@ -1184,12 +1397,17 @@ function generateProfessionalContractPlus() {
 // ATUALIZAR FUNÇÃO PRINCIPAL DE PREVIEW
 // =============================================
 
-// Update contract preview - USAR ESTA VERSÃO MELHORADA
+// Update contract preview
 function updatePreview() {
     try {
         const contractPreview = document.getElementById('contractPreview');
         if (contractPreview) {
             contractPreview.innerHTML = generateProfessionalContractPlus();
+            
+            // Incrementar contador de visualizações
+            if (currentUser) {
+                incrementContractCount();
+            }
         }
     } catch (error) {
         console.error('Erro ao atualizar preview:', error);
@@ -1243,12 +1461,6 @@ function openPaymentModal(plan) {
         let cardUrl = '#';
         
         switch(plan) {
-            case 'free':
-                modalTitle.textContent = 'Teste Grátis - 7 Dias';
-                description = 'Plano Teste Grátis - 3 contratos profissionais por 7 dias';
-                modalPrice.textContent = 'Total: R$ 0,00 (Após 7 dias: R$ 10,99/mês)';
-                price = '0,00';
-                break;
             case 'avulsa':
                 modalTitle.textContent = 'Comprar Contrato Avulso';
                 description = '1 Contrato de Prestação de Serviços Personalizado';
@@ -1262,16 +1474,16 @@ function openPaymentModal(plan) {
                 description = 'Plano Básico - 5 contratos por mês';
                 modalPrice.textContent = 'Total: R$ 9,99/mês';
                 price = '9,99';
-                pixUrl = 'https://mpago.li/1LcKs1M';
-                cardUrl = 'https://mpago.li/1LcKs1M';
+                pixUrl = 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=c1073157a14d42759dd4bdc289e876e4';
+                cardUrl = 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=c1073157a14d42759dd4bdc289e876e4';
                 break;
             case 'profissional':
                 modalTitle.textContent = 'Assinar Plano Profissional';
                 description = 'Plano Profissional - Contratos ilimitados';
                 modalPrice.textContent = 'Total: R$ 29,99/mês';
                 price = '29,99';
-                pixUrl = 'https://mpago.li/1xTcy3g';
-                cardUrl = 'https://mpago.li/1xTcy3g';
+                pixUrl = 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=762ad37ac4344ac2b71741512b53272c';
+                cardUrl = 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=762ad37ac4344ac2b71741512b53272c';
                 break;
         }
         
@@ -1287,6 +1499,13 @@ function openPaymentModal(plan) {
                     setTimeout(() => {
                         updateUserPlan(plan);
                         showNotification(`🎉 Plano ${plan} ativado com sucesso!`);
+                        closePaymentModal();
+                    }, 2000);
+                } else {
+                    // Para contrato avulso, gerar download após pagamento
+                    setTimeout(() => {
+                        generateWordPlus();
+                        closePaymentModal();
                     }, 2000);
                 }
                 return true;
@@ -1299,6 +1518,13 @@ function openPaymentModal(plan) {
                     setTimeout(() => {
                         updateUserPlan(plan);
                         showNotification(`🎉 Plano ${plan} ativado com sucesso!`);
+                        closePaymentModal();
+                    }, 2000);
+                } else {
+                    // Para contrato avulso, gerar download após pagamento
+                    setTimeout(() => {
+                        generateWordPlus();
+                        closePaymentModal();
                     }, 2000);
                 }
                 return true;
@@ -1357,69 +1583,13 @@ function selectPayment(element, type) {
     }
 }
 
-// Função para ativar teste grátis
-function activateFreeTrial() {
-    if (!currentUser) {
-        showNotification('🔐 Faça login primeiro para ativar o teste grátis');
-        showLoginModal();
-        return;
-    }
-    
-    // Atualizar dados do usuário para plano free
-    updateUserPlan('free');
-    
-    showNotification('🎉 Teste grátis ativado! Você tem 7 dias gratuitos com 3 contratos profissionais.');
-    
-    // Redirecionar para o gerador de contratos
-    setTimeout(() => {
-        window.location.href = 'index.html#generator';
-    }, 2000);
-}
-
 // =============================================
 // SISTEMA DE DOWNLOAD E EXPORTAÇÃO
 // =============================================
 
-// Função para mostrar contrato em tela cheia
-function showContractFullscreen() {
-    if (!canGenerateContract()) {
-        return;
-    }
-    
-    const contractContent = generateProfessionalContractPlus();
-    
-    const fullscreenModal = document.createElement('div');
-    fullscreenModal.className = 'modal active';
-    fullscreenModal.style.zIndex = '3000';
-    fullscreenModal.innerHTML = `
-        <div class="modal-content" style="max-width: 90%; max-height: 90%;">
-            <div class="modal-header">
-                <h3>Contrato Gerado - ContratoFácil</h3>
-                <button class="close-modal" onclick="this.closest('.modal').remove()">&times;</button>
-            </div>
-            <div class="modal-body" style="padding: 0;">
-                <div class="contract-fullscreen">
-                    ${contractContent}
-                </div>
-                <div style="padding: 1.5rem; text-align: center; border-top: 1px solid #e0e0e0;">
-                    <button class="btn btn-success" onclick="generateWordPlus()">
-                        <i class="fas fa-file-word"></i> Baixar em Word
-                    </button>
-                    <button class="btn" onclick="this.closest('.modal').remove()" style="margin-left: 1rem;">
-                        <i class="fas fa-times"></i> Fechar
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(fullscreenModal);
-    document.body.style.overflow = 'hidden';
-}
-
 // Função para gerar Word - VERSÃO MELHORADA
 function generateWordPlus() {
-    if (!canGenerateContract()) {
+    if (!canDownloadContract()) {
         return;
     }
     
@@ -1559,60 +1729,126 @@ function generateWordPlus() {
     }
 }
 
-// Função para mostrar opções de download
-function showDownloadOptions() {
-    if (!canGenerateContract()) {
-        return;
-    }
-    
-    const modal = document.getElementById('paymentModal');
-    if (!modal) return;
+// =============================================
+// MOBILE OPTIMIZATIONS
+// =============================================
 
-    const modalBody = modal.querySelector('.modal-body');
-    if (!modalBody) return;
-
-    modalBody.innerHTML = `
-        <div style="text-align: center;">
-            <h3 style="color: var(--success); margin-bottom: 1rem;">
-                <i class="fas fa-check-circle"></i> Contrato Gerado com Sucesso!
-            </h3>
-            <p>Seu contrato está pronto para visualização e download.</p>
-            
-            <div class="download-options">
-                <button class="btn btn-secondary" onclick="showContractFullscreen()">
-                    <i class="fas fa-eye"></i> Visualizar Contrato
-                </button>
-                <button class="btn btn-secondary" onclick="generateWordPlus()">
-                    <i class="fas fa-file-word"></i> Baixar Word
-                </button>
-            </div>
-            
-            <button class="btn btn-success" onclick="closePaymentModal()" style="margin-top: 1.5rem; width: 100%;">
-                <i class="fas fa-check"></i> Concluir
-            </button>
-        </div>
-    `;
+// Detect mobile device
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+           window.innerWidth < 768;
 }
 
-function processPayment() {
-    const selectedPayment = document.querySelector('.payment-option.selected');
-    if (!selectedPayment) {
-        showNotification('❌ Selecione uma forma de pagamento');
-        return;
-    }
-
-    showNotification('💳 Processando pagamento...');
-    
-    setTimeout(() => {
-        if (selectedPlan === 'free') {
-            showNotification('🎉 Teste grátis ativado! Você tem 7 dias gratuitos.');
-        } else {
-            showNotification('🎉 Pagamento aprovado com sucesso!');
+// Optimize for mobile on load
+function optimizeForMobile() {
+    if (isMobileDevice()) {
+        document.body.classList.add('mobile-device');
+        
+        // Adjust video autoplay for mobile
+        const video = document.querySelector('.intro-video');
+        if (video) {
+            video.removeAttribute('autoplay');
+            video.setAttribute('playsinline', '');
+            video.setAttribute('controls', '');
         }
         
-        showDownloadOptions();
+        // Improve touch interactions
+        improveTouchInteractions();
+    }
+}
+
+// Improve touch interactions
+function improveTouchInteractions() {
+    // Add touch-friendly class to interactive elements
+    const touchElements = document.querySelectorAll('.btn, .nav-menu a, .signature-option');
+    touchElements.forEach(element => {
+        element.classList.add('touch-friendly');
+    });
+    
+    // Prevent zoom on inputs
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('touchstart', function(e) {
+            this.style.fontSize = '16px'; // Prevent zoom
+        });
+    });
+}
+
+// Enhanced signature system for mobile
+function initMobileSignatureSystem() {
+    if (!isMobileDevice()) return;
+    
+    const signatureCanvases = document.querySelectorAll('canvas');
+    signatureCanvases.forEach(canvas => {
+        canvas.style.touchAction = 'none';
         
-    }, 2000);
+        // Improve touch drawing
+        canvas.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousedown', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }, { passive: false });
+        
+        canvas.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent('mousemove', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }, { passive: false });
+    });
+}
+
+// Mobile-friendly notifications
+function showMobileNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification mobile-notification';
+    notification.innerHTML = `
+        <div style="text-align: center; padding: 1rem;">
+            <strong>${message}</strong>
+        </div>
+    `;
+    
+    // Mobile-specific styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 70px;
+        left: 10px;
+        right: 10px;
+        background: var(--success);
+        color: white;
+        padding: 0;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        z-index: 10000;
+        max-width: none;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: all 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+    }, 10);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+            if (document.body.contains(notification)) {
+                document.body.removeChild(notification);
+            }
+        }, 300);
+    }, 4000);
 }
 
 // =============================================
@@ -1648,41 +1884,78 @@ function showNotification(message) {
     }, 5000);
 }
 
-// Fechar modal ao clicar fora
-document.addEventListener('click', function(event) {
-    const modal = document.getElementById('paymentModal');
-    if (event.target === modal) {
-        closePaymentModal();
-    }
+// Função para formatar CPF/CNPJ
+function formatCPFCNPJ(value) {
+    const cleanValue = value.replace(/\D/g, '');
     
-    const loginModal = document.getElementById('loginModal');
-    if (event.target === loginModal) {
-        closeLoginModal();
+    if (cleanValue.length <= 11) {
+        // CPF
+        return cleanValue.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    } else {
+        // CNPJ
+        return cleanValue.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
     }
-});
+}
 
-// Tecla ESC para fechar modal
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closePaymentModal();
-        closeLoginModal();
-    }
-});
+// Função para validar email
+function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
 
-// Prevenir cópia do conteúdo do contrato
-document.addEventListener('copy', function(e) {
-    const contractPreview = document.getElementById('contractPreview');
-    if (contractPreview && contractPreview.contains(e.target)) {
-        e.preventDefault();
-        showNotification('❌ Cópia do conteúdo do contrato não é permitida');
-    }
-});
+// Função para gerar ID único
+function generateUniqueId() {
+    return 'id_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
+}
 
-// Prevenir clique direito no contrato
-document.addEventListener('contextmenu', function(e) {
-    const contractPreview = document.getElementById('contractPreview');
-    if (contractPreview && contractPreview.contains(e.target)) {
-        e.preventDefault();
-        showNotification('❌ Ação não permitida no contrato');
+// Função para debounce (otimização de performance)
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Aplicar debounce no updatePreview para mobile
+if (isMobileDevice()) {
+    window.updatePreview = debounce(updatePreview, 500);
+}
+
+// =============================================
+// EXPORTAÇÃO DE FUNÇÕES GLOBAIS
+// =============================================
+
+// Exportar funções para o escopo global
+window.scrollToGenerator = scrollToGenerator;
+window.showUpgradeModal = showUpgradeModal;
+window.handleGoogleSignIn = handleGoogleSignIn;
+window.showLoginModal = showLoginModal;
+window.closeLoginModal = closeLoginModal;
+window.showUserMenu = showUserMenu;
+window.signOut = signOut;
+window.selectSignatureOption = selectSignatureOption;
+window.clearSignature = clearSignature;
+window.confirmSignature = confirmSignature;
+window.toggleFAQ = toggleFAQ;
+window.updatePreview = updatePreview;
+window.openPaymentModal = openPaymentModal;
+window.closePaymentModal = closePaymentModal;
+window.selectPayment = selectPayment;
+window.generateWordPlus = generateWordPlus;
+window.canDownloadContract = canDownloadContract;
+
+console.log('📦 Todas as funções JavaScript carregadas com sucesso!');
+
+// Inicialização final
+setTimeout(() => {
+    if (currentUser) {
+        console.log(`👤 Usuário logado: ${currentUser.name}`);
+    } else {
+        console.log('🔒 Usuário não logado - Modo visualização ativo');
     }
-});
+}, 1000);
