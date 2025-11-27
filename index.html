@@ -56,6 +56,35 @@
         </div>
     </header>
 
+    <!-- Seção do Vídeo Persuasivo -->
+    <section class="video-section" id="videoSection">
+        <div class="container">
+            <div class="video-container">
+                <h2>⚠️ ATENÇÃO: Não Assine Nenhum Contrato Sem Ver Isso!</h2>
+                <div class="video-wrapper">
+                    <video controls autoplay muted class="intro-video" poster="video-poster.jpg">
+                        <source src="video.mp4" type="video/mp4">
+                        Seu navegador não suporta o elemento de vídeo.
+                    </video>
+                </div>
+                <div class="video-benefits">
+                    <h3>O que você PERDE sem um contrato profissional:</h3>
+                    <ul>
+                        <li>❌ <strong>Proteção Jurídica</strong> - Risco de processos</li>
+                        <li>❌ <strong>Pagamentos Garantidos</strong> - Pode trabalhar e não receber</li>
+                        <li>❌ <strong>Clareza nas Obrigações</strong> - Confusão e desentendimentos</li>
+                        <li>❌ <strong>Tempo e Dinheiro</strong> - Resolver problemas judiciais</li>
+                    </ul>
+                    <div class="video-cta">
+                        <button class="btn btn-large" onclick="scrollToGenerator()">
+                            <i class="fas fa-shield-alt"></i> Criar Meu Contrato Seguro
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="container">
@@ -119,7 +148,7 @@
                         <li><i class="fas fa-check"></i> Salve seus contratos na nuvem</li>
                         <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
                         <li><i class="fas fa-check"></i> Histórico de contratos gerados</li>
-                        <li><i class="fas fa-check"></i> Teste grátis por 7 dias</li>
+                        <li><i class="fas fa-check"></i> Visualização gratuita de contratos</li>
                     </ul>
                 </div>
                 <div class="login-box">
@@ -163,7 +192,7 @@
                         <p id="userEmail"></p>
                         <div class="user-plan">
                             <span class="plan-badge" id="userPlan">Plano Gratuito</span>
-                            <span class="plan-expiry" id="planExpiry">Expira em 7 dias</span>
+                            <span class="plan-expiry" id="planExpiry">Visualização Gratuita</span>
                         </div>
                     </div>
                 </div>
@@ -177,14 +206,14 @@
             <div class="user-stats">
                 <div class="stat-card">
                     <div class="stat-number" id="contractsCount">0</div>
-                    <div class="stat-label">Contratos Gerados</div>
+                    <div class="stat-label">Contratos Visualizados</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="remainingContracts">3</div>
-                    <div class="stat-label">Contratos Restantes</div>
+                    <div class="stat-number" id="remainingContracts">Ilimitado</div>
+                    <div class="stat-label">Visualizações Restantes</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="daysLeft">7</div>
+                    <div class="stat-number" id="daysLeft">∞</div>
                     <div class="stat-label">Dias Restantes</div>
                 </div>
             </div>
@@ -199,12 +228,13 @@
                 <p>Preencha os dados abaixo e visualize em tempo real seu contrato profissional</p>
             </div>
             
+            
             <!-- Aviso de login necessário -->
             <div id="loginRequired" class="login-required" style="display: none;">
                 <div class="login-required-content">
                     <i class="fas fa-lock"></i>
                     <h3>Login Necessário</h3>
-                    <p>Faça login para criar e baixar contratos</p>
+                    <p>Faça login para criar e visualizar contratos</p>
                     <button class="btn-login" onclick="showLoginModal()">
                         <i class="fas fa-sign-in-alt"></i> Fazer Login
                     </button>
@@ -388,7 +418,7 @@
                             <i class="fas fa-eye"></i> Atualizar Visualização
                         </button>
                         <button class="btn btn-success" onclick="openPaymentModal('avulsa')">
-                            <i class="fas fa-shopping-cart"></i> Comprar Avulso - R$ 6,99
+                            <i class="fas fa-download"></i> Baixar Contrato - R$ 6,99
                         </button>
                     </div>
                 </div>
@@ -396,7 +426,8 @@
                 <!-- Preview Section -->
                 <div class="preview-section">
                     <div class="preview-header">
-                        <h3>Pré-visualização</h3>
+                        <h3>Pré-visualização do Seu Contrato</h3>
+                        <p class="preview-notice">✅ Visualização gratuita - Faça upgrade para baixar</p>
                     </div>
                     <div class="contract-preview" id="contractPreview">
                         <!-- CONTRATO PROFISSIONAL SERÁ INSERIDO AQUI VIA JAVASCRIPT -->
@@ -456,19 +487,6 @@
             <div class="modal-body">
                 <p id="modalPlanDescription">Plano selecionado</p>
                 <h4 id="modalPrice">Total: R$ 0,00</h4>
-                
-                <!-- BOTÃO DE TESTE -->
-                <div style="margin-bottom: 1.5rem; padding: 1rem; background: #e7f3ff; border-radius: 8px; border: 2px dashed #2c5aa0;">
-                    <h4 style="color: #2c5aa0; margin-bottom: 0.5rem; text-align: center;">
-                        <i class="fas fa-vial"></i> MODO TESTE
-                    </h4>
-                    <button class="btn" onclick="showDownloadOptions()" style="width: 100%; background: #2c5aa0;">
-                        <i class="fas fa-play-circle"></i> Testar Download (Sem Pagar)
-                    </button>
-                    <p style="font-size: 0.8rem; color: #666; text-align: center; margin-top: 0.5rem;">
-                        Use este botão para testar o sistema sem pagar
-                    </p>
-                </div>
                 
                 <div class="payment-options">
                     <div class="payment-option" onclick="selectPayment(this, 'pix')">
