@@ -34,75 +34,165 @@
     </header>
 
     <!-- Pricing Section -->
-    <section class="pricing" id="pricing" style="padding-top: 8rem;">
+    <section class="pricing" id="pricing" style="padding-top: 6rem; padding-bottom: 4rem;">
         <div class="container">
-            <div class="section-title">
-                <h2>Planos e Preços</h2>
-                <p>Escolha o plano ideal para suas necessidades</p>
+            <div class="section-title" style="margin-bottom: 3rem;">
+                <h2 style="font-size: 2rem;">Escolha Seu Plano</h2>
+                <p style="font-size: 1rem;">Planos flexíveis para todas as suas necessidades</p>
             </div>
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <div class="pricing-header">
-                        <div class="pricing-title">Teste Grátis</div>
-                        <div class="pricing-price">R$ 0</div>
-                        <div class="pricing-period">7 dias gratuitos</div>
-                        <small>*Após 7 dias: R$ 10,99/mês</small>
+
+            <!-- Grid de Planos Compacto -->
+            <div class="pricing-grid-compact" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                <!-- Plano Grátis -->
+                <div class="pricing-card-compact" style="background: white; border-radius: 12px; padding: 1.5rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; transition: all 0.3s ease;">
+                    <div style="margin-bottom: 1rem;">
+                        <div class="pricing-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 0.5rem; font-weight: 600;">Visualização Grátis</h3>
+                        <div style="font-size: 1.8rem; font-weight: 800; color: var(--dark); margin-bottom: 0.3rem;">R$ 0</div>
+                        <div style="font-size: 0.8rem; color: var(--gray);">para sempre</div>
                     </div>
-                    <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> 3 contratos profissionais</li>
-                        <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
-                        <li><i class="fas fa-check"></i> Download em PDF e Word</li>
-                        <li><i class="fas fa-check"></i> Suporte por email</li>
-                        <li class="disabled"><i class="fas fa-times"></i> Contratos ilimitados</li>
+                    
+                    <ul style="list-style: none; margin: 1.5rem 0; text-align: left; font-size: 0.85rem;">
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check" style="color: var(--success); font-size: 0.8rem;"></i>
+                            Visualização ilimitada
+                        </li>
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check" style="color: var(--success); font-size: 0.8rem;"></i>
+                            Todos os modelos
+                        </li>
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check" style="color: var(--success); font-size: 0.8rem;"></i>
+                            Pré-visualização
+                        </li>
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-times" style="color: var(--danger); font-size: 0.8rem;"></i>
+                            Download bloqueado
+                        </li>
                     </ul>
-                    <button class="btn" onclick="activateFreeTrial()">
-                        <i class="fas fa-play-circle"></i> Teste Grátis
+                    
+                    <button class="btn" onclick="showLoginModal()" style="width: 100%; padding: 0.7rem; font-size: 0.85rem; background: var(--gray);">
+                        <i class="fas fa-user-plus"></i> Criar Conta Grátis
                     </button>
                 </div>
 
-                <div class="pricing-card featured">
-                    <div class="pricing-header">
-                        <div class="pricing-title">Básico</div>
-                        <div class="pricing-price">R$ 9,99</div>
-                        <div class="pricing-period">por mês</div>
+                <!-- Plano Básico -->
+                <div class="pricing-card-compact featured" style="background: white; border-radius: 12px; padding: 1.5rem; text-align: center; box-shadow: 0 8px 32px rgba(44, 90, 160, 0.15); border: 2px solid var(--primary); transform: scale(1.02); position: relative; transition: all 0.3s ease;">
+                    <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.7rem; font-weight: bold;">
+                        💼 RECOMENDADO
                     </div>
-                    <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> Até 5 contratos/mês</li>
-                        <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
-                        <li><i class="fas fa-check"></i> Download em PDF e Word</li>
-                        <li><i class="fas fa-check"></i> Suporte por email</li>
-                        <li class="disabled"><i class="fas fa-times"></i> Contratos ilimitados</li>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <div class="pricing-icon" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0.5rem auto 1rem;">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 0.5rem; font-weight: 600;">Plano Básico</h3>
+                        <div style="font-size: 1.8rem; font-weight: 800; color: var(--dark); margin-bottom: 0.3rem;">R$ 9,99</div>
+                        <div style="font-size: 0.8rem; color: var(--gray);">por mês</div>
+                    </div>
+                    
+                    <ul style="list-style: none; margin: 1.5rem 0; text-align: left; font-size: 0.85rem;">
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check" style="color: var(--success); font-size: 0.8rem;"></i>
+                            5 contratos/mês
+                        </li>
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check" style="color: var(--success); font-size: 0.8rem;"></i>
+                            Download Word + PDF
+                        </li>
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check" style="color: var(--success); font-size: 0.8rem;"></i>
+                            Todos os modelos
+                        </li>
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check" style="color: var(--success); font-size: 0.8rem;"></i>
+                            Suporte por email
+                        </li>
                     </ul>
-                    <button class="btn" onclick="openPaymentModal('basico')">
-                        <i class="fas fa-crown"></i> Assinar Agora
+                    
+                    <button class="btn" onclick="openPaymentModal('basico')" style="width: 100%; padding: 0.7rem; font-size: 0.85rem; background: var(--primary);">
+                        <i class="fas fa-rocket"></i> Assinar Agora
                     </button>
-                    <div style="margin-top: 0.5rem;">
-                        <button class="btn-login" onclick="activateFreeTrial()" style="width: 100%;">
-                            <i class="fas fa-play-circle"></i> Teste Grátis
-                        </button>
-                    </div>
                 </div>
 
-                <div class="pricing-card">
-                    <div class="pricing-header">
-                        <div class="pricing-title">Profissional</div>
-                        <div class="pricing-price">R$ 29,99</div>
-                        <div class="pricing-period">por mês</div>
+                <!-- Plano Profissional -->
+                <div class="pricing-card-compact" style="background: white; border-radius: 12px; padding: 1.5rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e0e0e0; transition: all 0.3s ease;">
+                    <div style="margin-bottom: 1rem;">
+                        <div class="pricing-icon" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 0.5rem; font-weight: 600;">Profissional</h3>
+                        <div style="font-size: 1.8rem; font-weight: 800; color: var(--dark); margin-bottom: 0.3rem;">R$ 29,99</div>
+                        <div style="font-size: 0.8rem; color: var(--gray);">por mês</div>
                     </div>
-                    <ul class="pricing-features">
-                        <li><i class="fas fa-check"></i> Contratos ilimitados</li>
-                        <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
-                        <li><i class="fas fa-check"></i> Download em PDF e Word</li>
-                        <li><i class="fas fa-check"></i> Suporte prioritário</li>
-                        <li><i class="fas fa-check"></i> Armazenamento na nuvem</li>
+                    
+                    <ul style="list-style: none; margin: 1.5rem 0; text-align: left; font-size: 0.85rem;">
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check" style="color: var(--success); font-size: 0.8rem;"></i>
+                            Contratos ilimitados
+                        </li>
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check" style="color: var(--success); font-size: 0.8rem;"></i>
+                            Download Word + PDF
+                        </li>
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check" style="color: var(--success); font-size: 0.8rem;"></i>
+                            Suporte prioritário
+                        </li>
+                        <li style="padding: 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-check" style="color: var(--success); font-size: 0.8rem;"></i>
+                            Armazenamento
+                        </li>
                     </ul>
-                    <button class="btn" onclick="openPaymentModal('profissional')">
-                        <i class="fas fa-star"></i> Assinar Agora
+                    
+                    <button class="btn" onclick="openPaymentModal('profissional')" style="width: 100%; padding: 0.7rem; font-size: 0.85rem; background: var(--success);">
+                        <i class="fas fa-gem"></i> Assinar Agora
                     </button>
-                    <div style="margin-top: 0.5rem;">
-                        <button class="btn-login" onclick="activateFreeTrial()" style="width: 100%;">
-                            <i class="fas fa-play-circle"></i> Teste Grátis
-                        </button>
+                </div>
+            </div>
+
+            <!-- Comparação Rápida -->
+            <div class="quick-comparison" style="margin-top: 3rem; background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <h3 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary); font-size: 1.1rem;">Comparação Rápida</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; font-size: 0.8rem; text-align: center;">
+                    <div style="font-weight: bold; padding: 0.8rem; border-bottom: 2px solid var(--primary);">Recurso</div>
+                    <div style="font-weight: bold; padding: 0.8rem; border-bottom: 2px solid var(--primary);">Grátis</div>
+                    <div style="font-weight: bold; padding: 0.8rem; border-bottom: 2px solid var(--primary);">Básico</div>
+                    <div style="font-weight: bold; padding: 0.8rem; border-bottom: 2px solid var(--primary);">Profissional</div>
+                    
+                    <div style="padding: 0.8rem; text-align: left; border-bottom: 1px solid #eee;">Visualização</div>
+                    <div style="padding: 0.8rem; border-bottom: 1px solid #eee;">✅</div>
+                    <div style="padding: 0.8rem; border-bottom: 1px solid #eee;">✅</div>
+                    <div style="padding: 0.8rem; border-bottom: 1px solid #eee;">✅</div>
+                    
+                    <div style="padding: 0.8rem; text-align: left; border-bottom: 1px solid #eee;">Download</div>
+                    <div style="padding: 0.8rem; border-bottom: 1px solid #eee;">❌</div>
+                    <div style="padding: 0.8rem; border-bottom: 1px solid #eee;">5/mês</div>
+                    <div style="padding: 0.8rem; border-bottom: 1px solid #eee;">Ilimitado</div>
+                    
+                    <div style="padding: 0.8rem; text-align: left; border-bottom: 1px solid #eee;">Word Editável</div>
+                    <div style="padding: 0.8rem; border-bottom: 1px solid #eee;">❌</div>
+                    <div style="padding: 0.8rem; border-bottom: 1px solid #eee;">✅</div>
+                    <div style="padding: 0.8rem; border-bottom: 1px solid #eee;">✅</div>
+                </div>
+            </div>
+
+            <!-- Garantia -->
+            <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px;">
+                <div style="display: inline-flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-shield-alt" style="color: var(--success); font-size: 1.2rem;"></i>
+                        <span style="font-size: 0.9rem; font-weight: 600;">7 dias de garantia</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-lock" style="color: var(--primary); font-size: 1.2rem;"></i>
+                        <span style="font-size: 0.9rem; font-weight: 600;">Pagamento seguro</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-clock" style="color: var(--secondary); font-size: 1.2rem;"></i>
+                        <span style="font-size: 0.9rem; font-weight: 600;">Cancelamento fácil</span>
                     </div>
                 </div>
             </div>
@@ -129,7 +219,6 @@
                 <div class="footer-column">
                     <h3>Suporte</h3>
                     <ul>
-                        <li><a href="faq.html">FAQ</a></li>
                         <li><a href="#">Contato</a></li>
                         <li><a href="#">Política de Privacidade</a></li>
                         <li><a href="#">Termos de Uso</a></li>
@@ -199,6 +288,44 @@
                             <i class="fas fa-credit-card"></i> Pagar com Cartão
                         </a>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Entrar no ContratoFácil</h3>
+                <button class="close-modal" onclick="closeLoginModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="login-modal-content">
+                    <h4>Entre com Google</h4>
+                    <p>É rápido, fácil e seguro</p>
+                    
+                    <div id="g_id_onload_modal"
+                         data-client_id="395303260900-usl0idov344ud7qo9ptr82mnmqfidebd.apps.googleusercontent.com"
+                         data-context="signin"
+                         data-ux_mode="popup"
+                         data-callback="handleGoogleSignIn"
+                         data-auto_prompt="false">
+                    </div>
+
+                    <div class="g_id_signin"
+                         data-type="standard"
+                         data-shape="rectangular"
+                         data-theme="filled_blue"
+                         data-text="signin_with"
+                         data-size="large"
+                         data-logo_alignment="left"
+                         data-width="300">
+                    </div>
+                    
+                    <p class="login-terms">
+                        Ao entrar, você concorda com nossos <a href="#">Termos de Serviço</a> e <a href="#">Política de Privacidade</a>
+                    </p>
                 </div>
             </div>
         </div>
