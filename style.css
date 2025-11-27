@@ -1142,7 +1142,6 @@ footer {
         height: 80px !important;
     }
 }
-
 /* Estilo para contrato em tela cheia */
 .contract-fullscreen {
     background: white;
@@ -1252,4 +1251,476 @@ footer {
 .contract-fullscreen .signature-document {
     font-size: 0.9em;
     color: #555;
+}
+/* Estilo para contrato em tela cheia */
+.contract-fullscreen {
+    background: white;
+    padding: 2rem;
+    font-family: 'Times New Roman', Times, serif;
+    line-height: 1.6;
+    font-size: 14px;
+    color: #000;
+    max-height: 70vh;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+}
+
+.contract-fullscreen .contract-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #000;
+}
+
+.contract-fullscreen .contract-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.contract-fullscreen .contract-intro {
+    margin-bottom: 1.5rem;
+    text-align: justify;
+}
+
+.contract-fullscreen .contract-body {
+    font-size: 13px;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+.contract-fullscreen .contract-clause {
+    margin-bottom: 20px;
+}
+
+.contract-fullscreen .contract-clause h4 {
+    font-size: 13px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #000;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 3px;
+}
+
+.contract-fullscreen .contract-clause p {
+    margin-bottom: 10px;
+    text-indent: 20px;
+}
+
+.contract-fullscreen .contract-clause ol {
+    margin: 12px 0;
+    padding-left: 30px;
+}
+
+.contract-fullscreen .contract-clause li {
+    margin-bottom: 6px;
+    line-height: 1.5;
+}
+
+.contract-fullscreen .signature-area {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #000;
+}
+
+.contract-fullscreen .signature-line-improved {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #000;
+}
+
+.contract-fullscreen .signature-box-improved {
+    text-align: center;
+    padding: 1rem;
+}
+
+.contract-fullscreen .signature-space {
+    border-top: 1px solid #000;
+    margin: 2rem 0 1rem 0;
+    padding-top: 0.5rem;
+    font-weight: bold;
+}
+
+.contract-fullscreen .signature-name {
+    margin-top: 0.5rem;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.contract-fullscreen .signature-role {
+    font-style: italic;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.contract-fullscreen .signature-document {
+    font-size: 0.9em;
+    color: #555;
+}
+/* Login Section */
+.login-promo {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 0;
+}
+
+.login-promo-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+}
+
+.login-info h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.login-info p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.9;
+}
+
+.login-info ul {
+    list-style: none;
+}
+
+.login-info li {
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.login-info li i {
+    color: #4ade80;
+}
+
+.login-box {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    color: var(--dark);
+    box-shadow: var(--shadow);
+}
+
+.login-box h3 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.login-box p {
+    color: var(--gray);
+    margin-bottom: 1.5rem;
+}
+
+.login-terms {
+    font-size: 0.8rem;
+    margin-top: 1.5rem;
+    color: var(--gray);
+}
+
+.login-terms a {
+    color: var(--primary);
+}
+
+/* User Dashboard */
+.user-dashboard {
+    background: var(--light);
+    padding: 3rem 0;
+}
+
+.user-welcome {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid var(--primary);
+}
+
+.user-details h2 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.user-details p {
+    color: var(--gray);
+    margin-bottom: 0.5rem;
+}
+
+.user-plan {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.plan-badge {
+    background: var(--primary);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.plan-expiry {
+    color: var(--gray);
+    font-size: 0.8rem;
+}
+
+.user-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--gray);
+    font-size: 0.9rem;
+}
+
+/* Login Required */
+.login-required {
+    background: white;
+    padding: 3rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.login-required-content i {
+    font-size: 3rem;
+    color: var(--gray);
+    margin-bottom: 1rem;
+}
+
+.login-required-content h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.login-required-content p {
+    color: var(--gray);
+    margin-bottom: 1.5rem;
+}
+
+/* Login Modal */
+.login-modal-content {
+    text-align: center;
+    padding: 1rem;
+}
+
+.login-modal-content h4 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.login-modal-content p {
+    color: var(--gray);
+    margin-bottom: 1.5rem;
+}
+
+/* User Menu */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .login-promo-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .user-welcome {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .user-plan {
+        justify-content: center;
+    }
+    
+    .user-stats {
+        grid-template-columns: 1fr;
+    }
+}
+/* Adicione ao final do seu style.css */
+
+/* User Menu in Navigation */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.user-menu:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.user-menu i {
+    font-size: 1rem;
+}
+
+/* Login Required Message */
+.login-required {
+    background: white;
+    padding: 3rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.login-required-content i {
+    font-size: 3rem;
+    color: var(--gray);
+    margin-bottom: 1rem;
+}
+
+.login-required-content h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.login-required-content p {
+    color: var(--gray);
+    margin-bottom: 1.5rem;
+}
+
+/* User Dashboard Improvements */
+.user-dashboard {
+    background: var(--light);
+    padding: 3rem 0;
+}
+
+.user-welcome {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 2rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid var(--primary);
+    object-fit: cover;
+}
+
+.user-details h2 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.user-details p {
+    color: var(--gray);
+    margin-bottom: 0.5rem;
+}
+
+.user-plan {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.plan-badge {
+    background: var(--primary);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.plan-expiry {
+    color: var(--gray);
+    font-size: 0.8rem;
+}
+
+.user-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--gray);
+    font-size: 0.9rem;
 }
