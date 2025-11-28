@@ -2073,3 +2073,375 @@ footer {
 .pricing-card-compact:active {
     transform: scale(0.98);
 }
+
+/* ===== NOVOS ESTILOS PARA BARRA DE STATUS ===== */
+.status-bar {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 0.8rem 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.status-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.status-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-info i {
+    font-size: 1rem;
+}
+
+.status-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-upgrade {
+    background: var(--secondary);
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.btn-upgrade:hover {
+    background: #e55a00;
+    transform: translateY(-1px);
+}
+
+/* ===== ESTILOS PARA HERO SECTION ===== */
+.hero {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><polygon fill="rgba(255,255,255,0.05)" points="0,1000 1000,0 1000,1000"/></svg>');
+    background-size: cover;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* ===== ESTILOS PARA FEATURE CARDS MELHORADAS ===== */
+.feature-card {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.feature-card:hover::before {
+    left: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+/* ===== ESTILOS PARA VIDEO SECTION ===== */
+.video-section {
+    position: relative;
+}
+
+.video-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><polygon fill="rgba(0,0,0,0.1)" points="0,0 1000,1000 0,1000"/></svg>');
+    background-size: cover;
+}
+
+/* ===== ESTILOS RESPONSIVOS PARA BARRA DE STATUS ===== */
+@media (max-width: 768px) {
+    .status-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .status-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .hero h1 {
+        font-size: 2.2rem !important;
+    }
+    
+    .hero p {
+        font-size: 1.1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.8rem !important;
+    }
+    
+    .hero-stats {
+        gap: 1.5rem !important;
+    }
+    
+    .stat {
+        font-size: 0.8rem;
+    }
+}
+
+/* ===== ESTILOS PARA MODAL DE CONTATO ===== */
+.contact-modal .modal-content {
+    max-width: 500px;
+}
+
+.contact-modal .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.contact-modal label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.contact-modal input,
+.contact-modal textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.contact-modal input:focus,
+.contact-modal textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+}
+
+.contact-modal textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* ===== ANIMAÇÕES ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feature-card {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.feature-card:nth-child(1) { animation-delay: 0.1s; }
+.feature-card:nth-child(2) { animation-delay: 0.2s; }
+.feature-card:nth-child(3) { animation-delay: 0.3s; }
+.feature-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* ===== MELHORIAS DE ACESSIBILIDADE ===== */
+@media (prefers-reduced-motion: reduce) {
+    .feature-card,
+    .btn,
+    .status-bar {
+        transition: none;
+        animation: none;
+    }
+}
+
+/* ===== ESTILOS PARA CONTRATO SEGURO ===== */
+.contract-secure-view {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 2rem;
+    margin: 2rem 0;
+    position: relative;
+}
+
+.contract-protection {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(0,0,0,0.02) 10px,
+        rgba(0,0,0,0.02) 20px
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+.contract-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 4rem;
+    color: rgba(0,0,0,0.03);
+    font-weight: bold;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.contract-content {
+    position: relative;
+    z-index: 3;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Prevenir seleção de texto */
+.contract-content * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Prevenir arrastar imagens */
+.contract-content img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+}
+/* ===== ESTILOS PARA BOTÕES NOVOS ===== */
+.btn-secure {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.btn-secure:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-2px);
+}
+
+/* ===== ESTILOS PARA FORMULÁRIO DE CONTATO ===== */
+.contact-modal .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.contact-modal label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--dark);
+    font-size: 0.9rem;
+}
+
+.contact-modal input,
+.contact-modal textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: var(--transition);
+    background: white;
+}
+
+.contact-modal input:focus,
+.contact-modal textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+}
+
+.contact-modal textarea {
+    resize: vertical;
+    min-height: 120px;
+    font-family: inherit;
+}
+
+/* ===== RESPONSIVIDADE PARA NOVOS ELEMENTOS ===== */
+@media (max-width: 768px) {
+    .status-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .status-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .security-features {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-stats {
+        gap: 1.5rem !important;
+    }
+}
+
+/* ===== ANIMAÇÕES ADICIONAIS ===== */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.btn-secure {
+    animation: pulse 2s infinite;
+}
+
+.feature-card:hover .feature-icon {
+    animation: pulse 0.5s ease;
+}
