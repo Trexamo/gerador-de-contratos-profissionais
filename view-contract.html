@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualização Segura - ContratoFácil</title>
+    <link rel="icon" href="logo.jpg" type="image/jpeg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .secure-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .security-header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .security-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .security-feature {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .view-only-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            color: #856404;
+        }
+        
+        .protection-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        .protection-message {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="logo.jpg" alt="ContratoFácil" class="logo-img">
+                    <span>ContratoFácil</span>
+                </div>
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#generator">Criar Contrato</a></li>
+                        <li><a href="planos.html">Planos</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </nav>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <a href="index.html#generator" class="btn mobile-hidden">Criar Contrato</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Visualização Segura -->
+    <section style="padding: 6rem 0 2rem;">
+        <div class="container">
+            <div class="secure-container">
+                <!-- Cabeçalho de Segurança -->
+                <div class="security-header">
+                    <h1><i class="fas fa-shield-alt"></i> Visualização Segura</h1>
+                    <p>Este contrato está protegido contra cópia e download não autorizado</p>
+                </div>
+
+                <!-- Recursos de Segurança -->
+                <div class="security-features">
+                    <div class="security-feature">
+                        <i class="fas fa-ban" style="color: #ff6b6b; font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                        <h4>Download Bloqueado</h4>
+                        <p style="font-size: 0.8rem; color: #666;">Impedido por segurança</p>
+                    </div>
+                    <div class="security-feature">
+                        <i class="fas fa-copy" style="color: #ff9ff3; font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                        <h4>Cópia Desativada</h4>
+                        <p style="font-size: 0.8rem; color: #666;">Texto protegido</p>
+                    </div>
+                    <div class="security-feature">
+                        <i class="fas fa-print" style="color: #f368e0; font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                        <h4>Impressão Restrita</h4>
+                        <p style="font-size: 0.8rem; color: #666;">Impressão bloqueada</p>
+                    </div>
+                    <div class="security-feature">
+                        <i class="fas fa-eye" style="color: #00d2d3; font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                        <h4>Apenas Visualização</h4>
+                        <p style="font-size: 0.8rem; color: #666;">Modo seguro ativo</p>
+                    </div>
+                </div>
+
+                <!-- Aviso de Apenas Visualização -->
+                <div class="view-only-notice">
+                    <h4><i class="fas fa-info-circle"></i> Modo de Visualização</h4>
+                    <p>Esta é uma visualização segura do contrato. Para baixar ou editar, faça upgrade para um plano pago.</p>
+                    <button class="btn" onclick="openPaymentModal('avulsa')" style="margin-top: 0.5rem;">
+                        <i class="fas fa-download"></i> Desbloquear Download - R$ 6,99
+                    </button>
+                </div>
+
+                <!-- Contrato Protegido -->
+                <div class="contract-secure-view">
+                    <div class="contract-protection"></div>
+                    <div class="contract-watermark">CONTRATO FÁCIL - VERSÃO SEGURA</div>
+                    
+                    <div class="contract-content" id="secureContractContent">
+                        <!-- O contrato será carregado aqui via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Ações -->
+                <div class="actions" style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
+                    <button class="btn" onclick="attemptPrint()">
+                        <i class="fas fa-print"></i> Tentar Imprimir
+                    </button>
+                    <button class="btn" onclick="attemptCopy()">
+                        <i class="fas fa-copy"></i> Tentar Copiar
+                    </button>
+                    <button class="btn btn-success" onclick="openPaymentModal('avulsa')">
+                        <i class="fas fa-download"></i> Desbloquear Download - R$ 6,99
+                    </button>
+                    <a href="index.html#generator" class="btn">
+                        <i class="fas fa-edit"></i> Criar Novo Contrato
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overlay de Proteção -->
+    <div class="protection-overlay" id="protectionOverlay">
+        <div class="protection-message">
+            <i class="fas fa-lock" style="font-size: 3rem; color: #ff6b6b; margin-bottom: 1rem;"></i>
+            <h3>Recurso Bloqueado</h3>
+            <p>Esta função está disponível apenas para usuários com planos pagos.</p>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center;">
+                <button class="btn" onclick="closeProtectionOverlay()">
+                    <i class="fas fa-times"></i> Fechar
+                </button>
+                <button class="btn btn-success" onclick="openPaymentModal('avulsa')">
+                    <i class="fas fa-crown"></i> Fazer Upgrade
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>ContratoFácil</h3>
+                    <p>Criando contratos profissionais de forma simples e segura desde 2024.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#generator">Criar Contrato</a></li>
+                        <li><a href="planos.html">Planos</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Suporte</h3>
+                    <ul>
+                        <li><a href="#" onclick="showContactModal()">Contato</a></li>
+                        <li><a href="politica-de-privacidade.html">Política de Privacidade</a></li>
+                        <li><a href="termos-de-uso.html">Termos de Uso</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contato</h3>
+                    <ul>
+                        <li><a href="https://wa.me/556299290737?text=Olá! Gostaria de mais informações sobre o ContratoFácil" target="_blank"><i class="fab fa-whatsapp"></i> (62) 99290-0737</a></li>
+                        <li><i class="fas fa-map-marker-alt"></i> Goiânia, GO</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 ContratoFácil. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="paymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Desbloquear Contrato</h3>
+                <button class="close-modal" onclick="closePaymentModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Para baixar este contrato, escolha uma opção:</p>
+                
+                <div class="upgrade-options" style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin: 1.5rem 0;">
+                    <div class="upgrade-option featured" style="background: white; border: 2px solid var(--primary); border-radius: 10px; padding: 1.5rem; text-align: center;">
+                        <div class="option-header">
+                            <h5 style="color: var(--primary); margin-bottom: 0.5rem;">CONTRATO AVULSO</h5>
+                            <div class="price" style="font-size: 2rem; font-weight: 800; color: var(--dark);">R$ 6,99</div>
+                            <div class="period" style="color: var(--gray);">apenas este contrato</div>
+                        </div>
+                        <ul style="list-style: none; margin: 1rem 0; text-align: left;">
+                            <li style="padding: 0.3rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-check" style="color: var(--success);"></i> Download em Word
+                            </li>
+                            <li style="padding: 0.3rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-check" style="color: var(--success);"></i> Formato editável
+                            </li>
+                            <li style="padding: 0.3rem 0; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-check" style="color: var(--success);"></i> Reutilizável
+                            </li>
+                        </ul>
+                        <button class="btn btn-success" onclick="processPayment('avulsa')" style="width: 100%;">
+                            <i class="fas fa-bolt"></i> Comprar Agora
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="risk-warning" style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 1rem; margin-top: 1rem;">
+                    <p style="margin: 0; color: #856404; font-size: 0.9rem;">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        <strong>Não arrisque:</strong> Um contrato profissional pode evitar prejuízos muito maiores.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carregar contrato seguro
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSecureContract();
+            setupProtection();
+        });
+
+        function loadSecureContract() {
+            // Recuperar dados do contrato da URL ou localStorage
+            const urlParams = new URLSearchParams(window.location.search);
+            const contractId = urlParams.get('id');
+            
+            let contractData = null;
+            
+            if (contractId) {
+                contractData = JSON.parse(localStorage.getItem(`contract_${contractId}`));
+            } else {
+                // Tentar carregar do sessionStorage como fallback
+                contractData = JSON.parse(sessionStorage.getItem('lastGeneratedContract'));
+            }
+            
+            if (contractData) {
+                document.getElementById('secureContractContent').innerHTML = generateContractHTML(contractData);
+            } else {
+                document.getElementById('secureContractContent').innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: #666;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h3>Contrato não encontrado</h3>
+                        <p>O contrato solicitado não está disponível ou expirou.</p>
+                        <a href="index.html#generator" class="btn" style="margin-top: 1rem;">
+                            <i class="fas fa-plus"></i> Criar Novo Contrato
+                        </a>
+                    </div>
+                `;
+            }
+        }
+
+        function generateContractHTML(data) {
+            // Função similar à do script.js para gerar o contrato
+            // (implementação detalhada no próximo arquivo)
+            return `
+                <div class="contract-header">
+                    <div class="contract-title">CONTRATO DE PRESTAÇÃO DE SERVIÇOS</div>
+                    <div class="contract-subtitle">Visualização Segura - ContratoFácil</div>
+                </div>
+                
+                <div class="contract-body">
+                    <div class="contract-clause">
+                        <h4>CLÁUSULA PRIMEIRA - DAS PARTES CONTRATANTES</h4>
+                        <p><strong>CONTRATANTE:</strong> ${data.contractorName || '________________________'}</p>
+                        <p><strong>CONTRATADO(A):</strong> ${data.contractedName || '________________________'}</p>
+                    </div>
+                    
+                    <!-- Restante do contrato... -->
+                    <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 8px;">
+                        <p><strong>Contrato gerado por ContratoFácil</strong></p>
+                        <p>Visualização segura - Download bloqueado</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setupProtection() {
+            // Prevenir menu de contexto (clique direito)
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                showProtectionOverlay();
+                return false;
+            });
+
+            // Prevenir arrastar imagens
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Prevenir seleção de texto
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // Prevenir cópia via teclado
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
+                    e.preventDefault();
+                    showProtectionOverlay();
+                    return false;
+                }
+                
+                // Prevenir print screen
+                if (e.key === 'PrintScreen') {
+                    e.preventDefault();
+                    showProtectionOverlay();
+                    return false;
+                }
+            });
+
+            // Prevenir impressão
+            window.addEventListener('beforeprint', function(e) {
+                e.preventDefault();
+                showProtectionOverlay();
+                return false;
+            });
+        }
+
+        function showProtectionOverlay() {
+            document.getElementById('protectionOverlay').style.display = 'flex';
+        }
+
+        function closeProtectionOverlay() {
+            document.getElementById('protectionOverlay').style.display = 'none';
+        }
+
+        function attemptPrint() {
+            showProtectionOverlay();
+        }
+
+        function attemptCopy() {
+            showProtectionOverlay();
+        }
+
+        function openPaymentModal(plan) {
+            document.getElementById('paymentModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function processPayment(plan) {
+            // Simular processamento de pagamento
+            alert('Redirecionando para o pagamento...');
+            closePaymentModal();
+            
+            // Em uma implementação real, aqui iria para o gateway de pagamento
+            setTimeout(() => {
+                alert('Pagamento processado com sucesso! O contrato foi desbloqueado.');
+                // Aqui você liberaria o download
+            }, 2000);
+        }
+
+        function showContactModal() {
+            alert('Redirecionando para o formulário de contato...');
+            window.location.href = 'index.html#contact';
+        }
+    </script>
+</body>
+</html>
