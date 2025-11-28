@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Conta - ContratoFácil</title>
+    <link rel="icon" href="logo.jpg" type="image/jpeg">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="logo.jpg" alt="ContratoFácil" class="logo-img">
+                    <span>ContratoFácil</span>
+                </div>
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#generator">Criar Contrato</a></li>
+                        <li><a href="planos.html">Planos</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="#user" class="active">Minha Conta</a></li>
+                    </ul>
+                </nav>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <button class="btn-logout" onclick="signOut()">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- User Dashboard -->
+    <section class="user-dashboard" style="padding-top: 6rem; padding-bottom: 4rem;">
+        <div class="container">
+            <div class="user-welcome">
+                <div class="user-info">
+                    <img id="userAvatar" src="" alt="Avatar" class="user-avatar">
+                    <div class="user-details">
+                        <h2>Olá, <span id="userName">Usuário</span>!</h2>
+                        <p id="userEmail">carregando...</p>
+                        <div class="user-plan">
+                            <span class="plan-badge" id="userPlan">Plano Gratuito</span>
+                            <span class="plan-expiry" id="planExpiry">Visualização Gratuita</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-actions">
+                    <button class="btn" onclick="openPaymentModal('profissional')">
+                        <i class="fas fa-crown"></i> Fazer Upgrade
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="user-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="contractsCount">0</div>
+                    <div class="stat-label">Contratos Visualizados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="remainingContracts">Ilimitado</div>
+                    <div class="stat-label">Visualizações Restantes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="daysLeft">∞</div>
+                    <div class="stat-label">Dias Restantes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="contractsDownloaded">0</div>
+                    <div class="stat-label">Contratos Baixados</div>
+                </div>
+            </div>
+
+            <!-- Barra de Progresso do Plano -->
+            <div class="plan-progress" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 2rem;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary);">Seu Uso do Plano</h3>
+                <div class="progress-bar" style="background: #f0f0f0; border-radius: 10px; height: 12px; margin-bottom: 1rem; overflow: hidden;">
+                    <div id="usageProgress" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--gray);">
+                    <span id="usageText">0 de ∞ visualizações</span>
+                    <span id="usagePercentage">0%</span>
+                </div>
+            </div>
+
+            <!-- Histórico de Contratos -->
+            <div class="contracts-history" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 2rem;">
+                <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Histórico de Contratos</h3>
+                <div id="contractsList" style="min-height: 100px;">
+                    <p style="text-align: center; color: var(--gray); padding: 2rem;">
+                        <i class="fas fa-file-contract" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                        Nenhum contrato gerado ainda
+                    </p>
+                </div>
+            </div>
+
+            <!-- Ações Rápidas -->
+            <div class="quick-actions" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                <div class="action-card" style="background: white; padding: 1.5rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 2px solid var(--primary);">
+                    <i class="fas fa-file-contract" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                    <h4 style="margin-bottom: 0.5rem; color: var(--primary);">Criar Contrato</h4>
+                    <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 1rem;">Comece um novo contrato profissional</p>
+                    <a href="index.html#generator" class="btn" style="width: 100%;">Criar Agora</a>
+                </div>
+                
+                <div class="action-card" style="background: white; padding: 1.5rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 2px solid var(--success);">
+                    <i class="fas fa-crown" style="font-size: 2rem; color: var(--success); margin-bottom: 1rem;"></i>
+                    <h4 style="margin-bottom: 0.5rem; color: var(--success);">Fazer Upgrade</h4>
+                    <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 1rem;">Acesse todos os recursos</p>
+                    <button class="btn btn-success" onclick="openPaymentModal('profissional')" style="width: 100%;">Ver Planos</button>
+                </div>
+                
+                <div class="action-card" style="background: white; padding: 1.5rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 2px solid var(--secondary);">
+                    <i class="fas fa-question-circle" style="font-size: 2rem; color: var(--secondary); margin-bottom: 1rem;"></i>
+                    <h4 style="margin-bottom: 0.5rem; color: var(--secondary);">Ajuda</h4>
+                    <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 1rem;">Precisa de suporte?</p>
+                    <a href="faq.html" class="btn" style="width: 100%; background: var(--secondary);">FAQ</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>ContratoFácil</h3>
+                    <p>Criando contratos profissionais de forma simples e segura desde 2024.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#generator">Criar Contrato</a></li>
+                        <li><a href="planos.html">Planos</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Suporte</h3>
+                    <ul>
+                        <li><a href="https://wa.me/556299290737?text=Olá! Gostaria de mais informações sobre o ContratoFácil" target="_blank">Contato</a></li>
+                        <li><a href="politica-de-privacidade.html">Política de Privacidade</a></li>
+                        <li><a href="termos-de-uso.html">Termos de Uso</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contato</h3>
+                    <ul>
+                        <li><a href="https://wa.me/556299290737?text=Olá! Gostaria de mais informações sobre o ContratoFácil" target="_blank"><i class="fab fa-whatsapp"></i> (62) 99290-0737</a></li>
+                        <li><i class="fas fa-map-marker-alt"></i> Goiânia, GO</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 ContratoFácil. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Carregar dados do usuário
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!currentUser) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Atualizar informações do usuário
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userEmail').textContent = currentUser.email;
+            
+            if (currentUser.picture) {
+                document.getElementById('userAvatar').src = currentUser.picture;
+            }
+
+            // Atualizar informações do plano
+            updatePlanInfo(currentUser);
+            updateUsageProgress(currentUser);
+            loadContractsHistory(currentUser);
+        });
+
+        function updatePlanInfo(user) {
+            const userPlan = document.getElementById('userPlan');
+            const planExpiry = document.getElementById('planExpiry');
+            const contractsCount = document.getElementById('contractsCount');
+            const remainingContracts = document.getElementById('remainingContracts');
+            const daysLeft = document.getElementById('daysLeft');
+            const contractsDownloaded = document.getElementById('contractsDownloaded');
+
+            if (userPlan) {
+                userPlan.textContent = user.plan === 'free' ? 'Plano Gratuito' : 
+                                      user.plan === 'basico' ? 'Plano Básico' : 'Plano Profissional';
+                userPlan.className = 'plan-badge ' + user.plan;
+            }
+
+            if (planExpiry) {
+                planExpiry.textContent = user.plan === 'free' ? 'Visualização Gratuita' : 
+                                        user.plan === 'basico' ? '5 contratos/mês' : 'Ilimitado';
+            }
+
+            if (contractsCount) {
+                contractsCount.textContent = user.contractsGenerated || 0;
+            }
+
+            if (remainingContracts) {
+                const remaining = user.plan === 'free' ? 'Ilimitado' :
+                                 user.plan === 'basico' ? (5 - (user.contractsDownloaded || 0)) : 'Ilimitado';
+                remainingContracts.textContent = remaining;
+            }
+
+            if (daysLeft) {
+                daysLeft.textContent = user.plan === 'free' ? '∞' : '30';
+            }
+
+            if (contractsDownloaded) {
+                contractsDownloaded.textContent = user.contractsDownloaded || 0;
+            }
+        }
+
+        function updateUsageProgress(user) {
+            const progressBar = document.getElementById('usageProgress');
+            const usageText = document.getElementById('usageText');
+            const usagePercentage = document.getElementById('usagePercentage');
+
+            if (user.plan === 'free') {
+                progressBar.style.width = '0%';
+                usageText.textContent = 'Visualização Ilimitada';
+                usagePercentage.textContent = '0%';
+            } else if (user.plan === 'basico') {
+                const used = user.contractsDownloaded || 0;
+                const percentage = Math.min((used / 5) * 100, 100);
+                progressBar.style.width = percentage + '%';
+                usageText.textContent = `${used} de 5 contratos baixados`;
+                usagePercentage.textContent = Math.round(percentage) + '%';
+            } else {
+                progressBar.style.width = '100%';
+                usageText.textContent = 'Contratos Ilimitados';
+                usagePercentage.textContent = '100%';
+            }
+        }
+
+        function loadContractsHistory(user) {
+            const contractsList = document.getElementById('contractsList');
+            const contracts = user.contractsHistory || [];
+
+            if (contracts.length === 0) {
+                return;
+            }
+
+            let html = '<div style="display: grid; gap: 1rem;">';
+            contracts.forEach(contract => {
+                html += `
+                    <div style="display: flex; justify-content: between; align-items: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--primary);">
+                        <div style="flex: 1;">
+                            <strong style="color: var(--primary);">${contract.name}</strong>
+                            <div style="font-size: 0.8rem; color: var(--gray); margin-top: 0.3rem;">
+                                Criado em: ${new Date(contract.createdAt).toLocaleDateString('pt-BR')}
+                            </div>
+                        </div>
+                        <span style="background: ${contract.downloaded ? 'var(--success)' : 'var(--warning)'}; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem;">
+                            ${contract.downloaded ? 'Baixado' : 'Visualizado'}
+                        </span>
+                    </div>
+                `;
+            });
+            html += '</div>';
+
+            contractsList.innerHTML = html;
+        }
+
+        function signOut() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        }
+
+        function openPaymentModal(plan) {
+            // Redirecionar para a página de planos
+            window.location.href = 'planos.html';
+        }
+    </script>
+</body>
+</html>
