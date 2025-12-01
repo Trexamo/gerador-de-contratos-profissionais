@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administração - ContratoFácil</title>
+    <title>Painel de Administração - ContratoFácil</title>
     <link rel="icon" href="logo.jpg" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,7 +13,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             padding: 2rem;
         }
         
@@ -21,7 +21,7 @@
             background: white;
             padding: 3rem;
             border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             width: 100%;
             max-width: 400px;
             text-align: center;
@@ -61,64 +61,380 @@
         .form-group input:focus {
             border-color: var(--primary);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.1);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
         
         .admin-dashboard {
-            padding: 2rem;
+            padding: 2rem 0;
             display: none;
+            background: #f8fafc;
+            min-height: 100vh;
         }
         
-        .admin-stats {
+        /* Dashboard Header */
+        .dashboard-header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .dashboard-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .dashboard-title i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
         
-        .admin-stat-card {
+        .stat-card {
             background: white;
             padding: 1.5rem;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            text-align: center;
             border-left: 4px solid var(--primary);
         }
         
-        .admin-stat-number {
+        .stat-card.error {
+            border-left-color: var(--danger);
+        }
+        
+        .stat-card.success {
+            border-left-color: var(--success);
+        }
+        
+        .stat-card.warning {
+            border-left-color: var(--warning);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-title {
+            font-size: 0.9rem;
+            color: var(--dark-gray);
+            font-weight: 600;
+        }
+        
+        .stat-icon {
+            font-size: 1.2rem;
+        }
+        
+        .stat-value {
             font-size: 2rem;
             font-weight: 800;
-            color: var(--primary);
+            color: var(--dark);
             margin-bottom: 0.5rem;
         }
         
+        .stat-change {
+            font-size: 0.8rem;
+            color: var(--success);
+        }
+        
+        .stat-change.negative {
+            color: var(--danger);
+        }
+        
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 1.5rem;
+            background: var(--light);
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-header h3 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        /* Activity List */
+        .activity-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .activity-icon.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .activity-icon.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .activity-icon.info {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+        }
+        
+        .activity-icon.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: var(--dark);
+        }
+        
+        .activity-description {
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+            margin-bottom: 0.3rem;
+            line-height: 1.4;
+        }
+        
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--dark-gray);
+        }
+        
+        /* Messages List */
+        .message-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #f8fafc;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.8rem;
+        }
+        
+        .message-sender {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .message-email {
+            font-size: 0.85rem;
+            color: var(--dark-gray);
+            margin-top: 0.2rem;
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--dark-gray);
+        }
+        
+        .message-content {
+            font-size: 0.9rem;
+            color: var(--dark);
+            line-height: 1.5;
+        }
+        
+        /* Users Table */
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .users-table th {
+            text-align: left;
+            padding: 0.8rem;
+            background: var(--light);
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .users-table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.85rem;
+        }
+        
+        .user-plan-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .plan-free {
+            background: var(--light-gray);
+            color: var(--dark-gray);
+        }
+        
+        .plan-basico {
+            background: var(--primary-light);
+            color: white;
+        }
+        
+        .plan-profissional {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        /* Actions */
         .admin-actions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
             margin-top: 2rem;
         }
         
-        .admin-action-card {
+        .action-button {
             background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            text-align: center;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: left;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        .admin-action-card:hover {
+        .action-button:hover {
             border-color: var(--primary);
-            transform: translateY(-5px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
-        .admin-action-icon {
-            font-size: 2.5rem;
+        .action-button i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
             color: var(--primary);
+        }
+        
+        .action-button h4 {
+            margin: 0 0 0.3rem 0;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+        
+        .action-button p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--dark-gray);
+        }
+        
+        .btn-logout {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .btn-logout:hover {
+            background: var(--danger-dark);
+            transform: translateY(-2px);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--dark-gray);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
             margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -127,29 +443,29 @@
     <section class="admin-login" id="adminLogin">
         <div class="admin-container">
             <div class="admin-icon">
-                <i class="fas fa-lock"></i>
+                <i class="fas fa-shield-alt"></i>
             </div>
-            <h2 style="color: var(--primary); margin-bottom: 0.5rem;">Área de Administração</h2>
-            <p style="color: var(--gray); margin-bottom: 2rem;">Acesso restrito aos administradores</p>
+            <h2 style="color: var(--primary); margin-bottom: 0.5rem;">Painel de Administração</h2>
+            <p style="color: var(--gray); margin-bottom: 2rem;">Acesso exclusivo para administradores</p>
             
             <form class="admin-form" id="adminForm">
                 <div class="form-group">
-                    <label for="adminEmail">Email</label>
-                    <input type="email" id="adminEmail" placeholder="seu@email.com" required>
+                    <label for="adminEmail">Email Administrativo</label>
+                    <input type="email" id="adminEmail" placeholder="admin@contratofacil.com" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="adminPassword">Senha</label>
-                    <input type="password" id="adminPassword" placeholder="Sua senha" required>
+                    <label for="adminPassword">Senha de Administração</label>
+                    <input type="password" id="adminPassword" placeholder="••••••••••" required>
                 </div>
                 
                 <button type="submit" class="btn" style="width: 100%;">
-                    <i class="fas fa-sign-in-alt"></i> Entrar
+                    <i class="fas fa-sign-in-alt"></i> Acessar Painel
                 </button>
             </form>
             
             <p style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--gray);">
-                <i class="fas fa-shield-alt"></i> Acesso seguro e criptografado
+                <i class="fas fa-lock"></i> Acesso monitorado e criptografado
             </p>
         </div>
     </section>
@@ -157,251 +473,984 @@
     <!-- Admin Dashboard -->
     <section class="admin-dashboard" id="adminDashboard">
         <div class="container">
-            <div class="header-content" style="margin-bottom: 2rem;">
-                <div class="logo">
-                    <img src="logo.jpg" alt="ContratoFácil" class="logo-img">
-                    <span>ContratoFácil - Admin</span>
-                </div>
-                <button class="btn-logout" onclick="adminLogout()">
-                    <i class="fas fa-sign-out-alt"></i> Sair
-                </button>
-            </div>
-
-            <div class="admin-stats">
-                <div class="admin-stat-card">
-                    <div class="admin-stat-number" id="totalUsers">0</div>
-                    <div class="stat-label">Total de Usuários</div>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-number" id="totalContracts">0</div>
-                    <div class="stat-label">Contratos Gerados</div>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-number" id="premiumUsers">0</div>
-                    <div class="stat-label">Usuários Premium</div>
-                </div>
-                <div class="admin-stat-card">
-                    <div class="admin-stat-number" id="revenue">R$ 0</div>
-                    <div class="stat-label">Receita Total</div>
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="header-content">
+                    <div class="dashboard-title">
+                        <i class="fas fa-chart-line"></i>
+                        <div>
+                            <h1 style="margin: 0; color: var(--primary);">Painel de Administração</h1>
+                            <p style="margin: 0; color: var(--dark-gray); font-size: 0.9rem;">
+                                ContratoFácil • Monitoramento do Sistema
+                            </p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span id="currentTime" style="color: var(--dark-gray); font-size: 0.9rem;"></span>
+                        <button class="btn-logout" onclick="adminLogout()">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <div class="admin-actions">
-                <div class="admin-action-card" onclick="upgradeAllUsers()">
-                    <div class="admin-action-icon">
-                        <i class="fas fa-crown"></i>
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">Usuários Ativos</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-users" style="color: var(--primary);"></i>
+                        </div>
                     </div>
-                    <h3>Upgrade em Massa</h3>
-                    <p>Ativar plano profissional para todos os usuários</p>
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-change" id="userGrowth">
+                        <i class="fas fa-arrow-up"></i> 0% este mês
+                    </div>
                 </div>
                 
-                <div class="admin-action-card" onclick="resetAllLimits()">
-                    <div class="admin-action-icon">
-                        <i class="fas fa-sync-alt"></i>
+                <div class="stat-card success">
+                    <div class="stat-header">
+                        <div class="stat-title">Contratos Gerados</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-file-contract" style="color: var(--success);"></i>
+                        </div>
                     </div>
-                    <h3>Resetar Limites</h3>
-                    <p>Zerar contadores de todos os usuários</p>
+                    <div class="stat-value" id="totalContracts">0</div>
+                    <div class="stat-change">
+                        <i class="fas fa-arrow-up"></i> Hoje: <span id="todayContracts">0</span>
+                    </div>
                 </div>
                 
-                <div class="admin-action-card" onclick="exportUserData()">
-                    <div class="admin-action-icon">
-                        <i class="fas fa-download"></i>
+                <div class="stat-card warning">
+                    <div class="stat-header">
+                        <div class="stat-title">Usuários Premium</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-crown" style="color: var(--warning);"></i>
+                        </div>
                     </div>
-                    <h3>Exportar Dados</h3>
-                    <p>Baixar relatório completo de usuários</p>
+                    <div class="stat-value" id="premiumUsers">0</div>
+                    <div class="stat-change">
+                        <span id="premiumPercentage">0%</span> dos usuários
+                    </div>
                 </div>
                 
-                <div class="admin-action-card" onclick="showUserManagement()">
-                    <div class="admin-action-icon">
-                        <i class="fas fa-users"></i>
+                <div class="stat-card error">
+                    <div class="stat-header">
+                        <div class="stat-title">Erros Recentes</div>
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                        </div>
                     </div>
-                    <h3>Gerenciar Usuários</h3>
-                    <p>Ver e editar dados dos usuários</p>
+                    <div class="stat-value" id="recentErrors">0</div>
+                    <div class="stat-change">
+                        <span id="errorStatus">Nenhum erro hoje</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Atividades Recentes -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-history"></i> Atividades Recentes</h3>
+                        <span style="font-size: 0.8rem; color: var(--dark-gray);">Últimas 24h</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-list" id="activityList">
+                            <!-- Atividades serão carregadas aqui -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mensagens de Contato -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-envelope"></i> Mensagens Recebidas</h3>
+                        <span style="font-size: 0.8rem; color: var(--dark-gray);" id="messageCount">0 mensagens</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-list" id="messagesList">
+                            <!-- Mensagens serão carregadas aqui -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Erros do Sistema -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bug"></i> Monitoramento de Erros</h3>
+                        <span style="font-size: 0.8rem; color: var(--danger);" id="errorCount">0 erros</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-list" id="errorsList">
+                            <!-- Erros serão carregadas aqui -->
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Lista de Usuários -->
-            <div id="userManagement" style="display: none; margin-top: 3rem;">
-                <h3 style="margin-bottom: 1.5rem; color: var(--primary);">Gerenciamento de Usuários</h3>
-                <div id="usersList" style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
-                    <p style="text-align: center; color: var(--gray);">Carregando usuários...</p>
+            <div class="dashboard-card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h3><i class="fas fa-user-friends"></i> Usuários do Sistema</h3>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="userSearch" placeholder="Buscar usuário..." style="padding: 0.4rem 0.8rem; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.85rem;">
+                        <button onclick="loadUsers()" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div style="overflow-x: auto;">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Plano</th>
+                                    <th>Contratos</th>
+                                    <th>Cadastro</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Usuários serão carregados aqui -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ações de Administração -->
+            <div class="dashboard-card" style="margin-top: 2rem;">
+                <div class="card-header">
+                    <h3><i class="fas fa-cogs"></i> Ferramentas de Administração</h3>
+                </div>
+                <div class="card-body">
+                    <div class="admin-actions">
+                        <div class="action-button" onclick="viewSystemLogs()">
+                            <i class="fas fa-clipboard-list"></i>
+                            <h4>Logs do Sistema</h4>
+                            <p>Ver registros detalhados de atividades do sistema</p>
+                        </div>
+                        
+                        <div class="action-button" onclick="sendBroadcastMessage()">
+                            <i class="fas fa-bullhorn"></i>
+                            <h4>Mensagem em Lote</h4>
+                            <p>Enviar notificação para múltiplos usuários</p>
+                        </div>
+                        
+                        <div class="action-button" onclick="exportSystemData()">
+                            <i class="fas fa-database"></i>
+                            <h4>Exportar Dados</h4>
+                            <p>Backup completo dos dados do sistema</p>
+                        </div>
+                        
+                        <div class="action-button" onclick="viewAnalytics()">
+                            <i class="fas fa-chart-bar"></i>
+                            <h4>Análises Detalhadas</h4>
+                            <p>Relatórios avançados de uso e conversão</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Modal para Ver Logs -->
+    <div class="modal" id="logsModal" style="display: none;">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-clipboard-list"></i> Logs do Sistema</h3>
+                <button class="close-modal" onclick="closeModal('logsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="systemLogsContent">
+                    <!-- Logs serão carregados aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Mensagem em Lote -->
+    <div class="modal" id="broadcastModal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-bullhorn"></i> Mensagem em Lote</h3>
+                <button class="close-modal" onclick="closeModal('broadcastModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="broadcastForm">
+                    <div class="form-group">
+                        <label for="broadcastRecipients">Destinatários</label>
+                        <select id="broadcastRecipients" class="form-control">
+                            <option value="all">Todos os Usuários</option>
+                            <option value="free">Usuários Gratuitos</option>
+                            <option value="premium">Usuários Premium</option>
+                            <option value="inactive">Usuários Inativos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="broadcastSubject">Assunto</label>
+                        <input type="text" id="broadcastSubject" class="form-control" placeholder="Assunto da mensagem" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="broadcastMessage">Mensagem</label>
+                        <textarea id="broadcastMessage" class="form-control" rows="5" placeholder="Digite sua mensagem..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-paper-plane"></i> Enviar Mensagem
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Credenciais de administração
+        const ADMIN_CREDENTIALS = {
+            email: 'administradorfree@gmail.com',
+            password: 'asenhapragentetestarhehe'
+        };
+
+        // Sistema de logs e atividades
+        let systemLogs = JSON.parse(localStorage.getItem('systemLogs') || '[]');
+        let contactMessages = JSON.parse(localStorage.getItem('contactMessages') || '[]');
+        let systemErrors = JSON.parse(localStorage.getItem('systemErrors') || '[]');
+
+        // Atualizar tempo atual
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const dateString = now.toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            
+            document.getElementById('currentTime').innerHTML = 
+                `<i class="fas fa-clock"></i> ${dateString} • ${timeString}`;
+        }
+
+        // Registrar atividade no sistema
+        function logActivity(type, title, description, data = {}) {
+            const activity = {
+                id: Date.now(),
+                type: type, // 'success', 'error', 'info', 'warning'
+                title: title,
+                description: description,
+                timestamp: new Date().toISOString(),
+                data: data
+            };
+            
+            systemLogs.unshift(activity);
+            
+            // Manter apenas os últimos 100 logs
+            if (systemLogs.length > 100) {
+                systemLogs = systemLogs.slice(0, 100);
+            }
+            
+            localStorage.setItem('systemLogs', JSON.stringify(systemLogs));
+            
+            // Se o dashboard estiver aberto, atualizar a lista
+            if (document.getElementById('adminDashboard').style.display === 'block') {
+                loadRecentActivities();
+            }
+            
+            return activity;
+        }
+
+        // Registrar erro no sistema
+        function logError(title, description, user = null) {
+            const error = {
+                id: Date.now(),
+                title: title,
+                description: description,
+                user: user,
+                timestamp: new Date().toISOString(),
+                resolved: false
+            };
+            
+            systemErrors.unshift(error);
+            
+            // Manter apenas os últimos 50 erros
+            if (systemErrors.length > 50) {
+                systemErrors = systemErrors.slice(0, 50);
+            }
+            
+            localStorage.setItem('systemErrors', JSON.stringify(systemErrors));
+            
+            logActivity('error', title, description, { user: user });
+            
+            // Atualizar dashboard se estiver aberto
+            if (document.getElementById('adminDashboard').style.display === 'block') {
+                loadErrorStats();
+                loadRecentErrors();
+            }
+            
+            return error;
+        }
+
+        // Salvar mensagem de contato
+        function saveContactMessage(name, email, subject, message) {
+            const contactMessage = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                subject: subject,
+                message: message,
+                timestamp: new Date().toISOString(),
+                read: false
+            };
+            
+            contactMessages.unshift(contactMessage);
+            
+            // Manter apenas as últimas 100 mensagens
+            if (contactMessages.length > 100) {
+                contactMessages = contactMessages.slice(0, 100);
+            }
+            
+            localStorage.setItem('contactMessages', JSON.stringify(contactMessages));
+            
+            // Registrar atividade
+            logActivity('info', 'Nova Mensagem Recebida', 
+                `${name} (${email}) enviou uma mensagem: ${subject}`);
+            
+            return contactMessage;
+        }
+
+        // Login do Administrador
         document.getElementById('adminForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const email = document.getElementById('adminEmail').value;
             const password = document.getElementById('adminPassword').value;
             
-            // Credenciais de administração
-            if (email === 'administradorfree@gmail.com' && password === 'asenhapragentetestarhehe') {
+            if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
                 // Login bem-sucedido
                 localStorage.setItem('adminLoggedIn', 'true');
+                localStorage.setItem('adminLoginTime', new Date().toISOString());
+                
+                // Registrar login no log
+                logActivity('success', 'Login Administrativo', 
+                    'Administrador fez login no painel', { ip: '127.0.0.1' });
+                
                 showAdminDashboard();
             } else {
-                alert('Credenciais inválidas!');
+                alert('❌ Credenciais inválidas!');
+                // Registrar tentativa falha
+                logError('Tentativa de Login Administrativo', 
+                    `Tentativa falha com email: ${email}`);
+                
+                document.getElementById('adminPassword').value = '';
             }
         });
 
         function showAdminDashboard() {
             document.getElementById('adminLogin').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'block';
-            loadAdminStats();
-            loadUsersList();
+            
+            // Iniciar atualização do tempo
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 1000);
+            
+            // Carregar todos os dados
+            loadDashboardStats();
+            loadRecentActivities();
+            loadContactMessages();
+            loadErrorStats();
+            loadRecentErrors();
+            loadUsers();
+            
+            // Registrar acesso
+            logActivity('info', 'Painel Acessado', 'Administrador está visualizando o painel');
         }
 
         function adminLogout() {
-            localStorage.removeItem('adminLoggedIn');
-            document.getElementById('adminLogin').style.display = 'flex';
-            document.getElementById('adminDashboard').style.display = 'none';
-        }
-
-        function loadAdminStats() {
-            // Simular dados - na implementação real, isso viria de um backend
-            const allUsers = getAllUsers();
-            const totalContracts = allUsers.reduce((sum, user) => sum + (user.contractsGenerated || 0), 0);
-            const premiumUsers = allUsers.filter(user => user.plan !== 'free').length;
-            const revenue = premiumUsers * 29.99; // Simulação
-
-            document.getElementById('totalUsers').textContent = allUsers.length;
-            document.getElementById('totalContracts').textContent = totalContracts;
-            document.getElementById('premiumUsers').textContent = premiumUsers;
-            document.getElementById('revenue').textContent = `R$ ${revenue.toFixed(2)}`;
-        }
-
-        function getAllUsers() {
-            // Recuperar todos os usuários do localStorage
-            const users = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.startsWith('user_') || key === 'currentUser') {
-                    try {
-                        const userData = JSON.parse(localStorage.getItem(key));
-                        users.push(userData);
-                    } catch (e) {
-                        console.error('Erro ao ler usuário:', e);
-                    }
-                }
+            if (confirm('Tem certeza que deseja sair do painel administrativo?')) {
+                // Registrar logout
+                logActivity('info', 'Logout Administrativo', 'Administrador saiu do painel');
+                
+                localStorage.removeItem('adminLoggedIn');
+                localStorage.removeItem('adminLoginTime');
+                document.getElementById('adminLogin').style.display = 'flex';
+                document.getElementById('adminDashboard').style.display = 'none';
+                document.getElementById('adminForm').reset();
             }
-            return users;
         }
 
-        function loadUsersList() {
+        // Carregar estatísticas do dashboard
+        function loadDashboardStats() {
             const users = getAllUsers();
-            const usersList = document.getElementById('usersList');
+            const totalContracts = users.reduce((sum, user) => sum + (user.contractsGenerated || 0), 0);
+            const todayContracts = calculateTodayContracts(users);
+            const premiumUsers = users.filter(user => user.plan !== 'free').length;
+            const recentErrors = systemErrors.filter(error => {
+                const errorDate = new Date(error.timestamp);
+                const today = new Date();
+                return errorDate.toDateString() === today.toDateString();
+            }).length;
+
+            // Atualizar estatísticas
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('totalContracts').textContent = totalContracts;
+            document.getElementById('todayContracts').textContent = todayContracts;
+            document.getElementById('premiumUsers').textContent = premiumUsers;
+            document.getElementById('recentErrors').textContent = recentErrors;
             
-            if (users.length === 0) {
-                usersList.innerHTML = '<p style="text-align: center; color: var(--gray);">Nenhum usuário encontrado</p>';
+            // Calcular crescimento
+            const userGrowth = calculateUserGrowth(users);
+            document.getElementById('userGrowth').innerHTML = userGrowth >= 0 ? 
+                `<i class="fas fa-arrow-up"></i> ${userGrowth}% este mês` :
+                `<i class="fas fa-arrow-down" style="color: var(--danger);"></i> ${Math.abs(userGrowth)}% este mês`;
+            
+            // Calcular porcentagem de premium
+            const premiumPercentage = users.length > 0 ? 
+                Math.round((premiumUsers / users.length) * 100) : 0;
+            document.getElementById('premiumPercentage').textContent = premiumPercentage + '%';
+            
+            // Status de erros
+            document.getElementById('errorStatus').textContent = recentErrors === 0 ? 
+                'Nenhum erro hoje' : `${recentErrors} erro(s) hoje`;
+        }
+
+        function calculateTodayContracts(users) {
+            const today = new Date().toDateString();
+            let count = 0;
+            
+            // Em produção, isso viria de um histórico real
+            // Por enquanto, simulamos com base nos contratos gerados
+            users.forEach(user => {
+                if (user.lastContractDate && new Date(user.lastContractDate).toDateString() === today) {
+                    count++;
+                }
+            });
+            
+            return count;
+        }
+
+        function calculateUserGrowth(users) {
+            // Simulação de crescimento mensal
+            // Em produção, isso seria calculado com base em dados históricos
+            const thisMonthUsers = users.filter(user => {
+                const joinDate = new Date(user.joinDate || Date.now());
+                const now = new Date();
+                return joinDate.getMonth() === now.getMonth() && 
+                       joinDate.getFullYear() === now.getFullYear();
+            }).length;
+            
+            const lastMonthUsers = Math.max(1, Math.floor(users.length / 2));
+            const growth = ((thisMonthUsers - lastMonthUsers) / lastMonthUsers) * 100;
+            
+            return Math.round(growth);
+        }
+
+        // Carregar atividades recentes
+        function loadRecentActivities() {
+            const activityList = document.getElementById('activityList');
+            const recentActivities = systemLogs.slice(0, 10); // Últimas 10 atividades
+            
+            if (recentActivities.length === 0) {
+                activityList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <p>Nenhuma atividade registrada ainda</p>
+                    </div>
+                `;
                 return;
             }
-
-            let html = '<div style="display: grid; gap: 1rem;">';
-            users.forEach(user => {
+            
+            let html = '';
+            recentActivities.forEach(activity => {
+                const time = new Date(activity.timestamp);
+                const timeString = time.toLocaleTimeString('pt-BR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
                 html += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
-                        <div style="flex: 1;">
-                            <strong>${user.name}</strong>
-                            <div style="font-size: 0.8rem; color: var(--gray);">
-                                ${user.email} | ${user.plan === 'free' ? 'Plano Gratuito' : 'Plano Premium'}
-                            </div>
+                    <div class="activity-item">
+                        <div class="activity-icon ${activity.type}">
+                            <i class="fas fa-${getActivityIcon(activity.type)}"></i>
                         </div>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;" onclick="upgradeUser('${user.email}')">
-                                <i class="fas fa-crown"></i> Upgrade
-                            </button>
-                            <button class="btn btn-success" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;" onclick="viewUser('${user.email}')">
-                                <i class="fas fa-eye"></i> Ver
-                            </button>
+                        <div class="activity-content">
+                            <div class="activity-title">${activity.title}</div>
+                            <div class="activity-description">${activity.description}</div>
+                            <div class="activity-time">
+                                <i class="far fa-clock"></i> ${timeString}
+                            </div>
                         </div>
                     </div>
                 `;
             });
-            html += '</div>';
-
-            usersList.innerHTML = html;
-        }
-
-        function upgradeAllUsers() {
-            if (confirm('Deseja ativar o plano profissional para TODOS os usuários?')) {
-                const users = getAllUsers();
-                users.forEach(user => {
-                    user.plan = 'profissional';
-                    user.remainingContracts = 999;
-                    // Salvar usuário atualizado
-                    localStorage.setItem(`user_${user.email}`, JSON.stringify(user));
-                });
-                alert('Upgrade em massa realizado com sucesso!');
-                loadAdminStats();
-                loadUsersList();
-            }
-        }
-
-        function resetAllLimits() {
-            if (confirm('Deseja zerar os contadores de TODOS os usuários?')) {
-                const users = getAllUsers();
-                users.forEach(user => {
-                    user.contractsGenerated = 0;
-                    user.contractsDownloaded = 0;
-                    // Salvar usuário atualizado
-                    localStorage.setItem(`user_${user.email}`, JSON.stringify(user));
-                });
-                alert('Limites resetados com sucesso!');
-                loadAdminStats();
-                loadUsersList();
-            }
-        }
-
-        function upgradeUser(email) {
-            const users = getAllUsers();
-            const user = users.find(u => u.email === email);
-            if (user) {
-                user.plan = 'profissional';
-                user.remainingContracts = 999;
-                localStorage.setItem(`user_${user.email}`, JSON.stringify(user));
-                alert(`Usuário ${user.name} atualizado para plano profissional!`);
-                loadAdminStats();
-                loadUsersList();
-            }
-        }
-
-        function viewUser(email) {
-            const users = getAllUsers();
-            const user = users.find(u => u.email === email);
-            if (user) {
-                alert(`Detalhes do usuário:\n\nNome: ${user.name}\nEmail: ${user.email}\nPlano: ${user.plan}\nContratos Gerados: ${user.contractsGenerated || 0}\nContratos Baixados: ${user.contractsDownloaded || 0}`);
-            }
-        }
-
-        function exportUserData() {
-            const users = getAllUsers();
-            const csvContent = "data:text/csv;charset=utf-8," 
-                + "Nome,Email,Plano,Contratos Gerados,Contratos Baixados,Data de Cadastro\n"
-                + users.map(user => 
-                    `"${user.name}","${user.email}","${user.plan}","${user.contractsGenerated || 0}","${user.contractsDownloaded || 0}","${user.joinDate || 'N/A'}"`
-                ).join("\n");
             
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "usuarios_contratofacil.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            activityList.innerHTML = html;
         }
 
-        function showUserManagement() {
-            const userManagement = document.getElementById('userManagement');
-            userManagement.style.display = userManagement.style.display === 'none' ? 'block' : 'none';
+        function getActivityIcon(type) {
+            const icons = {
+                'success': 'check-circle',
+                'error': 'exclamation-circle',
+                'warning': 'exclamation-triangle',
+                'info': 'info-circle'
+            };
+            return icons[type] || 'info-circle';
         }
+
+        // Carregar mensagens de contato
+        function loadContactMessages() {
+            const messagesList = document.getElementById('messagesList');
+            const recentMessages = contactMessages.slice(0, 5); // Últimas 5 mensagens
+            
+            document.getElementById('messageCount').textContent = 
+                `${contactMessages.length} mensagem${contactMessages.length !== 1 ? 'es' : ''}`;
+            
+            if (recentMessages.length === 0) {
+                messagesList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-envelope"></i>
+                        <p>Nenhuma mensagem recebida</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            recentMessages.forEach(message => {
+                const time = new Date(message.timestamp);
+                const timeString = time.toLocaleDateString('pt-BR') + ' ' + 
+                                 time.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                
+                html += `
+                    <div class="message-item">
+                        <div class="message-header">
+                            <div>
+                                <div class="message-sender">${message.name}</div>
+                                <div class="message-email">${message.email}</div>
+                            </div>
+                            <div class="message-time">${timeString}</div>
+                        </div>
+                        <div class="message-content">
+                            <strong>${message.subject}</strong>
+                            <p style="margin-top: 0.5rem;">${message.message.substring(0, 150)}${message.message.length > 150 ? '...' : ''}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            messagesList.innerHTML = html;
+        }
+
+        // Carregar estatísticas de erros
+        function loadErrorStats() {
+            const today = new Date();
+            const todayErrors = systemErrors.filter(error => {
+                const errorDate = new Date(error.timestamp);
+                return errorDate.toDateString() === today.toDateString();
+            });
+            
+            const unresolvedErrors = systemErrors.filter(error => !error.resolved).length;
+            
+            document.getElementById('errorCount').textContent = 
+                `${unresolvedErrors} erro${unresolvedErrors !== 1 ? 's' : ''} não resolvido${unresolvedErrors !== 1 ? 's' : ''}`;
+        }
+
+        // Carregar erros recentes
+        function loadRecentErrors() {
+            const errorsList = document.getElementById('errorsList');
+            const recentErrors = systemErrors.filter(error => !error.resolved).slice(0, 5);
+            
+            if (recentErrors.length === 0) {
+                errorsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                        <p>Todos os sistemas funcionando normalmente</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            recentErrors.forEach(error => {
+                const time = new Date(error.timestamp);
+                const timeString = time.toLocaleTimeString('pt-BR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                html += `
+                    <div class="activity-item">
+                        <div class="activity-icon error">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">${error.title}</div>
+                            <div class="activity-description">${error.description}</div>
+                            <div class="activity-time">
+                                <i class="far fa-clock"></i> ${timeString}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            errorsList.innerHTML = html;
+        }
+
+        // Carregar usuários
+        function loadUsers() {
+            const usersTableBody = document.getElementById('usersTableBody');
+            const users = getAllUsers();
+            const searchTerm = document.getElementById('userSearch')?.value.toLowerCase() || '';
+            
+            let filteredUsers = users;
+            if (searchTerm) {
+                filteredUsers = users.filter(user => 
+                    (user.name && user.name.toLowerCase().includes(searchTerm)) ||
+                    (user.email && user.email.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            if (filteredUsers.length === 0) {
+                usersTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 3rem; color: var(--dark-gray);">
+                            <i class="fas fa-user-slash" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                            Nenhum usuário encontrado
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            filteredUsers.forEach((user, index) => {
+                const joinDate = user.joinDate ? new Date(user.joinDate).toLocaleDateString('pt-BR') : 'N/A';
+                const contractsGenerated = user.contractsGenerated || 0;
+                const contractsDownloaded = user.contractsDownloaded || 0;
+                
+                html += `
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">${user.name || 'Usuário Sem Nome'}</div>
+                            ${user.lastLogin ? `
+                            <div style="font-size: 0.75rem; color: var(--dark-gray);">
+                                Último acesso: ${new Date(user.lastLogin).toLocaleDateString('pt-BR')}
+                            </div>
+                            ` : ''}
+                        </td>
+                        <td>${user.email}</td>
+                        <td>
+                            <span class="user-plan-badge plan-${user.plan || 'free'}">
+                                ${getPlanName(user.plan)}
+                            </span>
+                        </td>
+                        <td>
+                            <div>👁️ ${contractsGenerated} visualizados</div>
+                            <div>💾 ${contractsDownloaded} baixados</div>
+                        </td>
+                        <td>${joinDate}</td>
+                        <td>
+                            <button onclick="viewUserDetails('${user.email}')" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="sendMessageToUser('${user.email}')" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: var(--primary-light);">
+                                <i class="fas fa-envelope"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            usersTableBody.innerHTML = html;
+        }
+
+        function getAllUsers() {
+            const users = [];
+            
+            // Buscar usuários no localStorage
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('user_')) {
+                    try {
+                        const userData = JSON.parse(localStorage.getItem(key));
+                        if (userData && userData.email) {
+                            users.push(userData);
+                        }
+                    } catch (e) {
+                        console.warn('Erro ao ler usuário:', key, e);
+                    }
+                }
+            }
+            
+            // Adicionar usuário atual se existir
+            try {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (currentUser && currentUser.email) {
+                    if (!users.some(user => user.email === currentUser.email)) {
+                        users.push(currentUser);
+                    }
+                }
+            } catch (e) {
+                console.warn('Erro ao ler usuário atual:', e);
+            }
+            
+            // Ordenar por data de cadastro (mais recentes primeiro)
+            return users.sort((a, b) => {
+                const dateA = new Date(a.joinDate || 0);
+                const dateB = new Date(b.joinDate || 0);
+                return dateB - dateA;
+            });
+        }
+
+        function getPlanName(plan) {
+            const plans = {
+                'free': 'Gratuito',
+                'basico': 'Básico',
+                'profissional': 'Profissional'
+            };
+            return plans[plan] || 'Gratuito';
+        }
+
+        // Funções dos botões de ação
+        function viewSystemLogs() {
+            const modal = document.getElementById('logsModal');
+            const content = document.getElementById('systemLogsContent');
+            
+            let html = `
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <div style="margin-bottom: 1rem; display: flex; justify-content: space-between;">
+                        <div>
+                            <strong>Total de Logs:</strong> ${systemLogs.length}
+                        </div>
+                        <button onclick="clearOldLogs()" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+                            <i class="fas fa-trash"></i> Limpar Logs Antigos
+                        </button>
+                    </div>
+                    <div style="background: #f8fafc; border-radius: 8px; padding: 1rem;">
+            `;
+            
+            systemLogs.forEach(log => {
+                const time = new Date(log.timestamp);
+                const timeString = time.toLocaleString('pt-BR');
+                
+                html += `
+                    <div style="padding: 0.8rem; border-bottom: 1px solid #e2e8f0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                            <strong>${log.title}</strong>
+                            <span style="font-size: 0.8rem; color: var(--dark-gray);">${timeString}</span>
+                        </div>
+                        <div style="font-size: 0.9rem; color: var(--dark); margin-bottom: 0.3rem;">
+                            ${log.description}
+                        </div>
+                        <div style="font-size: 0.8rem; color: var(--dark-gray);">
+                            Tipo: <span style="color: ${getLogColor(log.type)};">${log.type}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `</div></div>`;
+            content.innerHTML = html;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            logActivity('info', 'Logs do Sistema Visualizados', 'Administrador acessou os logs do sistema');
+        }
+
+        function getLogColor(type) {
+            const colors = {
+                'success': 'var(--success)',
+                'error': 'var(--danger)',
+                'warning': 'var(--warning)',
+                'info': 'var(--primary)'
+            };
+            return colors[type] || 'var(--dark-gray)';
+        }
+
+        function sendBroadcastMessage() {
+            const modal = document.getElementById('broadcastModal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function exportSystemData() {
+            const data = {
+                users: getAllUsers(),
+                logs: systemLogs,
+                messages: contactMessages,
+                errors: systemErrors,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `contratofacil_backup_${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            logActivity('success', 'Backup Exportado', 'Administrador exportou backup completo do sistema');
+            alert('✅ Backup exportado com sucesso!');
+        }
+
+        function viewAnalytics() {
+            alert('📊 Em desenvolvimento: Análises detalhadas em tempo real serão implementadas em breve!');
+            logActivity('info', 'Análises Acessadas', 'Administrador acessou as análises do sistema');
+        }
+
+        function viewUserDetails(email) {
+            const users = getAllUsers();
+            const user = users.find(u => u.email === email);
+            
+            if (user) {
+                const details = `
+Detalhes do Usuário:
+
+👤 Nome: ${user.name || 'Não informado'}
+📧 Email: ${user.email}
+📱 Plano: ${getPlanName(user.plan)}
+📊 Estatísticas:
+   • Contratos Visualizados: ${user.contractsGenerated || 0}
+   • Contratos Baixados: ${user.contractsDownloaded || 0}
+   • Contratos Restantes: ${user.remainingContracts || 'Ilimitado'}
+📅 Datas:
+   • Cadastro: ${user.joinDate ? new Date(user.joinDate).toLocaleDateString('pt-BR') : 'N/A'}
+   • Último Login: ${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('pt-BR') : 'N/A'}
+   • Último Contrato: ${user.lastContractDate ? new Date(user.lastContractDate).toLocaleDateString('pt-BR') : 'N/A'}
+
+💰 Receita Gerada: R$ ${calculateUserRevenue(user).toFixed(2)}
+                `.trim();
+                
+                alert(details);
+                logActivity('info', 'Detalhes do Usuário Visualizados', 
+                    `Administrador visualizou detalhes de ${user.email}`);
+            }
+        }
+
+        function calculateUserRevenue(user) {
+            // Simulação de cálculo de receita
+            let revenue = 0;
+            
+            if (user.plan === 'basico') {
+                revenue += 9.99; // Assinatura mensal
+            } else if (user.plan === 'profissional') {
+                revenue += 29.99; // Assinatura mensal
+            }
+            
+            // Adicionar contratos avulsos
+            const avulsos = (user.contractsDownloaded || 0) * 6.99;
+            revenue += avulsos;
+            
+            return revenue;
+        }
+
+        function sendMessageToUser(email) {
+            const subject = prompt('Assunto da mensagem:');
+            if (!subject) return;
+            
+            const message = prompt('Mensagem para o usuário:');
+            if (!message) return;
+            
+            // Em produção, aqui enviaria um email real
+            logActivity('success', 'Mensagem Enviada', 
+                `Mensagem enviada para ${email}: ${subject}`, { email, subject });
+            
+            alert(`✅ Mensagem programada para envio para ${email}`);
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function clearOldLogs() {
+            if (confirm('Deseja limpar logs com mais de 30 dias?')) {
+                const thirtyDaysAgo = new Date();
+                thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                
+                systemLogs = systemLogs.filter(log => {
+                    const logDate = new Date(log.timestamp);
+                    return logDate > thirtyDaysAgo;
+                });
+                
+                localStorage.setItem('systemLogs', JSON.stringify(systemLogs));
+                
+                alert('✅ Logs antigos limpos!');
+                viewSystemLogs(); // Recarregar a visualização
+                logActivity('info', 'Logs Limpos', 'Administrador limpou logs antigos do sistema');
+            }
+        }
+
+        // Formulário de mensagem em lote
+        document.getElementById('broadcastForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const recipients = document.getElementById('broadcastRecipients').value;
+            const subject = document.getElementById('broadcastSubject').value;
+            const message = document.getElementById('broadcastMessage').value;
+            
+            // Em produção, aqui enviaria emails em lote
+            logActivity('success', 'Mensagem em Lote Enviada', 
+                `Mensagem enviada para ${recipients}: ${subject}`, { recipients, subject });
+            
+            alert(`✅ Mensagem em lote programada para envio!`);
+            closeModal('broadcastModal');
+        });
 
         // Verificar se já está logado
         document.addEventListener('DOMContentLoaded', function() {
-            if (localStorage.getItem('adminLoggedIn') === 'true') {
-                showAdminDashboard();
+            const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+            const loginTime = localStorage.getItem('adminLoginTime');
+            
+            if (isLoggedIn && loginTime) {
+                const loginDate = new Date(loginTime);
+                const now = new Date();
+                const hoursDiff = (now - loginDate) / (1000 * 60 * 60);
+                
+                if (hoursDiff < 8) {
+                    showAdminDashboard();
+                } else {
+                    adminLogout();
+                    alert('Sessão expirada. Faça login novamente.');
+                }
+            }
+            
+            // Simular algumas mensagens e erros para demonstração
+            if (contactMessages.length === 0) {
+                // Criar algumas mensagens de exemplo
+                saveContactMessage(
+                    'João Silva',
+                    'joao@exemplo.com',
+                    'Dúvida sobre contratos',
+                    'Gostaria de saber mais sobre os planos profissionais disponíveis.'
+                );
+                
+                saveContactMessage(
+                    'Maria Santos',
+                    'maria@empresa.com',
+                    'Problema com download',
+                    'Não consegui baixar meu contrato após o pagamento.'
+                );
+            }
+            
+            if (systemErrors.length === 0) {
+                // Criar alguns erros de exemplo
+                logError(
+                    'Erro na Geração de Contrato',
+                    'Falha ao processar assinatura digital no contrato #12345',
+                    'usuario@exemplo.com'
+                );
             }
         });
     </script>
