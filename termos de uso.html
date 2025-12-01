@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Termos de Uso - ContratoFácil</title>
+    <link rel="icon" href="logo.jpg" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Header -->
     <header>
         <div class="container">
             <div class="header-content">
@@ -15,171 +17,197 @@
                     <img src="logo.jpg" alt="ContratoFácil" class="logo-img">
                     <span>ContratoFácil</span>
                 </div>
-                <a href="index.html" class="btn">Voltar ao Site</a>
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#generator">Criar Contrato</a></li>
+                        <li><a href="planos.html">Planos</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="politica-de-privacidade.html">Privacidade</a></li>
+                        <li><a href="#terms" class="active">Termos</a></li>
+                    </ul>
+                </nav>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <a href="index.html#generator" class="btn mobile-hidden">Criar Contrato</a>
             </div>
         </div>
     </header>
 
-    <section style="padding: 4rem 0;">
+    <!-- Terms of Use Content -->
+    <section class="terms-of-use" id="terms" style="padding-top: 6rem; padding-bottom: 4rem;">
         <div class="container">
             <div class="terms-header" style="text-align: center; margin-bottom: 3rem;">
                 <h1 style="color: var(--primary); margin-bottom: 1rem;">Termos de Uso</h1>
-                <p style="color: var(--gray); font-size: 1.1rem;"><strong>Última atualização:</strong> 2024</p>
+                <p style="color: var(--gray); font-size: 1.1rem;">Última atualização: 2024</p>
             </div>
 
-            <div class="terms-content" style="max-width: 800px; margin: 0 auto;">
-                <div class="terms-card" style="background: white; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 2rem;">
-                    <h2 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-check-circle"></i> 1. Aceitação dos Termos
-                    </h2>
-                    <p>Ao usar o ContratoFácil, você concorda com estes Termos de Uso e com nossa Política de Privacidade. Se não concordar, não use nossos serviços.</p>
-                </div>
-
-                <div class="terms-card" style="background: white; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 2rem;">
-                    <h2 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-rocket"></i> 2. Serviços Oferecidos
-                    </h2>
-                    <p style="margin-bottom: 1rem;">O ContratoFácil oferece:</p>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
-                        <div style="text-align: center; padding: 1.5rem; background: var(--light); border-radius: 8px;">
-                            <i class="fas fa-eye" style="color: var(--primary); font-size: 2rem; margin-bottom: 1rem;"></i>
-                            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Visualização Grátis</h4>
-                            <p style="font-size: 0.9rem;">Visualize contratos ilimitados</p>
-                        </div>
-                        <div style="text-align: center; padding: 1.5rem; background: var(--light); border-radius: 8px;">
-                            <i class="fas fa-download" style="color: var(--primary); font-size: 2rem; margin-bottom: 1rem;"></i>
-                            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Download Profissional</h4>
-                            <p style="font-size: 0.9rem;">Contratos editáveis em Word</p>
-                        </div>
-                        <div style="text-align: center; padding: 1.5rem; background: var(--light); border-radius: 8px;">
-                            <i class="fas fa-gavel" style="color: var(--primary); font-size: 2rem; margin-bottom: 1rem;"></i>
-                            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Modelos Jurídicos</h4>
-                            <p style="font-size: 0.9rem;">Criados por especialistas</p>
+            <div class="terms-content" style="background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <!-- Important Notice -->
+                <div class="important-notice" style="background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border: 2px solid #ffc107; border-radius: 10px; padding: 2rem; margin-bottom: 2.5rem;">
+                    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                        <i class="fas fa-exclamation-triangle" style="color: #856404; font-size: 2rem; flex-shrink: 0;"></i>
+                        <div>
+                            <h3 style="color: #856404; margin-bottom: 1rem;">⚠️ AVISO IMPORTANTE</h3>
+                            <p style="color: #856404; margin-bottom: 0; line-height: 1.6;">
+                                Os contratos gerados são modelos jurídicos válidos, mas recomendamos consultar um advogado para situações específicas. 
+                                O ContratoFácil não substitui assessoria jurídica personalizada.
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="terms-card" style="background: white; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 2rem;">
-                    <h2 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-user-shield"></i> 3. Responsabilidades do Usuário
-                    </h2>
-                    <p style="margin-bottom: 1rem;">Você concorda em:</p>
+                <div class="terms-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">1. Aceitação dos Termos</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">
+                        Ao acessar e usar o ContratoFácil, você concorda com estes Termos de Uso e com nossa 
+                        <a href="politica-de-privacidade.html" style="color: var(--primary); text-decoration: none;">Política de Privacidade</a>. 
+                        Se você não concordar com estes termos, não use nossos serviços.
+                    </p>
+                </div>
+
+                <div class="terms-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">2. Serviços Oferecidos</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">O ContratoFácil oferece:</p>
                     <ul style="list-style: none; padding-left: 1rem;">
                         <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
                             <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
-                            Fornecer informações verdadeiras e precisas
+                            <strong>Visualização gratuita:</strong> Pré-visualização ilimitada de contratos
                         </li>
                         <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
                             <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
-                            Usar o serviço apenas para fins legais
+                            <strong>Contratos avulsos:</strong> Download individual por R$ 6,99
                         </li>
                         <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
                             <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
-                            Manter a confidencialidade da conta
-                        </li>
-                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
-                            <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
-                            Não reproduzir ou distribuir conteúdo sem autorização
+                            <strong>Planos mensais:</strong> Básico (R$ 9,99) e Profissional (R$ 29,99)
                         </li>
                     </ul>
                 </div>
 
-                <div class="terms-card" style="background: white; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 2rem;">
-                    <h2 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-credit-card"></i> 4. Pagamentos e Reembolsos
-                    </h2>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-                        <div style="padding: 1.5rem; background: var(--light); border-radius: 8px;">
-                            <h4 style="color: var(--primary); margin-bottom: 1rem;">Formas de Pagamento</h4>
-                            <p style="font-size: 0.9rem;">Aceitamos cartão, PIX, boleto e PayPal através do Mercado Pago</p>
+                <div class="terms-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">3. Limitações de Responsabilidade</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">
+                        O ContratoFácil fornece modelos de contratos juridicamente válidos, porém:
+                    </p>
+                    <div style="background: var(--light); padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0;">
+                        <ul style="list-style: none; padding-left: 0;">
+                            <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                                <i class="fas fa-times" style="color: var(--danger); position: absolute; left: 0;"></i>
+                                Não substitui assessoria jurídica personalizada
+                            </li>
+                            <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                                <i class="fas fa-times" style="color: var(--danger); position: absolute; left: 0;"></i>
+                                Não nos responsabilizamos por uso inadequado dos contratos
+                            </li>
+                            <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                                <i class="fas fa-times" style="color: var(--danger); position: absolute; left: 0;"></i>
+                                Recomendamos consultar um advogado para casos complexos
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="terms-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">4. Propriedade Intelectual</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">
+                        Todos os direitos de propriedade intelectual sobre os modelos de contrato, software e conteúdo do site são de propriedade do ContratoFácil.
+                    </p>
+                </div>
+
+                <div class="terms-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">5. Pagamentos e Reembolsos</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                        <div style="background: var(--light); padding: 1.5rem; border-radius: 8px;">
+                            <h4 style="color: var(--primary); margin-bottom: 1rem;">💳 Pagamentos</h4>
+                            <ul style="list-style: none; padding-left: 0;">
+                                <li style="margin-bottom: 0.5rem;">• Aceitamos cartão, PIX e boleto</li>
+                                <li style="margin-bottom: 0.5rem;">• Cobranças recorrentes mensais</li>
+                                <li style="margin-bottom: 0.5rem;">• Faturamento via Mercado Pago</li>
+                            </ul>
                         </div>
-                        <div style="padding: 1.5rem; background: var(--light); border-radius: 8px;">
-                            <h4 style="color: var(--primary); margin-bottom: 1rem;">Contratos Avulsos</h4>
-                            <p style="font-size: 0.9rem;">Sem reembolso após download do contrato</p>
-                        </div>
-                        <div style="padding: 1.5rem; background: var(--light); border-radius: 8px;">
-                            <h4 style="color: var(--primary); margin-bottom: 1rem;">Assinaturas</h4>
-                            <p style="font-size: 0.9rem;">Cancelamento a qualquer momento sem taxas</p>
+                        <div style="background: var(--light); padding: 1.5rem; border-radius: 8px;">
+                            <h4 style="color: var(--primary); margin-bottom: 1rem;">🔄 Reembolsos</h4>
+                            <ul style="list-style: none; padding-left: 0;">
+                                <li style="margin-bottom: 0.5rem;">• 7 dias de garantia</li>
+                                <li style="margin-bottom: 0.5rem;">• Cancelamento a qualquer momento</li>
+                                <li style="margin-bottom: 0.5rem;">• Sem reembolso por contratos baixados</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="terms-card" style="background: white; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 2rem;">
-                    <h2 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-exclamation-triangle"></i> 5. Limitação de Responsabilidade
-                    </h2>
-                    <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0;">
-                        <h4 style="color: #856404; margin-bottom: 1rem;"><i class="fas fa-info-circle"></i> Importante</h4>
-                        <p style="color: #856404; margin: 0;">O ContratoFácil fornece modelos jurídicos, mas não substitui consultoria jurídica personalizada. Recomendamos consultar um advogado para casos específicos.</p>
-                    </div>
-                    <ul style="list-style: none; padding-left: 1rem;">
-                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
-                            <i class="fas fa-times" style="color: var(--danger); position: absolute; left: 0;"></i>
-                            Não substitui consultoria jurídica personalizada
-                        </li>
-                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
-                            <i class="fas fa-times" style="color: var(--danger); position: absolute; left: 0;"></i>
-                            Não nos responsabilizamos pelo uso dos contratos
-                        </li>
-                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
-                            <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
-                            Recomendamos consultar um advogado para casos específicos
-                        </li>
-                    </ul>
+                <div class="terms-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">6. Cancelamento</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">
+                        Você pode cancelar seu plano a qualquer momento. O cancelamento será efetivo no final do período atual já pago.
+                    </p>
                 </div>
 
-                <div class="terms-card" style="background: white; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 2rem;">
-                    <h2 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-copyright"></i> 6. Propriedade Intelectual
-                    </h2>
-                    <p>Todos os direitos sobre a plataforma, conteúdo, marcas e modelos de contrato são propriedade do ContratoFácil. É proibida a reprodução não autorizada.</p>
+                <div class="terms-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">7. Modificações nos Termos</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">
+                        Reservamo-nos o direito de modificar estes termos a qualquer momento. Notificaremos sobre mudanças significativas.
+                    </p>
                 </div>
 
-                <div class="terms-card" style="background: white; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 2rem;">
-                    <h2 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-ban"></i> 7. Cancelamento
-                    </h2>
-                    <p>Você pode cancelar assinaturas a qualquer momento através da sua conta. O cancelamento é imediato e não gera cobranças futuras.</p>
+                <div class="terms-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">8. Lei Aplicável</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">
+                        Estes termos são regidos pelas leis brasileiras. Qualquer disputa será resolvida no foro de Goiânia/GO.
+                    </p>
                 </div>
 
-                <div class="terms-card" style="background: white; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 2rem;">
-                    <h2 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-balance-scale"></i> 8. Lei Aplicável
-                    </h2>
-                    <p>Estes termos são regidos pelas leis brasileiras. Foro: Goiânia/GO.</p>
-                </div>
-
-                <div class="terms-card" style="background: white; padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow);">
-                    <h2 style="color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fas fa-envelope"></i> 9. Contato
-                    </h2>
-                    <p style="margin-bottom: 1.5rem;">Dúvidas sobre estes termos?</p>
-                    <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fas fa-envelope" style="color: var(--primary);"></i>
-                            <span>luhkaimn@gmail.com</span>
+                <!-- Legal Compliance -->
+                <div class="legal-compliance" style="background: linear-gradient(135deg, #e7f3ff 0%, #d0e7ff 100%); border: 2px solid var(--primary); border-radius: 10px; padding: 2rem; margin-top: 2rem;">
+                    <h3 style="color: var(--primary); margin-bottom: 1rem; text-align: center;">⚖️ Conformidade Legal</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; text-align: center;">
+                        <div>
+                            <i class="fas fa-gavel" style="color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                            <div style="font-size: 0.9rem; color: var(--gray);">Código Civil</div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <i class="fab fa-whatsapp" style="color: var(--success);"></i>
-                            <span>(62) 99290-0737</span>
+                        <div>
+                            <i class="fas fa-balance-scale" style="color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                            <div style="font-size: 0.9rem; color: var(--gray);">LGPD</div>
+                        </div>
+                        <div>
+                            <i class="fas fa-shield-alt" style="color: var(--primary); font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                            <div style="font-size: 0.9rem; color: var(--gray);">Marco Civil</div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Acceptance CTA -->
+            <div class="acceptance-cta" style="text-align: center; margin-top: 3rem; padding: 2rem; background: var(--light); border-radius: 12px;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary);">Ao usar nosso serviço, você aceita estes termos</h3>
+                <p style="margin-bottom: 1.5rem; color: var(--gray);">Se tiver dúvidas, entre em contato antes de prosseguir</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="index.html#generator" class="btn" style="background: var(--primary);">
+                        <i class="fas fa-check"></i> Aceitar e Continuar
+                    </a>
+                    <a href="mailto:luhkaimn@gmail.com?subject=Dúvida sobre Termos de Uso" class="btn" style="background: var(--gray);">
+                        <i class="fas fa-question-circle"></i> Tirar Dúvidas
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
         <div class="container">
             <div class="footer-content">
                 <div class="footer-column">
                     <h3>ContratoFácil</h3>
-                    <p>Criando contratos profissionais de forma simples e segura.</p>
+                    <p>Criando contratos profissionais de forma simples e segura desde 2024.</p>
                 </div>
                 <div class="footer-column">
-                    <h3>Links</h3>
+                    <h3>Links Rápidos</h3>
                     <ul>
                         <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#generator">Criar Contrato</a></li>
                         <li><a href="planos.html">Planos</a></li>
                         <li><a href="faq.html">FAQ</a></li>
                     </ul>
@@ -187,8 +215,16 @@
                 <div class="footer-column">
                     <h3>Legal</h3>
                     <ul>
-                        <li><a href="politica-de-privacidade.html">Privacidade</a></li>
-                        <li><a href="termos-de-uso.html">Termos</a></li>
+                        <li><a href="politica-de-privacidade.html">Política de Privacidade</a></li>
+                        <li><a href="#terms" class="active">Termos de Uso</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contato</h3>
+                    <ul>
+                        <li><a href="https://wa.me/556299290737?text=Olá! Gostaria de mais informações sobre o ContratoFácil" target="_blank"><i class="fab fa-whatsapp"></i> (62) 99290-0737</a></li>
+                        <li><a href="mailto:luhkaimn@gmail.com"><i class="fas fa-envelope"></i> luhkaimn@gmail.com</a></li>
+                        <li><i class="fas fa-map-marker-alt"></i> Goiânia, GO</li>
                     </ul>
                 </div>
             </div>
@@ -197,5 +233,7 @@
             </div>
         </div>
     </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
