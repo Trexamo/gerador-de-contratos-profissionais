@@ -85,216 +85,73 @@
     </header>
 
     <!-- Seção Hero Melhorada -->
-    <section class="hero" id="home" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 6rem 0; text-align: center;">
+    <section class="hero" id="home">
         <div class="container">
             <div class="hero-content">
-                <h1 style="font-size: 3rem; margin-bottom: 1.5rem; font-weight: 800; line-height: 1.2;">
+                <h1>
                     Contratos Profissionais em 
-                    <span style="color: var(--secondary);">5 Minutos</span>
+                    <span class="hero-highlight">5 Minutos</span>
                 </h1>
-                <p style="font-size: 1.3rem; margin-bottom: 2.5rem; opacity: 0.9; max-width: 600px; margin-left: auto; margin-right: auto;">
+                <p>
                     Crie contratos juridicamente válidos com nosso gerador inteligente. 
                     <strong>Visualize gratuitamente</strong> e pague apenas quando baixar.
                 </p>
-                <div class="hero-buttons" style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                    <button class="btn btn-large" onclick="scrollToGenerator()" style="background: var(--secondary); border: none;">
+                <div class="hero-buttons">
+                    <button class="btn btn-large" onclick="scrollToGenerator()">
                         <i class="fas fa-bolt"></i> Criar Meu Contrato Seguro
                     </button>
                     <button class="btn btn-large btn-outline" onclick="showLoginModal()">
                         <i class="fas fa-eye"></i> Visualizar Gratuitamente
                     </button>
                 </div>
-                
-                <!-- Stats -->
-                <div class="hero-stats" style="display: flex; justify-content: center; gap: 3rem; margin-top: 4rem; flex-wrap: wrap;">
-                    <div class="stat" style="text-align: center;">
-                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--secondary);">+500</div>
-                        <div style="font-size: 0.9rem; opacity: 0.8;">Contratos Gerados</div>
-                    </div>
-                    <div class="stat" style="text-align: center;">
-                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--secondary);">100%</div>
-                        <div style="font-size: 0.9rem; opacity: 0.8;">Juridicamente Válidos</div>
-                    </div>
-                    <div class="stat" style="text-align: center;">
-                        <div style="font-size: 2.5rem; font-weight: 800; color: var(--secondary);">5min</div>
-                        <div style="font-size: 0.9rem; opacity: 0.8;">Tempo Médio</div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
 
     <!-- Seção do Vídeo Persuasivo - Centralizada -->
-    <section class="video-section" id="videoSection" style="background: linear-gradient(135deg, #ff6b00 0%, #ff8c00 100%); color: white; padding: 4rem 0; text-align: center;">
+    <section class="video-section" id="videoSection">
         <div class="container">
             <div class="video-container">
-                <h2 style="font-size: 2.2rem; margin-bottom: 3rem; font-weight: 700;">⚠️ ATENÇÃO: Não Assine Nenhum Contrato Sem Ver Isso!</h2>
+                <h2>⚠️ ATENÇÃO: Não Assine Nenhum Contrato Sem Ver Isso!</h2>
                 
-                <div class="video-wrapper" style="max-width: 800px; margin: 0 auto 3rem; border-radius: 15px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-                    <video controls autoplay muted class="intro-video" poster="video-poster.jpg" style="width: 100%; height: auto; border-radius: 15px;">
+                <div class="video-wrapper">
+                    <video controls autoplay muted class="intro-video" poster="video-poster.jpg">
                         <source src="video.mp4" type="video/mp4">
                         Seu navegador não suporta o elemento de vídeo.
                     </video>
                 </div>
                 
-                <div class="video-benefits" style="max-width: 800px; margin: 0 auto;">
-                    <h3 style="font-size: 1.5rem; margin-bottom: 2rem;">O que você PERDE sem um contrato profissional:</h3>
+                <div class="video-benefits">
+                    <h3>O que você PERDE sem um contrato profissional:</h3>
                     
-                    <div class="benefits-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
-                        <div class="benefit-item" style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 10px; backdrop-filter: blur(10px);">
-                            <div style="font-size: 2rem; margin-bottom: 1rem;">❌</div>
-                            <h4 style="margin-bottom: 1rem; font-size: 1.1rem;">Proteção Jurídica</h4>
-                            <p style="font-size: 0.9rem; opacity: 0.9;">Risco de processos e disputas judiciais</p>
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">❌</div>
+                            <h4>Proteção Jurídica</h4>
+                            <p>Risco de processos e disputas judiciais</p>
                         </div>
-                        <div class="benefit-item" style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 10px; backdrop-filter: blur(10px);">
-                            <div style="font-size: 2rem; margin-bottom: 1rem;">❌</div>
-                            <h4 style="margin-bottom: 1rem; font-size: 1.1rem;">Pagamentos Garantidos</h4>
-                            <p style="font-size: 0.9rem; opacity: 0.9;">Pode trabalhar e não receber</p>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">❌</div>
+                            <h4>Pagamentos Garantidos</h4>
+                            <p>Pode trabalhar e não receber</p>
                         </div>
-                        <div class="benefit-item" style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 10px; backdrop-filter: blur(10px);">
-                            <div style="font-size: 2rem; margin-bottom: 1rem;">❌</div>
-                            <h4 style="margin-bottom: 1rem; font-size: 1.1rem;">Clareza nas Obrigações</h4>
-                            <p style="font-size: 0.9rem; opacity: 0.9;">Confusão e desentendimentos</p>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">❌</div>
+                            <h4>Clareza nas Obrigações</h4>
+                            <p>Confusão e desentendimentos</p>
                         </div>
-                        <div class="benefit-item" style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 10px; backdrop-filter: blur(10px);">
-                            <div style="font-size: 2rem; margin-bottom: 1rem;">❌</div>
-                            <h4 style="margin-bottom: 1rem; font-size: 1.1rem;">Tempo e Dinheiro</h4>
-                            <p style="font-size: 0.9rem; opacity: 0.9;">Resolver problemas judiciais</p>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">❌</div>
+                            <h4>Tempo e Dinheiro</h4>
+                            <p>Resolver problemas judiciais</p>
                         </div>
                     </div>
                     
                     <div class="video-cta">
-                        <button class="btn btn-large" onclick="scrollToGenerator()" style="background: white; color: #ff6b00; border: none; font-weight: 700; padding: 1rem 2rem;">
+                        <button class="btn btn-large" onclick="scrollToGenerator()">
                             <i class="fas fa-shield-alt"></i> Criar Meu Contrato Seguro Agora
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section Melhorada -->
-    <section class="features" id="features" style="padding: 5rem 0; background: var(--light);">
-        <div class="container">
-            <div class="section-title">
-                <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Por que escolher o ContratoFácil?</h2>
-                <p style="font-size: 1.2rem;">Oferecemos a solução mais completa para criação de contratos profissionais</p>
-            </div>
-            
-            <div class="features-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem;">
-                <div class="feature-card" style="background: white; padding: 2.5rem; border-radius: 15px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.05);">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem;">
-                        <i class="fas fa-rocket"></i>
-                    </div>
-                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--primary);">Rápido e Fácil</h3>
-                    <p style="color: var(--gray); line-height: 1.6;">Crie contratos profissionais em apenas 5 minutos com nosso formulário intuitivo. Interface simples e direta ao ponto.</p>
-                </div>
-                
-                <div class="feature-card" style="background: white; padding: 2.5rem; border-radius: 15px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.05);">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem;">
-                        <i class="fas fa-gavel"></i>
-                    </div>
-                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--primary);">Juridicamente Válido</h3>
-                    <p style="color: var(--gray); line-height: 1.6;">Modelos criados por especialistas jurídicos e atualizados conforme a legislação brasileira vigente.</p>
-                </div>
-                
-                <div class="feature-card" style="background: white; padding: 2.5rem; border-radius: 15px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.05);">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem;">
-                        <i class="fas fa-sliders-h"></i>
-                    </div>
-                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--primary);">Totalmente Personalizável</h3>
-                    <p style="color: var(--gray); line-height: 1.6;">Adapte cada cláusula do contrato às suas necessidades específicas. Adicione ou remova seções conforme necessário.</p>
-                </div>
-                
-                <div class="feature-card" style="background: white; padding: 2.5rem; border-radius: 15px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.05);">
-                    <div class="feature-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2rem;">
-                        <i class="fas fa-download"></i>
-                    </div>
-                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem; color: var(--primary);">Download Imediato</h3>
-                    <p style="color: var(--gray); line-height: 1.6;">Receba seu contrato em Word editável pronto para usar assim que finalizar. Formato profissional e personalizável.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Seção de Login (aparece quando não logado) -->
-    <section id="loginSection" class="login-promo" style="display: none;">
-        <div class="container">
-            <div class="login-promo-content">
-                <div class="login-info">
-                    <h2>Crie sua conta gratuitamente</h2>
-                    <p>Faça login para acessar todos os recursos e salvar seus contratos</p>
-                    <ul>
-                        <li><i class="fas fa-check"></i> Salve seus contratos na nuvem</li>
-                        <li><i class="fas fa-check"></i> Acesso a todos os modelos</li>
-                        <li><i class="fas fa-check"></i> Histórico de contratos gerados</li>
-                        <li><i class="fas fa-check"></i> Visualização gratuita de contratos</li>
-                    </ul>
-                </div>
-                <div class="login-box">
-                    <h3>Entre com Google</h3>
-                    <p>É rápido, fácil e seguro</p>
-                    
-                    <div id="g_id_onload"
-                         data-client_id="395303260900-usl0idov344ud7qo9ptr82mnmqfidebd.apps.googleusercontent.com"
-                         data-context="signin"
-                         data-ux_mode="popup"
-                         data-callback="handleGoogleSignIn"
-                         data-auto_prompt="false">
-                    </div>
-
-                    <div class="g_id_signin"
-                         data-type="standard"
-                         data-shape="rectangular"
-                         data-theme="filled_blue"
-                         data-text="signin_with"
-                         data-size="large"
-                         data-logo_alignment="left"
-                         data-width="300">
-                    </div>
-                    
-                    <p class="login-terms">
-                        Ao entrar, você concorda com nossos <a href="termos-de-uso.html">Termos de Serviço</a> e <a href="politica-de-privacidade.html">Política de Privacidade</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Seção do Usuário (aparece quando logado) -->
-    <section id="userSection" class="user-dashboard" style="display: none;">
-        <div class="container">
-            <div class="user-welcome">
-                <div class="user-info">
-                    <img id="userAvatar" src="" alt="Avatar" class="user-avatar">
-                    <div class="user-details">
-                        <h2>Bem-vindo, <span id="userName"></span>!</h2>
-                        <p id="userEmail"></p>
-                        <div class="user-plan">
-                            <span class="plan-badge" id="userPlan">Plano Gratuito</span>
-                            <span class="plan-expiry" id="planExpiry">Visualização Gratuita</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="user-actions">
-                    <button class="btn-logout" onclick="signOut()">
-                        <i class="fas fa-sign-out-alt"></i> Sair
-                    </button>
-                </div>
-            </div>
-            
-            <div class="user-stats">
-                <div class="stat-card">
-                    <div class="stat-number" id="contractsCount">0</div>
-                    <div class="stat-label">Contratos Visualizados</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="remainingContracts">Ilimitado</div>
-                    <div class="stat-label">Visualizações Restantes</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="daysLeft">∞</div>
-                    <div class="stat-label">Dias Restantes</div>
                 </div>
             </div>
         </div>
@@ -414,67 +271,36 @@
                         </div>
                     </div>
 
-                    <!-- Sistema de Assinatura - Contratante -->
-                    <div class="signature-options">
-                        <h4>Assinatura do Contratante</h4>
-                        
-                        <div class="signature-option" onclick="selectSignatureOption('contractor', 'upload')">
-                            <strong>Anexar Assinatura</strong>
-                            <p>Faça upload de uma imagem da sua assinatura (fundo branco)</p>
-                            <input type="file" id="contractorSignatureUpload" accept="image/*" style="display: none;">
-                            <canvas id="contractorSignatureCanvas" width="300" height="100" style="border: 1px solid #ccc; display: none;"></canvas>
-                        </div>
-                        
-                        <div class="signature-option" onclick="selectSignatureOption('contractor', 'draw')">
-                            <strong>Desenhar Assinatura</strong>
-                            <p>Use o mouse ou touch para desenhar sua assinatura</p>
-                            <canvas id="contractorSignatureDraw" width="300" height="100" style="border: 1px solid #ccc; display: none;"></canvas>
-                        </div>
-                        
-                        <div class="signature-preview" id="contractorSignaturePreview">
-                            <p style="color: #666;">Assinatura aparecerá aqui</p>
-                        </div>
-                        
-                        <div class="signature-actions" id="contractorSignatureConfirmation" style="display: none;">
-                            <button type="button" class="btn" onclick="clearSignature('contractor')">
-                                <i class="fas fa-redo"></i> Refazer
-                            </button>
-                            <button type="button" class="btn btn-success" onclick="confirmSignature('contractor')">
-                                <i class="fas fa-check"></i> Confirmar
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Sistema de Assinatura - Contratado -->
-                    <div class="signature-options">
-                        <h4>Assinatura do Contratado</h4>
-                        
-                        <div class="signature-option" onclick="selectSignatureOption('contracted', 'upload')">
-                            <strong>Anexar Assinatura</strong>
-                            <p>Faça upload de uma imagem da sua assinatura (fundo branco)</p>
-                            <input type="file" id="contractedSignatureUpload" accept="image/*" style="display: none;">
-                            <canvas id="contractedSignatureCanvas" width="300" height="100" style="border: 1px solid #ccc; display: none;"></canvas>
-                        </div>
-                        
-                        <div class="signature-option" onclick="selectSignatureOption('contracted', 'draw')">
-                            <strong>Desenhar Assinatura</strong>
-                            <p>Use o mouse ou touch para desenhar sua assinatura</p>
-                            <canvas id="contractedSignatureDraw" width="300" height="100" style="border: 1px solid #ccc; display: none;"></canvas>
-                        </div>
-                        
-                        <div class="signature-preview" id="contractedSignaturePreview">
-                            <p style="color: #666;">Assinatura aparecerá aqui</p>
-                        </div>
-                        
-                        <div class="signature-actions" id="contractedSignatureConfirmation" style="display: none;">
-                            <button type="button" class="btn" onclick="clearSignature('contracted')">
-                                <i class="fas fa-redo"></i> Refazer
-                            </button>
-                            <button type="button" class="btn btn-success" onclick="confirmSignature('contracted')">
-                                <i class="fas fa-check"></i> Confirmar
-                            </button>
-                        </div>
-                    </div>
+<!-- Sistema de Assinatura - Contratado -->
+<div class="signature-options">
+    <h4>Assinatura do Contratado</h4>
+    
+    <div class="signature-option" onclick="selectSignatureOption('contracted', 'upload', event)">
+        <strong>Anexar Assinatura</strong>
+        <p>Faça upload de uma imagem da sua assinatura (fundo branco)</p>
+        <input type="file" id="contractedSignatureUpload" accept="image/*" style="display: none;" onchange="handleSignatureUpload(event, 'contracted')">
+        <!-- REMOVA ESTA LINHA: <canvas id="contractedSignatureCanvas"... -->
+    </div>
+    
+    <div class="signature-option" onclick="selectSignatureOption('contracted', 'draw', event)">
+        <strong>Desenhar Assinatura</strong>
+        <p>Use o mouse ou touch para desenhar sua assinatura</p>
+        <canvas id="contractedSignatureDraw" width="300" height="100" style="border: 1px solid #ccc; display: none;"></canvas>
+    </div>
+    
+    <div class="signature-preview" id="contractedSignaturePreview">
+        <p style="color: #666;">Assinatura aparecerá aqui</p>
+    </div>
+    
+    <div class="signature-actions" id="contractedSignatureConfirmation" style="display: none;">
+        <button type="button" class="btn" onclick="clearSignature('contracted')">
+            <i class="fas fa-redo"></i> Refazer
+        </button>
+        <button type="button" class="btn btn-success" onclick="confirmSignature('contracted')">
+            <i class="fas fa-check"></i> Confirmar
+        </button>
+    </div>
+</div>
 
                     <div class="form-row">
                         <div class="form-group">
@@ -493,10 +319,10 @@
                     </div>
                     
                     <div class="actions">
-                        <button class="btn" onclick="updatePreview()">
-                            <i class="fas fa-eye"></i> Atualizar Visualização
+                        <button class="btn" onclick="openSecurePreview()">
+                            <i class="fas fa-eye"></i> Visualizar Gratuitamente
                         </button>
-                        <button class="btn btn-success" onclick="openPaymentModal('avulsa')">
+                        <button class="btn btn-success" onclick="generateWordPlus()">
                             <i class="fas fa-download"></i> Baixar Contrato - R$ 6,99
                         </button>
                     </div>
@@ -544,7 +370,7 @@
                 <div class="footer-column">
                     <h3>Contato</h3>
                     <ul>
-                        <li><a href="https://wa.me/556299290737?text=Olá! Gostaria de mais informações sobre o ContratoFácil" target="_blank"><i class="fab fa-whatsapp"></i> (62) 99290-0737</a></li>
+                        <li><a href="mailto:luhkaimn@gmail.com"><i class="fas fa-envelope"></i> luhkaimn@gmail.com</a></li>
                         <li><i class="fas fa-map-marker-alt"></i> Goiânia, GO</li>
                         <!-- Link de administração escondido -->
                         <li style="opacity: 0.3; font-size: 0.7rem;">
@@ -588,25 +414,25 @@
                 </div>
 
                 <!-- Informações para PIX -->
-                <div id="pixDetails" class="bank-details" style="display: none; margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
-                    <h4 style="margin-bottom: 1rem;">Pagamento via PIX</h4>
-                    <p style="margin-bottom: 1rem;">Valor: <strong id="pixValue">R$ 6,99</strong></p>
-                    <div style="text-align: center; margin: 1.5rem 0;">
-                        <a href="#" id="pixLink" class="btn btn-success" target="_blank" style="width: 100%;">
+                <div id="pixDetails" class="bank-details" style="display: none;">
+                    <h4>Pagamento via PIX</h4>
+                    <p>Valor: <strong id="pixValue">R$ 6,99</strong></p>
+                    <div class="payment-action">
+                        <a href="#" id="pixLink" class="btn btn-success" target="_blank">
                             <i class="fas fa-qrcode"></i> Pagar com PIX Agora
                         </a>
                     </div>
-                    <p style="font-size: 0.9rem; color: #666; text-align: center;">
+                    <p class="payment-note">
                         Você será redirecionado para o Mercado Pago
                     </p>
                 </div>
 
                 <!-- Informações para Cartão -->
-                <div id="cardDetails" class="bank-details" style="display: none; margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
-                    <h4 style="margin-bottom: 1rem;">Pagamento com Cartão</h4>
-                    <p style="margin-bottom: 1rem;">Valor: <strong id="cardValue">R$ 6,99</strong></p>
-                    <div style="text-align: center; margin: 1.5rem 0;">
-                        <a href="#" id="cardLink" class="btn btn-success" target="_blank" style="width: 100%;">
+                <div id="cardDetails" class="bank-details" style="display: none;">
+                    <h4>Pagamento com Cartão</h4>
+                    <p>Valor: <strong id="cardValue">R$ 6,99</strong></p>
+                    <div class="payment-action">
+                        <a href="#" id="cardLink" class="btn btn-success" target="_blank">
                             <i class="fas fa-credit-card"></i> Pagar com Cartão
                         </a>
                     </div>
@@ -678,7 +504,7 @@
                         <label for="contactMessage">Mensagem *</label>
                         <textarea id="contactMessage" rows="5" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-success" style="width: 100%;">
+                    <button type="submit" class="btn btn-success">
                         <i class="fas fa-paper-plane"></i> Enviar Mensagem
                     </button>
                 </form>
@@ -747,7 +573,7 @@
                     closeContactModal();
                     document.getElementById('contactForm').reset();
                 }, function(error) {
-                    alert('Erro ao enviar mensagem. Tente novamente ou entre em contato via WhatsApp.');
+                    alert('Erro ao enviar mensagem. Tente novamente ou entre em contato via email.');
                 });
         }
 
@@ -768,6 +594,47 @@
             const user = JSON.parse(localStorage.getItem('currentUser'));
             updateStatusBar(user);
         });
+
+        // Scroll para o gerador
+        function scrollToGenerator() {
+            document.getElementById('generator').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Função para visualização segura
+        function openSecurePreview() {
+            if (!canGenerateContract()) {
+                return;
+            }
+            
+            const validationErrors = validateContractData();
+            if (validationErrors.length > 0) {
+                showNotification(`❌ Corrija os seguintes campos: ${validationErrors.join(', ')}`);
+                return;
+            }
+            
+            try {
+                const contractData = collectContractData();
+                const contractId = 'contract_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                
+                sessionStorage.setItem('secureContractData', JSON.stringify(contractData));
+                sessionStorage.setItem('secureContractId', contractId);
+                
+                const secureWindow = window.open('view-contract.html', '_blank');
+                
+                if (secureWindow) {
+                    showNotification('👁️ Visualização segura aberta em nova aba');
+                } else {
+                    showNotification('❌ Permita pop-ups para visualização segura');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao abrir visualização segura:', error);
+                showNotification('❌ Erro ao abrir visualização segura');
+            }
+        }
     </script>
 </body>
 </html>
