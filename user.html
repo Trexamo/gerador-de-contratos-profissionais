@@ -7,6 +7,161 @@
     <link rel="icon" href="logo.jpg" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-light);
+        }
+        
+        .user-welcome {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .user-details h2 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-plan {
+            margin-top: 1rem;
+        }
+        
+        .plan-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        
+        .plan-badge.free {
+            background: var(--light-gray);
+            color: var(--dark-gray);
+        }
+        
+        .plan-badge.basico {
+            background: var(--primary-light);
+            color: white;
+        }
+        
+        .plan-badge.profissional {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .plan-expiry {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .user-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            background: #f0f0f0;
+            border-radius: 10px;
+            height: 12px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+        
+        .action-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .btn-logout {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .btn-logout:hover {
+            background: var(--danger-dark);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .user-welcome {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .user-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -39,6 +194,7 @@
     <!-- User Dashboard -->
     <section class="user-dashboard" style="padding-top: 6rem; padding-bottom: 4rem;">
         <div class="container">
+            <!-- Welcome Section -->
             <div class="user-welcome">
                 <div class="user-info">
                     <img id="userAvatar" src="" alt="Avatar" class="user-avatar">
@@ -65,7 +221,7 @@
                     <div class="stat-label">Contratos Visualizados</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number" id="remainingContracts">Ilimitado</div>
+                    <div class="stat-number" id="remainingContracts">∞</div>
                     <div class="stat-label">Visualizações Restantes</div>
                 </div>
                 <div class="stat-card">
@@ -81,8 +237,8 @@
             <!-- Barra de Progresso do Plano -->
             <div class="plan-progress" style="background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-top: 2rem;">
                 <h3 style="margin-bottom: 1rem; color: var(--primary);">Seu Uso do Plano</h3>
-                <div class="progress-bar" style="background: #f0f0f0; border-radius: 10px; height: 12px; margin-bottom: 1rem; overflow: hidden;">
-                    <div id="usageProgress" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="usageProgress"></div>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--gray);">
                     <span id="usageText">0 de ∞ visualizações</span>
@@ -103,21 +259,21 @@
 
             <!-- Ações Rápidas -->
             <div class="quick-actions" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
-                <div class="action-card" style="background: white; padding: 1.5rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 2px solid var(--primary);">
+                <div class="action-card" style="border: 2px solid var(--primary);">
                     <i class="fas fa-file-contract" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
                     <h4 style="margin-bottom: 0.5rem; color: var(--primary);">Criar Contrato</h4>
                     <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 1rem;">Comece um novo contrato profissional</p>
                     <a href="index.html#generator" class="btn" style="width: 100%;">Criar Agora</a>
                 </div>
                 
-                <div class="action-card" style="background: white; padding: 1.5rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 2px solid var(--success);">
+                <div class="action-card" style="border: 2px solid var(--success);">
                     <i class="fas fa-crown" style="font-size: 2rem; color: var(--success); margin-bottom: 1rem;"></i>
                     <h4 style="margin-bottom: 0.5rem; color: var(--success);">Fazer Upgrade</h4>
                     <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 1rem;">Acesse todos os recursos</p>
                     <button class="btn btn-success" onclick="openPaymentModal('profissional')" style="width: 100%;">Ver Planos</button>
                 </div>
                 
-                <div class="action-card" style="background: white; padding: 1.5rem; border-radius: 12px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 2px solid var(--secondary);">
+                <div class="action-card" style="border: 2px solid var(--secondary);">
                     <i class="fas fa-question-circle" style="font-size: 2rem; color: var(--secondary); margin-bottom: 1rem;"></i>
                     <h4 style="margin-bottom: 0.5rem; color: var(--secondary);">Ajuda</h4>
                     <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 1rem;">Precisa de suporte?</p>
@@ -177,18 +333,27 @@
             }
 
             // Atualizar informações do usuário
-            document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('userEmail').textContent = currentUser.email;
-            
-            if (currentUser.picture) {
-                document.getElementById('userAvatar').src = currentUser.picture;
-            }
-
-            // Atualizar informações do plano
+            updateUserInfo(currentUser);
             updatePlanInfo(currentUser);
             updateUsageProgress(currentUser);
             loadContractsHistory(currentUser);
         });
+
+        function updateUserInfo(user) {
+            document.getElementById('userName').textContent = user.name || 'Usuário';
+            document.getElementById('userEmail').textContent = user.email;
+            
+            const userAvatar = document.getElementById('userAvatar');
+            if (user.picture) {
+                userAvatar.src = user.picture;
+                userAvatar.onerror = function() {
+                    // Fallback para avatar padrão se a imagem não carregar
+                    this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiMyYzlhYTAiLz4KPHBhdGggZD0iTTQwIDQ0QzQ2LjYgNDQgNTIgMzguNiA1MiAzMkM1MiAyNS40IDQ2LjYgMjAgNDAgMjBDMzMuNCAyMCAyOCAyNS40IDI4IDMyQzI4IDM4LjYgMzMuNCA0NCA0MCA0NFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yOCA1MkMyOCA1OC42IDMzLjQgNjQgNDAgNjRDNDYuNiA2NCA1MiA1OC42IDUyIDUyVjUySDI4VjUyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+';
+                };
+            } else {
+                userAvatar.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiMyYzlhYTAiLz4KPHBhdGggZD0iTTQwIDQ0QzQ2LjYgNDQgNTIgMzguNiA1MiAzMkM1MiAyNS40IDQ2LjYgMjAgNDAgMjBDMzMuNCAyMCAyOCAyNS40IDI4IDMyQzI4IDM4LjYgMzMuNCA0NCA0MCA0NFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yOCA1MkMyOCA1OC42IDMzLjQgNjQgNDAgNjRDNDYuNiA2NCA1MiA1OC42IDUyIDUyVjUySDI4VjUyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+';
+            }
+        }
 
         function updatePlanInfo(user) {
             const userPlan = document.getElementById('userPlan');
@@ -198,53 +363,84 @@
             const daysLeft = document.getElementById('daysLeft');
             const contractsDownloaded = document.getElementById('contractsDownloaded');
 
-            if (userPlan) {
-                userPlan.textContent = user.plan === 'free' ? 'Plano Gratuito' : 
-                                      user.plan === 'basico' ? 'Plano Básico' : 'Plano Profissional';
-                userPlan.className = 'plan-badge ' + user.plan;
-            }
+            // Atualizar plano
+            const planName = getPlanName(user.plan);
+            userPlan.textContent = planName;
+            userPlan.className = 'plan-badge ' + user.plan;
 
-            if (planExpiry) {
-                planExpiry.textContent = user.plan === 'free' ? 'Visualização Gratuita' : 
-                                        user.plan === 'basico' ? '5 contratos/mês' : 'Ilimitado';
-            }
-
-            if (contractsCount) {
-                contractsCount.textContent = user.contractsGenerated || 0;
-            }
-
-            if (remainingContracts) {
-                const remaining = user.plan === 'free' ? 'Ilimitado' :
-                                 user.plan === 'basico' ? (5 - (user.contractsDownloaded || 0)) : 'Ilimitado';
-                remainingContracts.textContent = remaining;
-            }
-
-            if (daysLeft) {
-                daysLeft.textContent = user.plan === 'free' ? '∞' : '30';
-            }
-
-            if (contractsDownloaded) {
-                contractsDownloaded.textContent = user.contractsDownloaded || 0;
+            // Atualizar informações do plano
+            planExpiry.textContent = getPlanDescription(user.plan);
+            contractsCount.textContent = user.contractsGenerated || 0;
+            contractsDownloaded.textContent = user.contractsDownloaded || 0;
+            
+            // Calcular dias restantes (simulação)
+            if (user.plan === 'free') {
+                remainingContracts.textContent = '∞';
+                daysLeft.textContent = '∞';
+            } else if (user.plan === 'basico') {
+                const remaining = 5 - (user.contractsDownloaded || 0);
+                remainingContracts.textContent = Math.max(0, remaining);
+                daysLeft.textContent = calculateDaysLeft(user.joinDate);
+            } else {
+                remainingContracts.textContent = '∞';
+                daysLeft.textContent = calculateDaysLeft(user.joinDate);
             }
         }
 
+        function getPlanName(plan) {
+            const plans = {
+                'free': 'Plano Gratuito',
+                'basico': 'Plano Básico', 
+                'profissional': 'Plano Profissional'
+            };
+            return plans[plan] || 'Plano Gratuito';
+        }
+
+        function getPlanDescription(plan) {
+            const descriptions = {
+                'free': 'Visualização Gratuita Ilimitada',
+                'basico': '5 contratos por mês',
+                'profissional': 'Contratos Ilimitados'
+            };
+            return descriptions[plan] || 'Visualização Gratuita';
+        }
+
+        function calculateDaysLeft(joinDate) {
+            if (!joinDate) return '30';
+            
+            const join = new Date(joinDate);
+            const now = new Date();
+            const nextMonth = new Date(join);
+            nextMonth.setMonth(nextMonth.getMonth() + 1);
+            
+            const diffTime = nextMonth - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            return Math.max(0, diffDays);
+        }
+
         function updateUsageProgress(user) {
-            const progressBar = document.getElementById('usageProgress');
+            const progressFill = document.getElementById('usageProgress');
             const usageText = document.getElementById('usageText');
             const usagePercentage = document.getElementById('usagePercentage');
 
             if (user.plan === 'free') {
-                progressBar.style.width = '0%';
+                progressFill.style.width = '0%';
                 usageText.textContent = 'Visualização Ilimitada';
                 usagePercentage.textContent = '0%';
             } else if (user.plan === 'basico') {
                 const used = user.contractsDownloaded || 0;
                 const percentage = Math.min((used / 5) * 100, 100);
-                progressBar.style.width = percentage + '%';
+                progressFill.style.width = percentage + '%';
                 usageText.textContent = `${used} de 5 contratos baixados`;
                 usagePercentage.textContent = Math.round(percentage) + '%';
+                
+                // Mudar cor se estiver perto do limite
+                if (percentage >= 80) {
+                    progressFill.style.background = 'linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%)';
+                }
             } else {
-                progressBar.style.width = '100%';
+                progressFill.style.width = '100%';
                 usageText.textContent = 'Contratos Ilimitados';
                 usagePercentage.textContent = '100%';
             }
@@ -252,42 +448,110 @@
 
         function loadContractsHistory(user) {
             const contractsList = document.getElementById('contractsList');
+            
+            // Simular histórico de contratos (em produção, isso viria do backend)
             const contracts = user.contractsHistory || [];
+            
+            // Se não há histórico, tentar criar a partir dos contadores
+            if (contracts.length === 0 && (user.contractsGenerated > 0 || user.contractsDownloaded > 0)) {
+                const mockContracts = [];
+                const totalContracts = Math.max(user.contractsGenerated, user.contractsDownloaded);
+                
+                for (let i = 0; i < totalContracts; i++) {
+                    mockContracts.push({
+                        id: 'contract_' + i,
+                        name: `Contrato de Prestação de Serviços ${i + 1}`,
+                        createdAt: new Date(Date.now() - (i * 86400000)).toISOString(),
+                        downloaded: i < (user.contractsDownloaded || 0)
+                    });
+                }
+                
+                user.contractsHistory = mockContracts;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+            }
 
-            if (contracts.length === 0) {
+            const finalContracts = user.contractsHistory || [];
+
+            if (finalContracts.length === 0) {
+                contractsList.innerHTML = `
+                    <p style="text-align: center; color: var(--gray); padding: 2rem;">
+                        <i class="fas fa-file-contract" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                        Nenhum contrato gerado ainda
+                    </p>
+                `;
                 return;
             }
 
             let html = '<div style="display: grid; gap: 1rem;">';
-            contracts.forEach(contract => {
+            
+            finalContracts.slice(0, 10).forEach(contract => {
+                const date = new Date(contract.createdAt).toLocaleDateString('pt-BR');
+                const time = new Date(contract.createdAt).toLocaleTimeString('pt-BR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
                 html += `
-                    <div style="display: flex; justify-content: between; align-items: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--primary);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid ${contract.downloaded ? 'var(--success)' : 'var(--primary)'};">
                         <div style="flex: 1;">
                             <strong style="color: var(--primary);">${contract.name}</strong>
                             <div style="font-size: 0.8rem; color: var(--gray); margin-top: 0.3rem;">
-                                Criado em: ${new Date(contract.createdAt).toLocaleDateString('pt-BR')}
+                                📅 ${date} às ${time}
                             </div>
                         </div>
                         <span style="background: ${contract.downloaded ? 'var(--success)' : 'var(--warning)'}; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem;">
-                            ${contract.downloaded ? 'Baixado' : 'Visualizado'}
+                            ${contract.downloaded ? '✅ Baixado' : '👁️ Visualizado'}
                         </span>
                     </div>
                 `;
             });
+            
+            if (finalContracts.length > 10) {
+                html += `
+                    <div style="text-align: center; padding: 1rem; color: var(--gray);">
+                        + ${finalContracts.length - 10} contratos anteriores
+                    </div>
+                `;
+            }
+            
             html += '</div>';
 
             contractsList.innerHTML = html;
-        }
-
-        function signOut() {
-            localStorage.removeItem('currentUser');
-            window.location.href = 'index.html';
         }
 
         function openPaymentModal(plan) {
             // Redirecionar para a página de planos
             window.location.href = 'planos.html';
         }
+
+        function signOut() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Adicionar utilitários para o usuário
+        function getPlanName(plan) {
+            const plans = {
+                'free': 'Plano Gratuito',
+                'basico': 'Plano Básico',
+                'profissional': 'Plano Profissional'
+            };
+            return plans[plan] || 'Plano Gratuito';
+        }
+
+        // Atualizar último acesso
+        function updateLastAccess() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (currentUser) {
+                currentUser.lastAccess = new Date().toISOString();
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+        }
+
+        // Atualizar a cada minuto
+        setInterval(updateLastAccess, 60000);
     </script>
 </body>
 </html>
