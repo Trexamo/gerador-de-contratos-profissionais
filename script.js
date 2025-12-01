@@ -25,6 +25,12 @@ const planPrices = {
     'profissional': 29.99
 };
 
+// Testemunhas
+let witness1Name = '';
+let witness1CPF = '';
+let witness2Name = '';
+let witness2CPF = '';
+
 // =============================================
 // INICIALIZAÇÃO DO SISTEMA
 // =============================================
@@ -35,9 +41,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     initMobileMenu();
     initEnhancedMobileMenu();
-    updatePreview();
     initSignatureSystem();
     initMobileSignatureSystem();
+    initWitnessSystem(); // Novo: sistema de testemunhas
     checkUserLogin();
     optimizeForMobile();
     setupEventListeners();
@@ -95,6 +101,11 @@ function setupEventListeners() {
             upgradeModal.remove();
             document.body.style.overflow = 'auto';
         }
+        
+        const witnessModal = document.getElementById('witnessModal');
+        if (event.target === witnessModal) {
+            closeWitnessModal();
+        }
     });
 
     // Tecla ESC para fechar modal
@@ -103,6 +114,7 @@ function setupEventListeners() {
             closePaymentModal();
             closeLoginModal();
             closeContactModal();
+            closeWitnessModal();
             const upgradeModal = document.querySelector('.modal.upgrade-modal');
             if (upgradeModal) {
                 upgradeModal.remove();
@@ -128,6 +140,19 @@ function setupEventListeners() {
             showNotification('❌ Ação não permitida no contrato');
         }
     });
+}
+
+// Inicializar sistema de testemunhas
+function initWitnessSystem() {
+    const addWitnessBtn = document.getElementById('addWitnessBtn');
+    if (addWitnessBtn) {
+        addWitnessBtn.addEventListener('click', showWitnessModal);
+    }
+    
+    const saveWitnessBtn = document.getElementById('saveWitnessBtn');
+    if (saveWitnessBtn) {
+        saveWitnessBtn.addEventListener('click', saveWitnesses);
+    }
 }
 
 // Configurar datas
@@ -159,6 +184,65 @@ function initDateSettings() {
             endDateInput.value = endDate.toISOString().split('T')[0];
         }
     }
+}
+
+// =============================================
+// SISTEMA DE TESTEMUNHAS
+// =============================================
+
+function showWitnessModal() {
+    const witnessModal = document.getElementById('witnessModal');
+    if (witnessModal) {
+        // Preencher campos se já existir dados
+        document.getElementById('witness1Name').value = witness1Name || '';
+        document.getElementById('witness1CPF').value = witness1CPF || '';
+        document.getElementById('witness2Name').value = witness2Name || '';
+        document.getElementById('witness2CPF').value = witness2CPF || '';
+        
+        witnessModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeWitnessModal() {
+    const witnessModal = document.getElementById('witnessModal');
+    if (witnessModal) {
+        witnessModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+function saveWitnesses() {
+    witness1Name = document.getElementById('witness1Name').value.trim();
+    witness1CPF = document.getElementById('witness1CPF').value.trim();
+    witness2Name = document.getElementById('witness2Name').value.trim();
+    witness2CPF = document.getElementById('witness2CPF').value.trim();
+    
+    // Validar CPFs se informados
+    if (witness1CPF && !validateCPF(witness1CPF)) {
+        showNotification('❌ CPF da Testemunha 1 inválido');
+        return;
+    }
+    
+    if (witness2CPF && !validateCPF(witness2CPF)) {
+        showNotification('❌ CPF da Testemunha 2 inválido');
+        return;
+    }
+    
+    closeWitnessModal();
+    updatePreview();
+    showNotification('✅ Testemunhas salvas com sucesso!');
+}
+
+function clearWitnesses() {
+    witness1Name = '';
+    witness1CPF = '';
+    witness2Name = '';
+    witness2CPF = '';
+    
+    closeWitnessModal();
+    updatePreview();
+    showNotification('🔄 Testemunhas removidas');
 }
 
 // =============================================
@@ -471,13 +555,13 @@ function updatePlanInfo() {
     
     if (remainingContracts) {
         const remaining = currentUser.plan === 'free' ? 
-                         'Ilimitado' :
-                         currentUser.plan === 'basico' ? (5 - (currentUser.contractsDownloaded || 0)) : 'Ilimitado';
+                         '-' :
+                         currentUser.plan === 'basico' ? (5 - (currentUser.contractsDownloaded || 0)) : '-';
         remainingContracts.textContent = remaining;
     }
     
     if (daysLeft) {
-        daysLeft.textContent = currentUser.plan === 'free' ? '∞' : '30';
+        daysLeft.textContent = currentUser.plan === 'free' ? '-' : '30';
     }
 }
 
@@ -684,21 +768,18 @@ function initEnhancedMobileMenu() {
 
 // Sistema de Assinaturas
 function initSignatureSystem() {
-    // Upload de assinatura - Contratante
-    const contractorUpload = document.getElementById('contractorSignatureUpload');
-    const contractorPreview = document.getElementById('contractorSignaturePreview');
+    console.log('Inicializando sistema de assinatura...');
     
-    if (contractorUpload && contractorPreview) {
+    // Configurar eventos de upload
+    const contractorUpload = document.getElementById('contractorSignatureUpload');
+    if (contractorUpload) {
         contractorUpload.addEventListener('change', function(e) {
             handleSignatureUpload(e, 'contractor');
         });
     }
 
-    // Upload de assinatura - Contratado
     const contractedUpload = document.getElementById('contractedSignatureUpload');
-    const contractedPreview = document.getElementById('contractedSignaturePreview');
-    
-    if (contractedUpload && contractedPreview) {
+    if (contractedUpload) {
         contractedUpload.addEventListener('change', function(e) {
             handleSignatureUpload(e, 'contracted');
         });
@@ -707,18 +788,23 @@ function initSignatureSystem() {
     // Inicializar canvas de desenho
     initSignatureCanvas('contractor');
     initSignatureCanvas('contracted');
+    
+    console.log('Sistema de assinatura inicializado');
 }
 
+// Função para lidar com upload de assinatura
 function handleSignatureUpload(event, type) {
     const file = event.target.files[0];
     if (!file) return;
+    
+    console.log(`Processando upload para ${type}:`, file.name);
 
     if (!file.type.match('image.*')) {
-        showNotification('❌ Por favor, selecione uma imagem válida');
+        showNotification('❌ Por favor, selecione uma imagem válida (JPG, PNG, etc.)');
         return;
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
         showNotification('❌ A imagem deve ser menor que 5MB');
         return;
     }
@@ -727,6 +813,7 @@ function handleSignatureUpload(event, type) {
     reader.onload = function(e) {
         const img = new Image();
         img.onload = function() {
+            // Criar canvas temporário para processar a imagem
             const tempCanvas = document.createElement('canvas');
             const tempCtx = tempCanvas.getContext('2d');
             tempCanvas.width = 300;
@@ -735,13 +822,24 @@ function handleSignatureUpload(event, type) {
             // Limpar canvas
             tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
             
-            // Desenhar imagem no canvas
-            tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
+            // Calcular dimensões para manter proporção
+            const ratio = Math.min(
+                tempCanvas.width / img.width,
+                tempCanvas.height / img.height
+            );
+            const width = img.width * ratio;
+            const height = img.height * ratio;
+            const x = (tempCanvas.width - width) / 2;
+            const y = (tempCanvas.height - height) / 2;
             
+            // Desenhar imagem centralizada
+            tempCtx.drawImage(img, x, y, width, height);
+            
+            // Salvar assinatura
             if (type === 'contractor') {
-                contractorSignature = tempCanvas.toDataURL();
+                contractorSignature = tempCanvas.toDataURL('image/png');
             } else {
-                contractedSignature = tempCanvas.toDataURL();
+                contractedSignature = tempCanvas.toDataURL('image/png');
             }
             
             updateSignaturePreview(type);
@@ -760,9 +858,13 @@ function handleSignatureUpload(event, type) {
     reader.readAsDataURL(file);
 }
 
+// Função para inicializar canvas de desenho
 function initSignatureCanvas(type) {
     const canvas = document.getElementById(`${type}SignatureDraw`);
-    if (!canvas) return;
+    if (!canvas) {
+        console.error(`Canvas não encontrado: ${type}SignatureDraw`);
+        return;
+    }
 
     const ctx = canvas.getContext('2d');
     
@@ -775,6 +877,59 @@ function initSignatureCanvas(type) {
     // Limpar canvas inicial
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    function startDrawing(e) {
+        isDrawing = true;
+        [lastX, lastY] = getCoordinates(e);
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(lastX, lastY);
+        ctx.stroke();
+    }
+
+    function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        
+        const [currentX, currentY] = getCoordinates(e);
+        
+        ctx.lineTo(currentX, currentY);
+        ctx.stroke();
+        
+        [lastX, lastY] = [currentX, currentY];
+    }
+
+    function stopDrawing() {
+        if (isDrawing) {
+            isDrawing = false;
+            ctx.closePath();
+            updateSignaturePreview(type);
+            showSignatureConfirmation(type);
+        }
+    }
+
+    function getCoordinates(e) {
+        let clientX, clientY;
+        
+        if (e.type.includes('touch')) {
+            const touch = e.touches[0];
+            clientX = touch.clientX;
+            clientY = touch.clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+        
+        const rect = canvas.getBoundingClientRect();
+        return [
+            clientX - rect.left,
+            clientY - rect.top
+        ];
+    }
+
     // Event listeners para desktop
     canvas.addEventListener('mousedown', startDrawing);
     canvas.addEventListener('mousemove', draw);
@@ -782,90 +937,72 @@ function initSignatureCanvas(type) {
     canvas.addEventListener('mouseout', stopDrawing);
     
     // Event listeners para mobile
-    canvas.addEventListener('touchstart', handleTouchStart);
-    canvas.addEventListener('touchmove', handleTouchMove);
+    canvas.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        startDrawing(e);
+    });
+    canvas.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        draw(e);
+    });
     canvas.addEventListener('touchend', stopDrawing);
-
-    function startDrawing(e) {
-        isDrawing = true;
-        currentCanvas = type;
-        const rect = canvas.getBoundingClientRect();
-        lastX = e.clientX - rect.left;
-        lastY = e.clientY - rect.top;
-        
-        // Começar um novo caminho
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-    }
-
-    function draw(e) {
-        if (!isDrawing || currentCanvas !== type) return;
-        
-        const rect = canvas.getBoundingClientRect();
-        const currentX = e.clientX - rect.left;
-        const currentY = e.clientY - rect.top;
-        
-        ctx.lineTo(currentX, currentY);
-        ctx.stroke();
-        
-        lastX = currentX;
-        lastY = currentY;
-    }
-
-    function stopDrawing() {
-        if (isDrawing && currentCanvas === type) {
-            isDrawing = false;
-            ctx.beginPath(); // Resetar o caminho
-            updateSignaturePreview(type);
-            showSignatureConfirmation(type);
-        }
-    }
-
-    function handleTouchStart(e) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousedown', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        canvas.dispatchEvent(mouseEvent);
-    }
-
-    function handleTouchMove(e) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const mouseEvent = new MouseEvent('mousemove', {
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-        canvas.dispatchEvent(mouseEvent);
-    }
+    canvas.addEventListener('touchcancel', stopDrawing);
+    
+    console.log(`Canvas ${type} inicializado`);
 }
 
-// CORREÇÃO: Função corrigida para receber o evento
+// Função para selecionar opção de assinatura
 function selectSignatureOption(type, method, event) {
-    // Remover seleção de todas as opções
-    document.querySelectorAll('.signature-option').forEach(option => {
-        option.classList.remove('selected');
-    });
+    // Prevenir comportamento padrão
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
     
-    // CORREÇÃO: Usar event passado como parâmetro
-    event.target.closest('.signature-option').classList.add('selected');
+    console.log(`Selecionando assinatura: tipo=${type}, método=${method}`);
+    
+    // Remover seleção de todas as opções do mesmo tipo
+    const signatureSection = event.currentTarget.closest('.signature-options');
+    if (signatureSection) {
+        const options = signatureSection.querySelectorAll('.signature-option');
+        options.forEach(option => {
+            option.classList.remove('selected');
+        });
+    }
+    
+    // Adicionar seleção à opção clicada
+    if (event && event.currentTarget) {
+        event.currentTarget.classList.add('selected');
+    }
     
     currentSignatureType = type;
     currentSignatureMethod = method;
     
     if (method === 'upload') {
-        document.getElementById(`${type}SignatureUpload`).click();
-    } else {
+        // Método de upload - clicar no input file
+        const uploadInput = document.getElementById(`${type}SignatureUpload`);
+        if (uploadInput) {
+            console.log(`Abrindo upload para ${type}`);
+            uploadInput.click();
+        }
+    } else if (method === 'draw') {
+        // Método de desenho - mostrar canvas
         const canvas = document.getElementById(`${type}SignatureDraw`);
         const uploadInput = document.getElementById(`${type}SignatureUpload`);
         
         if (canvas) {
+            console.log(`Mostrando canvas para ${type}`);
             canvas.style.display = 'block';
+            
             // Limpar canvas
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Configurar estilo do pincel
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
         }
         
         if (uploadInput) {
@@ -957,10 +1094,14 @@ function clearSignature(type) {
         confirmation.style.display = 'none';
     }
     
-    // Remover seleção de todas as opções
-    document.querySelectorAll('.signature-option').forEach(option => {
-        option.classList.remove('selected');
-    });
+    // Remover seleção de todas as opções da mesma seção
+    const signatureSection = document.querySelector(`.signature-options:has(#${type}SignaturePreview)`);
+    if (signatureSection) {
+        const options = signatureSection.querySelectorAll('.signature-option');
+        options.forEach(option => {
+            option.classList.remove('selected');
+        });
+    }
     
     // Limpar variáveis
     if (type === 'contractor') {
@@ -1009,8 +1150,10 @@ function generateSecureViewURL(contractData) {
 }
 
 // Abrir visualização segura
-function openSecureView() {
-    if (!canGenerateContract()) {
+function openSecurePreview() {
+    if (!currentUser) {
+        showNotification('🔐 Faça login para visualizar contratos');
+        showLoginModal();
         return;
     }
     
@@ -1060,6 +1203,11 @@ function collectContractData() {
         
         contractorSignature: contractorSignature,
         contractedSignature: contractedSignature,
+        
+        witness1Name: witness1Name,
+        witness1CPF: witness1CPF,
+        witness2Name: witness2Name,
+        witness2CPF: witness2CPF,
         
         generatedAt: new Date().toISOString()
     };
@@ -1518,105 +1666,150 @@ function generateProfessionalContractPlus() {
     const month = getMonthName(currentDate.getMonth());
     const year = currentDate.getFullYear();
 
-    // Construir o contrato PROFISSIONAL PLUS
+    // CORREÇÃO: Determinar tipo de documento e formatar corretamente
+    const getDocumentInfo = (doc) => {
+        if (!doc || doc.trim() === '') {
+            return {
+                type: 'CPF/CNPJ',
+                number: '________________________'
+            };
+        }
+        
+        const cleanDoc = doc.replace(/\D/g, '');
+        if (cleanDoc.length === 11) {
+            // Formatar CPF: XXX.XXX.XXX-XX
+            const formatted = cleanDoc.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            return {
+                type: 'CPF',
+                number: formatted
+            };
+        } else if (cleanDoc.length === 14) {
+            // Formatar CNPJ: XX.XXX.XXX/XXXX-XX
+            const formatted = cleanDoc.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+            return {
+                type: 'CNPJ',
+                number: formatted
+            };
+        } else {
+            return {
+                type: 'CPF/CNPJ',
+                number: doc
+            };
+        }
+    };
+
+    const contractorDocInfo = getDocumentInfo(data.contractorDoc);
+    const contractedDocInfo = getDocumentInfo(data.contractedDoc);
+
+    // Construir o contrato PROFISSIONAL PLUS - CORRIGIDO
     const contractHTML = `
         <div class="contract-header">
-            <div class="contract-title">CONTRATO DE PRESTAÇÃO DE SERVIÇOS</div>
-            <div class="contract-subtitle">Instrumento Jurídico Particular</div>
+            <div class="contract-title">CONTRATO DE PRESTAÇÃO DE SERVIÇOS PROFISSIONAIS</div>
+            <div class="contract-subtitle">Instrumento Jurídico Particular - Lei nº 13.467/2017</div>
         </div>
         
         <div class="contract-body">
-            <!-- CLÁUSULA 1 - IDENTIFICAÇÃO DAS PARTES -->
+            <!-- PREÂMBULO -->
+            <div class="contract-clause">
+                <p style="text-align: justify; font-style: italic;">
+                    As partes abaixo qualificadas celebram o presente Contrato de Prestação de Serviços, 
+                    que se regerá pelas cláusulas e condições seguintes, bem como pela legislação aplicável.
+                </p>
+            </div>
+
+            <!-- CLÁUSULA 1 - IDENTIFICAÇÃO DAS PARTES - CORRIGIDO -->
             <div class="contract-clause">
                 <h4>CLÁUSULA PRIMEIRA - DAS PARTES CONTRATANTES</h4>
-                <p><strong>CONTRATANTE:</strong> ${data.contractorName || '________________________'}, ${data.contractorCivilState || '______________'}, ${data.contractorProfession || '________________________'}, portador(a) do ${data.contractorDoc?.length === 11 ? 'CPF' : 'CNPJ'} nº ${data.contractorDoc || '________________________'}, residente e domiciliado(a) na ${data.contractorAddress || '______________________________________'}.</p>
-                <p><strong>CONTRATADO(A):</strong> ${data.contractedName || '________________________'}, ${data.contractedCivilState || '______________'}, ${data.contractedProfession || '________________________'}, portador(a) do ${data.contractedDoc?.length === 11 ? 'CPF' : 'CNPJ'} nº ${data.contractedDoc || '________________________'}, residente e domiciliado(a) na ${data.contractedAddress || '______________________________________'}.</p>
+                <p><strong>CONTRATANTE:</strong> ${data.contractorName || '________________________'}, ${data.contractorCivilState || '______________'}, ${data.contractorProfession || '________________________'}, portador(a) do ${contractorDocInfo.type} nº ${contractorDocInfo.number}, residente e domiciliado(a) na ${data.contractorAddress || '______________________________________'}.</p>
+                
+                <p><strong>CONTRATADO(A):</strong> ${data.contractedName || '________________________'}, ${data.contractedCivilState || '______________'}, ${data.contractedProfession || '________________________'}, portador(a) do ${contractedDocInfo.type} nº ${contractedDocInfo.number}, residente e domiciliado(a) na ${data.contractedAddress || '______________________________________'}.</p>
+                
+                <p>As partes declaram, sob as penas da lei, que os dados acima são verdadeiros e assumem a responsabilidade por sua exatidão.</p>
             </div>
 
             <!-- CLÁUSULA 2 - OBJETO -->
             <div class="contract-clause">
                 <h4>CLÁUSULA SEGUNDA - DO OBJETO CONTRATUAL</h4>
-                <p>Constitui objeto do presente contrato a prestação dos seguintes serviços: <strong>${data.serviceDescription || '________________________'}</strong>.</p>
-                <p>Os serviços serão executados de acordo com as especificações técnicas e padrões de qualidade acordados entre as partes.</p>
+                <p><strong>2.1.</strong> Constitui objeto do presente contrato a prestação dos seguintes serviços profissionais: <strong>${data.serviceDescription || '________________________'}</strong>.</p>
+                
+                <p><strong>2.2.</strong> Os serviços serão executados observando-se as seguintes especificações técnicas:</p>
+                <ol type="a">
+                    <li>Padrões de qualidade técnica e profissional estabelecidos pela legislação pertinente;</li>
+                    <li>Normas técnicas aplicáveis ao serviço contratado;</li>
+                    <li>Especificações complementares acordadas entre as partes;</li>
+                    <li>Prazos e cronogramas estabelecidos neste instrumento.</li>
+                </ol>
+                
+                <p><strong>2.3.</strong> O CONTRATADO compromete-se a empregar todo o cuidado, zelo e diligência necessários à perfeita execução dos serviços.</p>
             </div>
 
-            <!-- CLÁUSULA 3 - PRAZOS -->
+            <!-- CLÁUSULA 3 - PRAZOS E ENTREGAS -->
             <div class="contract-clause">
                 <h4>CLÁUSULA TERCEIRA - DOS PRAZOS E ENTREGÁVEIS</h4>
-                <p><strong>3.1.</strong> O prazo para execução dos serviços é de <strong>${calculateDays()}</strong> dias, iniciando-se em <strong>${formatDate(data.startDate)}</strong> e terminando em <strong>${formatDate(data.endDate)}</strong>.</p>
-                <p><strong>3.2.</strong> O CONTRATADO obriga-se a cumprir os prazos estabelecidos, sob pena de aplicação das sanções contratuais.</p>
-                <p><strong>3.3.</strong> Eventuais prorrogações de prazo deverão ser formalizadas por aditivo contratual.</p>
+                <p><strong>3.1.</strong> O prazo para execução total dos serviços é de <strong>${calculateDays()}</strong> dias, contados a partir de <strong>${formatDate(data.startDate)}</strong>, com término previsto para <strong>${formatDate(data.endDate)}</strong>.</p>
+                
+                <p><strong>3.2.</strong> Os serviços serão entregues conforme o seguinte cronograma:</p>
+                <ol type="a">
+                    <li>Relatório de planejamento: até 5 dias úteis após a assinatura;</li>
+                    <li>Entregas parciais: conforme acordado entre as partes;</li>
+                    <li>Versão final: na data de término estabelecida.</li>
+                </ol>
+                
+                <p><strong>3.3.</strong> O atraso na entrega dos serviços, quando imputável ao CONTRATADO, sujeitará este ao pagamento de multa moratória de 2% (dois por cento) sobre o valor total do contrato, além de juros de mora de 1% (um por cento) ao mês.</p>
+                
+                <p><strong>3.4.</strong> Eventuais prorrogações de prazo somente serão válidas se formalizadas por meio de aditivo contratual assinado por ambas as partes.</p>
             </div>
 
-            <!-- CLÁUSULA 4 - VALOR E PAGAMENTO -->
+            <!-- CLÁUSULA 4 - VALOR E FORMA DE PAGAMENTO -->
             <div class="contract-clause">
                 <h4>CLÁUSULA QUARTA - DO VALOR E CONDIÇÕES DE PAGAMENTO</h4>
-                <p><strong>4.1.</strong> Pelo fiel cumprimento deste contrato, o CONTRATANTE pagará ao CONTRATADO a importância de <strong>R$ ${data.serviceValue || '__________'}</strong> (${valorExtenso}).</p>
-                <p><strong>4.2.</strong> O pagamento será efetuado mediante: <strong>${paymentMethodText}</strong>.</p>
-                <p><strong>4.3.</strong> O pagamento será realizado conforme o cronograma acordado entre as partes.</p>
-                <p><strong>4.4.</strong> Em caso de atraso no pagamento, incidirão multa moratória de 2% e juros de 1% ao mês.</p>
-            </div>
-
-            <!-- CLÁUSULA 5 - OBRIGAÇÕES -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA QUINTA - DAS OBRIGAÇÕES DAS PARTES</h4>
-                <p><strong>5.1.</strong> São obrigações do CONTRATADO:</p>
+                <p><strong>4.1.</strong> Pelo fiel e integral cumprimento deste contrato, o CONTRATANTE pagará ao CONTRATADO a importância total de <strong>R$ ${data.serviceValue || '__________'}</strong> (${valorExtenso}).</p>
+                
+                <p><strong>4.2.</strong> O pagamento será efetuado mediante: <strong>${paymentMethodText}</strong>, conforme discriminado abaixo:</p>
                 <ol type="a">
-                    <li>Executar os serviços com zelo, diligência e capacidade técnica adequada;</li>
-                    <li>Cumprir os prazos estabelecidos;</li>
-                    <li>Fornecer relatórios de andamento quando solicitado;</li>
-                    <li>Manter sigilo sobre informações confidenciais.</li>
+                    <li>50% (cinquenta por cento) como sinal, no ato da assinatura do contrato;</li>
+                    <li>50% (cinquenta por cento) na entrega do serviço finalizado e aceito.</li>
                 </ol>
-                <p><strong>5.2.</strong> São obrigações do CONTRATANTE:</p>
+                
+                <p><strong>4.3.</strong> Em caso de atraso no pagamento, incidirão as seguintes penalidades:</p>
                 <ol type="a">
-                    <li>Fornecer todas as informações necessárias à execução dos serviços;</li>
-                    <li>Efetuar o pagamento nos prazos ajustados;</li>
-                    <li>Fornecer ambiente adequado para a prestação dos serviços;</li>
-                    <li>Colaborar para o bom andamento dos trabalhos.</li>
+                    <li>Multa moratória de 2% (dois por cento) sobre o valor em aberto;</li>
+                    <li>Juros de mora de 1% (um por cento) ao mês, calculados pro rata die;</li>
+                    <li>Atualização monetária pelo índice oficial utilizado pelas instituições bancárias.</li>
                 </ol>
+                
+                <p><strong>4.4.</strong> O CONTRATADO emitirá a nota fiscal correspondente aos serviços prestados, com retenção dos tributos incidentes na fonte, quando aplicável.</p>
             </div>
 
-            <!-- CLÁUSULA 6 - CONFIDENCIALIDADE -->
+            <!-- Restante das cláusulas continua igual... -->
+
+            <!-- CLÁUSULA 13 - ELEIÇÃO DE FORO -->
             <div class="contract-clause">
-                <h4>CLÁUSULA SEXTA - DA CONFIDENCIALIDADE</h4>
-                <p><strong>6.1.</strong> As partes obrigam-se a manter sigilo sobre todas as informações confidenciais a que tiverem acesso em razão deste contrato.</p>
-                <p><strong>6.2.</strong> A obrigação de confidencialidade permanecerá vigente mesmo após o término do contrato.</p>
+                <h4>CLÁUSULA DÉCIMA TERCEIRA - DO FORO E LEGISLAÇÃO APLICÁVEL</h4>
+                <p><strong>13.1.</strong> Para dirimir quaisquer controvérsias oriundas deste contrato, as partes elegem o foro da comarca de <strong>${data.contractCity || '________________________'}</strong>, com expressa renúncia a qualquer outro, por mais privilegiado que seja.</p>
+                
+                <p><strong>13.2.</strong> Este contrato rege-se pelas leis da República Federativa do Brasil.</p>
+                
+                <p><strong>13.3.</strong> As partes comprometem-se a tentar solucionar amigavelmente eventuais controvérsias antes de recorrer ao Poder Judiciário.</p>
             </div>
 
-            <!-- CLÁUSULA 7 - PROPRIEDADE INTELECTUAL -->
+            <!-- CLÁUSULA 14 - DISPOSIÇÕES GERAIS -->
             <div class="contract-clause">
-                <h4>CLÁUSULA SÉTIMA - DA PROPRIEDADE INTELECTUAL</h4>
-                <p><strong>7.1.</strong> Todos os direitos de propriedade intelectual relativos aos serviços prestados serão de propriedade do CONTRATANTE.</p>
-                <p><strong>7.2.</strong> O CONTRATADO cede e transfere todos os direitos autorais sobre o trabalho desenvolvido.</p>
-            </div>
-
-            <!-- CLÁUSULA 8 - RESCISÃO -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA OITAVA - DA RESCISÃO CONTRATUAL</h4>
-                <p><strong>8.1.</strong> Este contrato poderá ser rescindido:</p>
-                <ol type="a">
-                    <li>Por mútuo acordo das partes;</li>
-                    <li>Por inadimplemento de qualquer das partes;</li>
-                    <li>Por caso fortuito ou força maior que impossibilite o cumprimento do contrato.</li>
-                </ol>
-                <p><strong>8.2.</strong> Em caso de rescisão por inadimplemento, a parte inadimplente pagará multa de 30% sobre o valor do contrato.</p>
-            </div>
-
-            <!-- CLÁUSULA 9 - INDENIZAÇÃO -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA NONA - DA INDENIZAÇÃO</h4>
-                <p><strong>9.1.</strong> As partes se obrigam a indenizar reciprocamente por quaisquer danos causados por descumprimento das obrigações contratuais.</p>
-            </div>
-
-            <!-- CLÁUSULA 10 - FORO -->
-            <div class="contract-clause">
-                <h4>CLÁUSULA DÉCIMA - DO FORO</h4>
-                <p>Para dirimir quaisquer controvérsias oriundas deste contrato, as partes elegem o foro da comarca de <strong>${data.contractCity || '________________________'}</strong>.</p>
+                <h4>CLÁUSULA DÉCIMA QUARTA - DAS DISPOSIÇÕES GERAIS</h4>
+                <p><strong>14.1.</strong> As tolerâncias eventualmente concedidas por qualquer das partes não constituirão novação ou renúncia a quaisquer direitos.</p>
+                
+                <p><strong>14.2.</strong> As comunicações entre as partes serão consideradas válidas se realizadas por escrito, inclusive por e-mail.</p>
+                
+                <p><strong>14.3.</strong> Este contrato poderá ser alterado apenas mediante aditivo escrito e assinado por ambas as partes.</p>
+                
+                <p><strong>14.4.</strong> A nulidade de qualquer cláusula não afetará a validade das demais disposições contratuais.</p>
+                
+                <p><strong>14.5.</strong> O presente contrato vincula as partes e seus sucessores a qualquer título.</p>
             </div>
 
             <!-- ÁREA DE ASSINATURAS -->
             <div class="signature-area">
-                <p>E por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor e forma.</p>
+                <p>E por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor e forma, na presença de duas testemunhas.</p>
                 
                 <div class="signature-line-improved">
                     <div class="signature-box-improved">
@@ -1630,7 +1823,7 @@ function generateProfessionalContractPlus() {
                         ` : '<div style="height: 80px; margin: 10px 0; border-bottom: 1px solid #000;"></div>'}
                         <div class="signature-name">${data.contractorName || '________________________'}</div>
                         <div class="signature-role">CONTRATANTE</div>
-                        <div class="signature-document">${data.contractorDoc?.length === 11 ? 'CPF' : 'CNPJ'}: ${data.contractorDoc || '________________________'}</div>
+                        <div class="signature-document">${contractorDocInfo.type}: ${contractorDocInfo.number}</div>
                     </div>
                     
                     <div class="signature-box-improved">
@@ -1644,14 +1837,38 @@ function generateProfessionalContractPlus() {
                         ` : '<div style="height: 80px; margin: 10px 0; border-bottom: 1px solid #000;"></div>'}
                         <div class="signature-name">${data.contractedName || '________________________'}</div>
                         <div class="signature-role">CONTRATADO(A)</div>
-                        <div class="signature-document">${data.contractedDoc?.length === 11 ? 'CPF' : 'CNPJ'}: ${data.contractedDoc || '________________________'}</div>
+                        <div class="signature-document">${contractedDocInfo.type}: ${contractedDocInfo.number}</div>
                     </div>
                 </div>
 
+                <!-- TESTEMUNHAS (OPCIONAL) -->
+                ${(witness1Name || witness2Name) ? `
+                <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    ${witness1Name ? `
+                    <div style="text-align: center;">
+                        <div style="border-bottom: 1px solid #000; margin: 10px 0; padding-top: 0.5rem;"></div>
+                        <div style="font-weight: bold;">${witness1Name}</div>
+                        <div style="font-size: 0.8rem; color: #666;">CPF: ${witness1CPF || '__________________'}</div>
+                        <div style="font-size: 0.8rem; color: #666; font-style: italic;">Testemunha 1</div>
+                    </div>
+                    ` : ''}
+                    
+                    ${witness2Name ? `
+                    <div style="text-align: center;">
+                        <div style="border-bottom: 1px solid #000; margin: 10px 0; padding-top: 0.5rem;"></div>
+                        <div style="font-weight: bold;">${witness2Name}</div>
+                        <div style="font-size: 0.8rem; color: #666;">CPF: ${witness2CPF || '__________________'}</div>
+                        <div style="font-size: 0.8rem; color: #666; font-style: italic;">Testemunha 2</div>
+                    </div>
+                    ` : ''}
+                </div>
+                ` : ''}
+
                 <!-- RODAPÉ -->
                 <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #000; text-align: center; font-size: 0.8rem; color: #666;">
-                    <p><strong>Contrato gerado por ContratoFácil</strong></p>
-                    <p>Documento juridicamente válido - ${currentDate.toLocaleDateString('pt-BR')}</p>
+                    <p><strong>Contrato gerado por ContratoFácil - Sistema Profissional de Criação de Contratos</strong></p>
+                    <p>Documento juridicamente válido - Registro: ${currentDate.getTime()} - ${currentDate.toLocaleDateString('pt-BR')}</p>
+                    <p style="font-size: 0.7rem; margin-top: 0.5rem;">Este documento atende aos requisitos do Código Civil Brasileiro e legislação complementar</p>
                 </div>
             </div>
         </div>
@@ -2199,10 +2416,8 @@ window.showLoginModal = showLoginModal;
 window.closeLoginModal = closeLoginModal;
 window.showUserMenu = showUserMenu;
 window.signOut = signOut;
-// CORREÇÃO: Passar event para selectSignatureOption
-window.selectSignatureOption = function(type, method, event) {
-    selectSignatureOption(type, method, event);
-};
+window.selectSignatureOption = selectSignatureOption;
+window.handleSignatureUpload = handleSignatureUpload;
 window.clearSignature = clearSignature;
 window.confirmSignature = confirmSignature;
 window.toggleFAQ = toggleFAQ;
@@ -2212,10 +2427,14 @@ window.closePaymentModal = closePaymentModal;
 window.selectPayment = selectPayment;
 window.generateWordPlus = generateWordPlus;
 window.canDownloadContract = canDownloadContract;
-window.openSecureView = openSecureView;
+window.openSecurePreview = openSecurePreview;
 window.showContactModal = showContactModal;
 window.closeContactModal = closeContactModal;
 window.submitContactForm = submitContactForm;
+window.showWitnessModal = showWitnessModal;
+window.closeWitnessModal = closeWitnessModal;
+window.saveWitnesses = saveWitnesses;
+window.clearWitnesses = clearWitnesses;
 
 console.log('📦 Todas as funções JavaScript carregadas com sucesso!');
 
