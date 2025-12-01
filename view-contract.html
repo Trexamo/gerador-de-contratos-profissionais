@@ -70,6 +70,56 @@
             max-width: 400px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
+
+        .contract-secure-view {
+            position: relative;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin: 2rem 0;
+        }
+
+        .contract-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 3rem;
+            color: rgba(0,0,0,0.1);
+            font-weight: bold;
+            pointer-events: none;
+            user-select: none;
+            z-index: 1;
+            white-space: nowrap;
+        }
+
+        .contract-protection {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: transparent;
+            z-index: 2;
+            cursor: not-allowed;
+        }
+
+        .contract-content {
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Estilos específicos para a visualização segura */
+        .secure-contract-body {
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .secure-contract-body * {
+            pointer-events: none;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
@@ -142,10 +192,10 @@
 
                 <!-- Contrato Protegido -->
                 <div class="contract-secure-view">
-                    <div class="contract-protection"></div>
+                    <div class="contract-protection" onclick="showProtectionOverlay()"></div>
                     <div class="contract-watermark">CONTRATO FÁCIL - VERSÃO SEGURA</div>
                     
-                    <div class="contract-content" id="secureContractContent">
+                    <div class="contract-content secure-contract-body" id="secureContractContent">
                         <!-- O contrato será carregado aqui via JavaScript -->
                     </div>
                 </div>
@@ -284,10 +334,10 @@
             let contractData = null;
             
             if (contractId) {
-                contractData = JSON.parse(localStorage.getItem(`contract_${contractId}`));
+                contractData = JSON.parse(localStorage.getItem(contractId));
             } else {
                 // Tentar carregar do sessionStorage como fallback
-                contractData = JSON.parse(sessionStorage.getItem('lastGeneratedContract'));
+                contractData = JSON.parse(sessionStorage.getItem('secureContractData'));
             }
             
             if (contractData) {
@@ -307,25 +357,90 @@
         }
 
         function generateContractHTML(data) {
-            // Função similar à do script.js para gerar o contrato
-            // (implementação detalhada no próximo arquivo)
+            if (!data) return '<p>Dados do contrato não disponíveis.</p>';
+            
+            // Função para formatar data
+            const formatDate = (dateString) => {
+                if (!dateString) return '__/__/____';
+                try {
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('pt-BR');
+                } catch (e) {
+                    return '__/__/____';
+                }
+            };
+
+            // Função para formatar valor por extenso (simplificada)
+            function formatarValorExtenso(valor) {
+                if (!valor || valor === '' || valor === '__________') {
+                    return '_________________________';
+                }
+                return 'valor por extenso'; // Implementação simplificada
+            }
+
+            const valorExtenso = formatarValorExtenso(data.serviceValue);
+
             return `
                 <div class="contract-header">
-                    <div class="contract-title">CONTRATO DE PRESTAÇÃO DE SERVIÇOS</div>
+                    <div class="contract-title">CONTRATO DE PRESTAÇÃO DE SERVIÇOS PROFISSIONAIS</div>
                     <div class="contract-subtitle">Visualização Segura - ContratoFácil</div>
                 </div>
                 
                 <div class="contract-body">
                     <div class="contract-clause">
                         <h4>CLÁUSULA PRIMEIRA - DAS PARTES CONTRATANTES</h4>
-                        <p><strong>CONTRATANTE:</strong> ${data.contractorName || '________________________'}</p>
-                        <p><strong>CONTRATADO(A):</strong> ${data.contractedName || '________________________'}</p>
+                        <p><strong>CONTRATANTE:</strong> ${data.contractorName || '________________________'}, ${data.contractorCivilState || '______________'}, ${data.contractorProfession || '________________________'}, portador(a) do ${data.contractorDoc?.length === 11 ? 'CPF' : 'CNPJ'} nº ${data.contractorDoc || '________________________'}, residente e domiciliado(a) na ${data.contractorAddress || '______________________________________'}.</p>
+                        
+                        <p><strong>CONTRATADO(A):</strong> ${data.contractedName || '________________________'}, ${data.contractedCivilState || '______________'}, ${data.contractedProfession || '________________________'}, portador(a) do ${data.contractedDoc?.length === 11 ? 'CPF' : 'CNPJ'} nº ${data.contractedDoc || '________________________'}, residente e domiciliado(a) na ${data.contractedAddress || '______________________________________'}.</p>
                     </div>
                     
-                    <!-- Restante do contrato... -->
+                    <div class="contract-clause">
+                        <h4>CLÁUSULA SEGUNDA - DO OBJETO</h4>
+                        <p>Constitui objeto do presente contrato a prestação dos seguintes serviços profissionais: <strong>${data.serviceDescription || '________________________'}</strong>.</p>
+                    </div>
+
+                    <div class="contract-clause">
+                        <h4>CLÁUSULA TERCEIRA - DO VALOR E FORMA DE PAGAMENTO</h4>
+                        <p>Pelo fiel cumprimento deste contrato, o CONTRATANTE pagará ao CONTRATADO a importância total de <strong>R$ ${data.serviceValue || '__________'}</strong> (${valorExtenso}).</p>
+                    </div>
+
+                    <div class="contract-clause">
+                        <h4>CLÁUSULA QUARTA - DO PRAZO</h4>
+                        <p>O prazo para execução dos serviços é de ${data.startDate ? formatDate(data.startDate) : '__/__/____'} a ${data.endDate ? formatDate(data.endDate) : '__/__/____'}.</p>
+                    </div>
+
+                    <div class="contract-clause">
+                        <h4>CLÁUSULA QUINTA - DA VIGÊNCIA</h4>
+                        <p>Este contrato é válido na cidade de <strong>${data.contractCity || '________________________'}</strong>.</p>
+                    </div>
+
+                    ${data.contractorSignature ? `
+                    <div class="contract-clause">
+                        <h4>ASSINATURA DO CONTRATANTE</h4>
+                        <div style="text-align: center; margin: 1rem 0;">
+                            <img src="${data.contractorSignature}" style="max-width: 200px; max-height: 80px; border: 1px solid #ddd;">
+                            <p style="font-size: 0.8rem; color: #666;">Assinatura digital do CONTRATANTE</p>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    ${data.contractedSignature ? `
+                    <div class="contract-clause">
+                        <h4>ASSINATURA DO CONTRATADO</h4>
+                        <div style="text-align: center; margin: 1rem 0;">
+                            <img src="${data.contractedSignature}" style="max-width: 200px; max-height: 80px; border: 1px solid #ddd;">
+                            <p style="font-size: 0.8rem; color: #666;">Assinatura digital do CONTRATADO</p>
+                        </div>
+                    </div>
+                    ` : ''}
+
                     <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 8px;">
                         <p><strong>Contrato gerado por ContratoFácil</strong></p>
                         <p>Visualização segura - Download bloqueado</p>
+                        <p>Para desbloquear este contrato, faça upgrade para um plano pago.</p>
+                        <p style="font-size: 0.8rem; color: #666; margin-top: 1rem;">
+                            Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+                        </p>
                     </div>
                 </div>
             `;
@@ -339,28 +454,42 @@
                 return false;
             });
 
-            // Prevenir arrastar imagens
+            // Prevenir arrastar
             document.addEventListener('dragstart', function(e) {
-                e.preventDefault();
-                return false;
+                if (e.target.closest('.contract-secure-view')) {
+                    e.preventDefault();
+                    showProtectionOverlay();
+                    return false;
+                }
             });
 
             // Prevenir seleção de texto
             document.addEventListener('selectstart', function(e) {
-                e.preventDefault();
-                return false;
+                if (e.target.closest('.contract-secure-view')) {
+                    e.preventDefault();
+                    return false;
+                }
             });
 
             // Prevenir cópia via teclado
             document.addEventListener('keydown', function(e) {
                 if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
-                    e.preventDefault();
-                    showProtectionOverlay();
-                    return false;
+                    if (document.activeElement.closest('.contract-secure-view')) {
+                        e.preventDefault();
+                        showProtectionOverlay();
+                        return false;
+                    }
                 }
                 
                 // Prevenir print screen
                 if (e.key === 'PrintScreen') {
+                    e.preventDefault();
+                    showProtectionOverlay();
+                    return false;
+                }
+
+                // Prevenir F12 (DevTools)
+                if (e.key === 'F12') {
                     e.preventDefault();
                     showProtectionOverlay();
                     return false;
@@ -372,6 +501,13 @@
                 e.preventDefault();
                 showProtectionOverlay();
                 return false;
+            });
+
+            // Prevenir captura de tela em alguns navegadores
+            document.addEventListener('keyup', function(e) {
+                if (e.key === 'PrintScreen') {
+                    showProtectionOverlay();
+                }
             });
         }
 
@@ -402,14 +538,33 @@
         }
 
         function processPayment(plan) {
-            // Simular processamento de pagamento
-            alert('Redirecionando para o pagamento...');
-            closePaymentModal();
-            
             // Em uma implementação real, aqui iria para o gateway de pagamento
+            // Por enquanto, vamos simular o processo
+            
+            const loadingBtn = event.target;
+            const originalText = loadingBtn.innerHTML;
+            
+            // Mostrar loading
+            loadingBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+            loadingBtn.disabled = true;
+            
             setTimeout(() => {
-                alert('Pagamento processado com sucesso! O contrato foi desbloqueado.');
-                // Aqui você liberaria o download
+                // Simular sucesso no pagamento
+                alert('🎉 Pagamento processado com sucesso! Redirecionando para download...');
+                
+                // Fechar modal
+                closePaymentModal();
+                
+                // Restaurar botão
+                loadingBtn.innerHTML = originalText;
+                loadingBtn.disabled = false;
+                
+                // Em produção, aqui você liberaria o download real
+                // Por enquanto, vamos mostrar uma mensagem
+                setTimeout(() => {
+                    alert('📄 Contrato desbloqueado! Em produção, o download começaria automaticamente.');
+                }, 1000);
+                
             }, 2000);
         }
 
@@ -417,6 +572,17 @@
             alert('Redirecionando para o formulário de contato...');
             window.location.href = 'index.html#contact';
         }
+
+        // Proteção adicional contra inspeção
+        setInterval(function() {
+            // Verificar se o DevTools está aberto (detecção básica)
+            const widthThreshold = window.outerWidth - window.innerWidth > 160;
+            const heightThreshold = window.outerHeight - window.innerHeight > 160;
+            
+            if (widthThreshold || heightThreshold) {
+                showProtectionOverlay();
+            }
+        }, 1000);
     </script>
 </body>
 </html>
