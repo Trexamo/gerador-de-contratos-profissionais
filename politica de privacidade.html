@@ -4,9 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Política de Privacidade - ContratoFácil</title>
+    <link rel="icon" href="logo.jpg" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <!-- Header -->
     <header>
         <div class="container">
             <div class="header-content">
@@ -14,61 +17,221 @@
                     <img src="logo.jpg" alt="ContratoFácil" class="logo-img">
                     <span>ContratoFácil</span>
                 </div>
-                <a href="index.html" class="btn">Voltar ao Site</a>
+                <nav class="nav-menu">
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#generator">Criar Contrato</a></li>
+                        <li><a href="planos.html">Planos</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                        <li><a href="#privacy" class="active">Privacidade</a></li>
+                        <li><a href="termos-de-uso.html">Termos</a></li>
+                    </ul>
+                </nav>
+                <div class="mobile-menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <a href="index.html#generator" class="btn mobile-hidden">Criar Contrato</a>
             </div>
         </div>
     </header>
 
-    <section style="padding: 4rem 0;">
+    <!-- Privacy Policy Content -->
+    <section class="privacy-policy" id="privacy" style="padding-top: 6rem; padding-bottom: 4rem;">
         <div class="container">
-            <h1>Política de Privacidade</h1>
-            <p><strong>Última atualização:</strong> 2024</p>
+            <div class="policy-header" style="text-align: center; margin-bottom: 3rem;">
+                <h1 style="color: var(--primary); margin-bottom: 1rem;">Política de Privacidade</h1>
+                <p style="color: var(--gray); font-size: 1.1rem;">Última atualização: 2024</p>
+            </div>
 
-            <h2>1. Coleta de Dados</h2>
-            <p>Coletamos os seguintes dados quando você usa nossa plataforma:</p>
-            <ul>
-                <li><strong>Dados de autenticação:</strong> Nome, email e foto do perfil (via Google Sign-In)</li>
-                <li><strong>Dados de uso:</strong> Contratos gerados, histórico de atividades</li>
-                <li><strong>Dados técnicos:</strong> IP, tipo de navegador, dispositivo</li>
-            </ul>
+            <div class="policy-content" style="background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+                <div class="policy-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">1. Coleta de Dados</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">Coletamos os seguintes dados quando você usa nossa plataforma:</p>
+                    <ul style="list-style: none; padding-left: 1rem;">
+                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                            <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
+                            <strong>Dados de autenticação:</strong> Nome, email e foto do perfil (via Google Sign-In)
+                        </li>
+                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                            <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
+                            <strong>Dados de uso:</strong> Contratos gerados, histórico de atividades
+                        </li>
+                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                            <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
+                            <strong>Dados técnicos:</strong> IP, tipo de navegador, dispositivo
+                        </li>
+                    </ul>
+                </div>
 
-            <h2>2. Uso dos Dados</h2>
-            <p>Seus dados são usados para:</p>
-            <ul>
-                <li>Fornecer e melhorar nossos serviços</li>
-                <li>Personalizar sua experiência</li>
-                <li>Comunicações sobre sua conta</li>
-                <li>Cumprir obrigações legais</li>
-            </ul>
+                <div class="policy-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">2. Uso dos Dados</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">Seus dados são usados para:</p>
+                    <ul style="list-style: none; padding-left: 1rem;">
+                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                            <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
+                            Fornecer e melhorar nossos serviços
+                        </li>
+                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                            <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
+                            Personalizar sua experiência
+                        </li>
+                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                            <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
+                            Comunicações sobre sua conta
+                        </li>
+                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                            <i class="fas fa-check" style="color: var(--success); position: absolute; left: 0;"></i>
+                            Cumprir obrigações legais
+                        </li>
+                    </ul>
+                </div>
 
-            <h2>3. Compartilhamento de Dados</h2>
-            <p>Não vendemos seus dados. Podemos compartilhar com:</p>
-            <ul>
-                <li><strong>Processadores de pagamento:</strong> Mercado Pago (apenas dados necessários para transações)</li>
-                <li><strong>Provedores de serviços:</strong> Hospedagem, suporte técnico</li>
-                <li><strong>Autoridades legais:</strong> Quando exigido por lei</li>
-            </ul>
+                <div class="policy-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">3. Compartilhamento de Dados</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">Não vendemos seus dados. Podemos compartilhar com:</p>
+                    <ul style="list-style: none; padding-left: 1rem;">
+                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                            <i class="fas fa-shield-alt" style="color: var(--primary); position: absolute; left: 0;"></i>
+                            <strong>Processadores de pagamento:</strong> Mercado Pago (apenas dados necessários para transações)
+                        </li>
+                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                            <i class="fas fa-shield-alt" style="color: var(--primary); position: absolute; left: 0;"></i>
+                            <strong>Provedores de serviços:</strong> Hospedagem, suporte técnico
+                        </li>
+                        <li style="margin-bottom: 0.8rem; padding-left: 1.5rem; position: relative;">
+                            <i class="fas fa-shield-alt" style="color: var(--primary); position: absolute; left: 0;"></i>
+                            <strong>Autoridades legais:</strong> Quando exigido por lei
+                        </li>
+                    </ul>
+                </div>
 
-            <h2>4. Seus Direitos (LGPD)</h2>
-            <p>Você tem direito a:</p>
-            <ul>
-                <li>Acessar seus dados pessoais</li>
-                <li>Corrigir dados incorretos</li>
-                <li>Excluir seus dados ("direito ao esquecimento")</li>
-                <li>Revoger consentimentos</li>
-            </ul>
+                <div class="policy-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">4. Seus Direitos (LGPD)</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">Você tem direito a:</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div style="background: var(--light); padding: 1.5rem; border-radius: 8px; text-align: center;">
+                            <i class="fas fa-search" style="color: var(--primary); font-size: 2rem; margin-bottom: 1rem;"></i>
+                            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Acessar seus dados</h4>
+                            <p style="color: var(--gray); font-size: 0.9rem;">Solicitar cópia dos seus dados pessoais</p>
+                        </div>
+                        <div style="background: var(--light); padding: 1.5rem; border-radius: 8px; text-align: center;">
+                            <i class="fas fa-edit" style="color: var(--primary); font-size: 2rem; margin-bottom: 1rem;"></i>
+                            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Corrigir dados</h4>
+                            <p style="color: var(--gray); font-size: 0.9rem;">Atualizar informações incorretas</p>
+                        </div>
+                        <div style="background: var(--light); padding: 1.5rem; border-radius: 8px; text-align: center;">
+                            <i class="fas fa-trash" style="color: var(--primary); font-size: 2rem; margin-bottom: 1rem;"></i>
+                            <h4 style="color: var(--primary); margin-bottom: 0.5rem;">Excluir dados</h4>
+                            <p style="color: var(--gray); font-size: 0.9rem;">Solicitar exclusão dos seus dados</p>
+                        </div>
+                    </div>
+                </div>
 
-            <h2>5. Segurança</h2>
-            <p>Implementamos medidas de segurança técnicas e organizacionais para proteger seus dados.</p>
+                <div class="policy-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">5. Segurança</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">Implementamos medidas de segurança técnicas e organizacionais para proteger seus dados:</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; background: var(--light); padding: 0.8rem 1.2rem; border-radius: 20px;">
+                            <i class="fas fa-lock" style="color: var(--success);"></i>
+                            <span>Criptografia de dados</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; background: var(--light); padding: 0.8rem 1.2rem; border-radius: 20px;">
+                            <i class="fas fa-shield-alt" style="color: var(--success);"></i>
+                            <span>Acesso restrito</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; background: var(--light); padding: 0.8rem 1.2rem; border-radius: 20px;">
+                            <i class="fas fa-sync" style="color: var(--success);"></i>
+                            <span>Backups regulares</span>
+                        </div>
+                    </div>
+                </div>
 
-            <h2>6. Contato</h2>
-            <p>Dúvidas sobre esta política? Entre em contato:</p>
-            <p>Email: luhkaimn@gmail.com<br>
-            WhatsApp: (62) 99290-0737</p>
+                <div class="policy-section" style="margin-bottom: 2.5rem;">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">6. Contato</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">Dúvidas sobre esta política? Entre em contato:</p>
+                    <div style="display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.8rem;">
+                            <i class="fas fa-envelope" style="color: var(--primary); font-size: 1.2rem;"></i>
+                            <div>
+                                <strong>Email</strong>
+                                <div style="color: var(--gray);">luhkaimn@gmail.com</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.8rem;">
+                            <i class="fab fa-whatsapp" style="color: var(--primary); font-size: 1.2rem;"></i>
+                            <div>
+                                <strong>WhatsApp</strong>
+                                <div style="color: var(--gray);">(62) 99290-0737</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <h2>7. Alterações</h2>
-            <p>Podemos atualizar esta política. Notificaremos sobre mudanças significativas.</p>
+                <div class="policy-section">
+                    <h2 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.4rem;">7. Alterações</h2>
+                    <p style="margin-bottom: 1rem; line-height: 1.6;">Podemos atualizar esta política. Notificaremos sobre mudanças significativas através do email cadastrado ou por meio de aviso em nossa plataforma.</p>
+                    <div style="background: var(--light); padding: 1.5rem; border-radius: 8px; margin-top: 1.5rem;">
+                        <h4 style="color: var(--primary); margin-bottom: 0.5rem;">📅 Histórico de Alterações</h4>
+                        <ul style="list-style: none; padding-left: 0;">
+                            <li style="margin-bottom: 0.5rem; padding-left: 1.5rem; position: relative;">
+                                <i class="fas fa-calendar" style="color: var(--primary); position: absolute; left: 0;"></i>
+                                <strong>2024:</strong> Versão inicial da política de privacidade
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact CTA -->
+            <div class="policy-cta" style="text-align: center; margin-top: 3rem; padding: 2rem; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border-radius: 12px;">
+                <h3 style="margin-bottom: 1rem;">Ainda com dúvidas?</h3>
+                <p style="margin-bottom: 1.5rem; opacity: 0.9;">Entre em contato conosco para esclarecer qualquer questão sobre privacidade</p>
+                <a href="mailto:luhkaimn@gmail.com?subject=Dúvida sobre Política de Privacidade" class="btn" style="background: white; color: var(--primary);">
+                    <i class="fas fa-envelope"></i> Enviar Email
+                </a>
+            </div>
         </div>
     </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>ContratoFácil</h3>
+                    <p>Criando contratos profissionais de forma simples e segura desde 2024.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Links Rápidos</h3>
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="index.html#generator">Criar Contrato</a></li>
+                        <li><a href="planos.html">Planos</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#privacy" class="active">Política de Privacidade</a></li>
+                        <li><a href="termos-de-uso.html">Termos de Uso</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contato</h3>
+                    <ul>
+                        <li><a href="https://wa.me/556299290737?text=Olá! Gostaria de mais informações sobre o ContratoFácil" target="_blank"><i class="fab fa-whatsapp"></i> (62) 99290-0737</a></li>
+                        <li><a href="mailto:luhkaimn@gmail.com"><i class="fas fa-envelope"></i> luhkaimn@gmail.com</a></li>
+                        <li><i class="fas fa-map-marker-alt"></i> Goiânia, GO</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 ContratoFácil. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
