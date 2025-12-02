@@ -39,12 +39,11 @@ let witness2CPF = '';
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 ContratoFácil inicializando...');
     
+    checkUserLogin();
     initMobileMenu();
     initEnhancedMobileMenu();
     initSignatureSystem();
     initMobileSignatureSystem();
-    initWitnessSystem(); // Novo: sistema de testemunhas
-    checkUserLogin();
     optimizeForMobile();
     setupEventListeners();
     initDateSettings();
@@ -53,21 +52,39 @@ document.addEventListener('DOMContentLoaded', function() {
     updateStatusBar();
     setupContactForm();
     
-    // Replace notification function for mobile
-    if (isMobileDevice()) {
-        window.showNotification = showMobileNotification;
-    }
+    // Setup auto-preview
+    setupAutoPreview();
     
     console.log('✅ ContratoFácil inicializado com sucesso!');
+    
+    // Forçar primeira atualização após 1 segundo
+    setTimeout(function() {
+        if (currentUser) {
+            console.log('🔄 Forçando primeira atualização do preview...');
+            updatePreview();
+        }
+    }, 1000);
 });
 
-// Configurar event listeners
+// =============================================
+// CONFIGURAÇÃO DE EVENT LISTENERS
+// =============================================
+
 function setupEventListeners() {
-    // Atualizar preview em tempo real
-    const formInputs = document.querySelectorAll('#generator input, #generator select, #generator textarea');
+    console.log('🔧 Configurando event listeners...');
+    
+    // Atualizar preview em tempo real PARA TODOS OS CAMPOS
+    const formInputs = document.querySelectorAll('#generatorForm input, #generatorForm select, #generatorForm textarea');
+    console.log(`✅ Encontrados ${formInputs.length} campos do formulário`);
+    
     formInputs.forEach(input => {
-        input.addEventListener('input', updatePreview);
-        input.addEventListener('change', updatePreview);
+        // Remover event listeners antigos para evitar duplicação
+        input.removeEventListener('input', handleFormInput);
+        input.removeEventListener('change', handleFormInput);
+        
+        // Adicionar novos listeners
+        input.addEventListener('input', handleFormInput);
+        input.addEventListener('change', handleFormInput);
     });
 
     // Formatação automática do valor
@@ -101,11 +118,6 @@ function setupEventListeners() {
             upgradeModal.remove();
             document.body.style.overflow = 'auto';
         }
-        
-        const witnessModal = document.getElementById('witnessModal');
-        if (event.target === witnessModal) {
-            closeWitnessModal();
-        }
     });
 
     // Tecla ESC para fechar modal
@@ -114,7 +126,6 @@ function setupEventListeners() {
             closePaymentModal();
             closeLoginModal();
             closeContactModal();
-            closeWitnessModal();
             const upgradeModal = document.querySelector('.modal.upgrade-modal');
             if (upgradeModal) {
                 upgradeModal.remove();
@@ -142,17 +153,10 @@ function setupEventListeners() {
     });
 }
 
-// Inicializar sistema de testemunhas
-function initWitnessSystem() {
-    const addWitnessBtn = document.getElementById('addWitnessBtn');
-    if (addWitnessBtn) {
-        addWitnessBtn.addEventListener('click', showWitnessModal);
-    }
-    
-    const saveWitnessBtn = document.getElementById('saveWitnessBtn');
-    if (saveWitnessBtn) {
-        saveWitnessBtn.addEventListener('click', saveWitnesses);
-    }
+// Função para lidar com input do formulário
+function handleFormInput(e) {
+    console.log(`📝 Campo alterado: ${e.target.id}`);
+    updatePreview();
 }
 
 // Configurar datas
@@ -187,180 +191,59 @@ function initDateSettings() {
 }
 
 // =============================================
-// SISTEMA DE TESTEMUNHAS
+// FUNÇÃO DE ATUALIZAÇÃO DO PREVIEW (CORRIGIDA)
 // =============================================
 
-function showWitnessModal() {
-    const witnessModal = document.getElementById('witnessModal');
-    if (witnessModal) {
-        // Preencher campos se já existir dados
-        document.getElementById('witness1Name').value = witness1Name || '';
-        document.getElementById('witness1CPF').value = witness1CPF || '';
-        document.getElementById('witness2Name').value = witness2Name || '';
-        document.getElementById('witness2CPF').value = witness2CPF || '';
+// Update contract preview - FUNÇÃO PRINCIPAL
+function updatePreview() {
+    try {
+        console.log('🔄 Atualizando preview do contrato...');
         
-        witnessModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        const contractPreview = document.getElementById('contractPreview');
+        if (!contractPreview) {
+            console.error('❌ Elemento contractPreview não encontrado!');
+            return;
+        }
+        
+        if (!currentUser) {
+            console.log('⚠️ Usuário não logado, não pode mostrar preview');
+            return;
+        }
+        
+        // Gerar o contrato
+        const contractHTML = generateProfessionalContractPlus();
+        
+        if (!contractHTML || contractHTML.trim() === '') {
+            console.error('❌ HTML do contrato está vazio!');
+            contractPreview.innerHTML = '<p style="color: #666; text-align: center;">Preencha os campos acima para gerar o contrato...</p>';
+            return;
+        }
+        
+        // Inserir no DOM
+        contractPreview.innerHTML = contractHTML;
+        
+        // Incrementar contador de visualizações
+        if (currentUser) {
+            incrementContractCount();
+        }
+        
+        console.log('✅ Preview atualizado com sucesso!');
+        
+    } catch (error) {
+        console.error('❌ Erro ao atualizar preview:', error);
+        showNotification('❌ Erro ao atualizar visualização do contrato');
     }
 }
 
-function closeWitnessModal() {
-    const witnessModal = document.getElementById('witnessModal');
-    if (witnessModal) {
-        witnessModal.classList.remove('active');
-        document.body.style.overflow = 'auto';
+// Função para setup automático do preview
+function setupAutoPreview() {
+    console.log('🔧 Configurando auto-preview...');
+    
+    // Verificar se o usuário está logado
+    if (currentUser) {
+        // Atualizar uma vez para mostrar contrato inicial
+        setTimeout(updatePreview, 500);
     }
-}
-
-function saveWitnesses() {
-    witness1Name = document.getElementById('witness1Name').value.trim();
-    witness1CPF = document.getElementById('witness1CPF').value.trim();
-    witness2Name = document.getElementById('witness2Name').value.trim();
-    witness2CPF = document.getElementById('witness2CPF').value.trim();
-    
-    // Validar CPFs se informados
-    if (witness1CPF && !validateCPF(witness1CPF)) {
-        showNotification('❌ CPF da Testemunha 1 inválido');
-        return;
-    }
-    
-    if (witness2CPF && !validateCPF(witness2CPF)) {
-        showNotification('❌ CPF da Testemunha 2 inválido');
-        return;
-    }
-    
-    closeWitnessModal();
-    updatePreview();
-    showNotification('✅ Testemunhas salvas com sucesso!');
-}
-
-function clearWitnesses() {
-    witness1Name = '';
-    witness1CPF = '';
-    witness2Name = '';
-    witness2CPF = '';
-    
-    closeWitnessModal();
-    updatePreview();
-    showNotification('🔄 Testemunhas removidas');
-}
-
-// =============================================
-// SISTEMA DE CONVERSÃO - FUNÇÕES NOVAS
-// =============================================
-
-// Scroll para o gerador após o vídeo
-function scrollToGenerator() {
-    document.getElementById('generator').scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
-    });
-    showNotification('🎯 Agora crie seu contrato profissional!');
-}
-
-// Sistema de controle de acesso aprimorado
-function canGenerateContract() {
-    if (!currentUser) {
-        showNotification('🔐 Faça login para acessar o gerador profissional');
-        showLoginModal();
-        return false;
-    }
-    
-    // Usuário free só pode visualizar, não baixar
-    if (currentUser.plan === 'free') {
-        return 'view_only';
-    }
-    
-    return true;
-}
-
-// Modal de upgrade persuasivo
-function showUpgradeModal() {
-    const modal = document.createElement('div');
-    modal.className = 'modal active upgrade-modal';
-    modal.style.zIndex = '3000';
-    modal.innerHTML = `
-        <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">
-                <h3>🚀 Upgrade Necessário</h3>
-                <button class="close-modal" onclick="this.closest('.modal').remove(); document.body.style.overflow='auto'">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="upgrade-content">
-                    <div class="upgrade-header">
-                        <h4>Seu Contrato Está Quase Pronto!</h4>
-                        <p>Você já criou um contrato profissional. Agora falta pouco para ter acesso completo:</p>
-                    </div>
-                    
-                    <div class="benefits-grid">
-                        <div class="benefit-card">
-                            <i class="fas fa-download"></i>
-                            <strong>Download Imediato</strong>
-                            <p>Baixe em Word e PDF</p>
-                        </div>
-                        <div class="benefit-card">
-                            <i class="fas fa-edit"></i>
-                            <strong>Edição Completa</strong>
-                            <p>Modifique quando quiser</p>
-                        </div>
-                        <div class="benefit-card">
-                            <i class="fas fa-shield-alt"></i>
-                            <strong>Proteção Total</strong>
-                            <p>Cláusulas jurídicas</p>
-                        </div>
-                    </div>
-                    
-                    <div class="upgrade-options">
-                        <div class="upgrade-option featured">
-                            <div class="option-header">
-                                <h5>💎 MAIS POPULAR</h5>
-                                <div class="price">R$ 6,99</div>
-                                <div class="period">por contrato</div>
-                            </div>
-                            <ul>
-                                <li>✅ Download imediato</li>
-                                <li>✅ Contrato editável</li>
-                                <li>✅ Formato Word + PDF</li>
-                                <li>✅ Reutilizável</li>
-                            </ul>
-                            <button class="btn btn-success" onclick="openPaymentModal('avulsa'); this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%;">
-                                <i class="fas fa-bolt"></i> Comprar Agora
-                            </button>
-                        </div>
-                        
-                        <div class="upgrade-option">
-                            <div class="option-header">
-                                <h5>🚀 PROFISSIONAL</h5>
-                                <div class="price">R$ 29,99</div>
-                                <div class="period">por mês</div>
-                            </div>
-                            <ul>
-                                <li>✅ Contratos Ilimitados</li>
-                                <li>✅ Todos os modelos</li>
-                                <li>✅ Suporte prioritário</li>
-                                <li>✅ Armazenamento</li>
-                            </ul>
-                            <button class="btn" onclick="openPaymentModal('profissional'); this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%;">
-                                <i class="fas fa-crown"></i> Assinar Plano
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="risk-warning">
-                        <p>⚠️ <strong>Não arrisque:</strong> Um contrato mal elaborado pode custar muito mais que R$ 6,99</p>
-                    </div>
-                    
-                    <div class="upgrade-footer">
-                        <button class="btn-login" onclick="this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%; margin-top: 1rem;">
-                            <i class="fas fa-eye"></i> Continuar Visualizando Gratuitamente
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    document.body.style.overflow = 'hidden';
 }
 
 // =============================================
@@ -402,7 +285,6 @@ function handleGoogleSignIn(response) {
             contractsGenerated: 0,
             contractsDownloaded: 0,
             remainingContracts: 999, // Visualizações ilimitadas
-            trialEndDate: null, // Sem trial, só visualização
             joinDate: new Date().toISOString(),
             lastLogin: new Date().toISOString()
         };
@@ -417,6 +299,9 @@ function handleGoogleSignIn(response) {
         closeLoginModal();
         
         showNotification('🎉 Login realizado com sucesso! Agora você pode visualizar contratos gratuitamente.');
+        
+        // Forçar atualização do preview após login
+        setTimeout(updatePreview, 500);
         
     } catch (error) {
         console.error('Erro no login:', error);
@@ -459,19 +344,18 @@ function updateUIAfterLogin() {
     }
     
     // Atualizar seções principais
-    const loginSection = document.getElementById('loginSection');
-    const userSection = document.getElementById('userSection');
     const loginRequired = document.getElementById('loginRequired');
     const generatorForm = document.getElementById('generatorForm');
     
-    if (loginSection) loginSection.style.display = 'none';
-    if (userSection) userSection.style.display = 'block';
     if (loginRequired) loginRequired.style.display = 'none';
-    if (generatorForm) generatorForm.style.display = 'grid';
+    if (generatorForm) generatorForm.style.display = 'flex';
     
     // Atualizar dashboard do usuário
     updateUserDashboard();
     updateStatusBar();
+    
+    // Configurar event listeners após login
+    setupEventListeners();
 }
 
 // Atualizar UI após logout
@@ -486,13 +370,9 @@ function updateUIAfterLogout() {
     if (userNav) userNav.style.display = 'none';
     
     // Atualizar seções principais
-    const loginSection = document.getElementById('loginSection');
-    const userSection = document.getElementById('userSection');
     const loginRequired = document.getElementById('loginRequired');
     const generatorForm = document.getElementById('generatorForm');
     
-    if (loginSection) loginSection.style.display = 'block';
-    if (userSection) userSection.style.display = 'none';
     if (loginRequired) loginRequired.style.display = 'block';
     if (generatorForm) generatorForm.style.display = 'none';
     
@@ -534,7 +414,6 @@ function updatePlanInfo() {
     const planExpiry = document.getElementById('planExpiry');
     const contractsCount = document.getElementById('contractsCount');
     const remainingContracts = document.getElementById('remainingContracts');
-    const daysLeft = document.getElementById('daysLeft');
     
     if (userPlan) {
         userPlan.textContent = currentUser.plan === 'free' ? 'Plano Gratuito' : 
@@ -559,10 +438,6 @@ function updatePlanInfo() {
                          currentUser.plan === 'basico' ? (5 - (currentUser.contractsDownloaded || 0)) : '-';
         remainingContracts.textContent = remaining;
     }
-    
-    if (daysLeft) {
-        daysLeft.textContent = currentUser.plan === 'free' ? '-' : '30';
-    }
 }
 
 // Funções do Modal de Login
@@ -580,10 +455,6 @@ function closeLoginModal() {
         loginModal.classList.remove('active');
         document.body.style.overflow = 'auto';
     }
-}
-
-function showUserMenu() {
-    showNotification(`👋 Olá, ${currentUser.name.split(' ')[0]}!`);
 }
 
 // Função de Logout
@@ -651,7 +522,7 @@ function incrementDownloadCount() {
 }
 
 // =============================================
-// SISTEMA DE PLANOS REAIS
+// SISTEMA DE PLANOS
 // =============================================
 
 // Atualizar plano do usuário
@@ -663,16 +534,13 @@ function updateUserPlan(planType) {
     // Configurar limites conforme o plano
     switch(planType) {
         case 'free':
-            currentUser.remainingContracts = 999; // Visualizações ilimitadas
-            currentUser.trialEndDate = null;
+            currentUser.remainingContracts = 999;
             break;
         case 'basico':
             currentUser.remainingContracts = 5;
-            currentUser.trialEndDate = null;
             break;
         case 'profissional':
             currentUser.remainingContracts = 999;
-            currentUser.trialEndDate = null;
             break;
     }
     
@@ -684,7 +552,7 @@ function updateUserPlan(planType) {
 }
 
 // =============================================
-// FUNÇÕES DO SISTEMA PRINCIPAL
+// SISTEMA DE MOBILE
 // =============================================
 
 // Mobile Menu Toggle
@@ -768,101 +636,143 @@ function initEnhancedMobileMenu() {
 
 // Sistema de Assinaturas
 function initSignatureSystem() {
-    console.log('Inicializando sistema de assinatura...');
+    console.log('🔧 Inicializando sistema de assinatura...');
     
-    // Configurar eventos de upload
-    const contractorUpload = document.getElementById('contractorSignatureUpload');
-    if (contractorUpload) {
-        contractorUpload.addEventListener('change', function(e) {
-            handleSignatureUpload(e, 'contractor');
-        });
-    }
+    // Inicializar ambas as assinaturas
+    ['contractor', 'contracted'].forEach(type => {
+        // Configurar eventos de upload
+        const uploadInput = document.getElementById(`${type}SignatureUpload`);
+        if (uploadInput) {
+            // Remover event listener antigo se existir
+            uploadInput.removeEventListener('change', handleSignatureUpload);
+            // Adicionar novo
+            uploadInput.addEventListener('change', function(e) {
+                handleSignatureUpload(e, type);
+            });
+        }
 
-    const contractedUpload = document.getElementById('contractedSignatureUpload');
-    if (contractedUpload) {
-        contractedUpload.addEventListener('change', function(e) {
-            handleSignatureUpload(e, 'contracted');
-        });
-    }
-
-    // Inicializar canvas de desenho
-    initSignatureCanvas('contractor');
-    initSignatureCanvas('contracted');
+        // Inicializar canvas
+        initSignatureCanvas(type);
+    });
     
-    console.log('Sistema de assinatura inicializado');
+    console.log('✅ Sistema de assinatura inicializado');
 }
 
-// Função para lidar com upload de assinatura
+// Função para lidar com upload de assinatura - CORRIGIDA
 function handleSignatureUpload(event, type) {
-    const file = event.target.files[0];
-    if (!file) return;
+    console.log(`📤 Processando upload para ${type}`);
     
-    console.log(`Processando upload para ${type}:`, file.name);
+    const file = event.target.files[0];
+    if (!file) {
+        console.log('❌ Nenhum arquivo selecionado');
+        return;
+    }
+    
+    console.log(`📄 Arquivo: ${file.name} (${file.type}, ${file.size} bytes)`);
 
+    // Validar tipo de arquivo
     if (!file.type.match('image.*')) {
         showNotification('❌ Por favor, selecione uma imagem válida (JPG, PNG, etc.)');
         return;
     }
 
+    // Validar tamanho (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
         showNotification('❌ A imagem deve ser menor que 5MB');
         return;
     }
 
     const reader = new FileReader();
+    
+    reader.onloadstart = function() {
+        console.log(`📖 Lendo arquivo ${type}...`);
+    };
+    
     reader.onload = function(e) {
+        console.log(`✅ Arquivo ${type} lido com sucesso`);
+        
         const img = new Image();
+        
         img.onload = function() {
-            // Criar canvas temporário para processar a imagem
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCanvas.width = 300;
-            tempCanvas.height = 100;
+            console.log(`🖼️ Imagem ${type} carregada: ${img.width}x${img.height}`);
+            
+            // Criar canvas para processar a imagem
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Definir tamanho fixo para a assinatura
+            canvas.width = 300;
+            canvas.height = 100;
             
             // Limpar canvas
-            tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             // Calcular dimensões para manter proporção
             const ratio = Math.min(
-                tempCanvas.width / img.width,
-                tempCanvas.height / img.height
+                canvas.width / img.width,
+                canvas.height / img.height
             );
             const width = img.width * ratio;
             const height = img.height * ratio;
-            const x = (tempCanvas.width - width) / 2;
-            const y = (tempCanvas.height - height) / 2;
+            const x = (canvas.width - width) / 2;
+            const y = (canvas.height - height) / 2;
             
-            // Desenhar imagem centralizada
-            tempCtx.drawImage(img, x, y, width, height);
+            // Desenhar imagem centralizada no canvas
+            ctx.drawImage(img, x, y, width, height);
             
-            // Salvar assinatura
+            // Salvar assinatura como data URL
+            const signatureData = canvas.toDataURL('image/png');
+            
+            // Salvar na variável correspondente
             if (type === 'contractor') {
-                contractorSignature = tempCanvas.toDataURL('image/png');
+                contractorSignature = signatureData;
+                console.log(`✅ Assinatura do contratante salva (${signatureData.length} bytes)`);
             } else {
-                contractedSignature = tempCanvas.toDataURL('image/png');
+                contractedSignature = signatureData;
+                console.log(`✅ Assinatura do contratado salva (${signatureData.length} bytes)`);
             }
             
+            // Atualizar preview
             updateSignaturePreview(type);
+            
+            // Mostrar confirmação
             showSignatureConfirmation(type);
             
+            // Esconder canvas de desenho se estiver visível
+            const drawCanvas = document.getElementById(`${type}SignatureDraw`);
+            if (drawCanvas) {
+                drawCanvas.style.display = 'none';
+            }
+            
             showNotification('✅ Assinatura carregada com sucesso!');
+            
+            // Atualizar o preview do contrato
+            updatePreview();
         };
+        
         img.onerror = function() {
+            console.error(`❌ Erro ao carregar imagem ${type}`);
             showNotification('❌ Erro ao carregar a imagem');
         };
+        
         img.src = e.target.result;
     };
+    
     reader.onerror = function() {
+        console.error(`❌ Erro ao ler arquivo ${type}`);
         showNotification('❌ Erro ao ler o arquivo');
     };
+    
     reader.readAsDataURL(file);
 }
 
 // Função para inicializar canvas de desenho
 function initSignatureCanvas(type) {
-    const canvas = document.getElementById(`${type}SignatureDraw`);
+    const canvasId = `${type}SignatureDraw`;
+    const canvas = document.getElementById(canvasId);
+    
     if (!canvas) {
-        console.error(`Canvas não encontrado: ${type}SignatureDraw`);
+        console.error(`❌ Canvas não encontrado: ${canvasId}`);
         return;
     }
 
@@ -886,8 +796,6 @@ function initSignatureCanvas(type) {
         [lastX, lastY] = getCoordinates(e);
         ctx.beginPath();
         ctx.moveTo(lastX, lastY);
-        ctx.lineTo(lastX, lastY);
-        ctx.stroke();
     }
 
     function draw(e) {
@@ -900,14 +808,27 @@ function initSignatureCanvas(type) {
         ctx.stroke();
         
         [lastX, lastY] = [currentX, currentY];
+        
+        // Atualizar assinatura na variável em tempo real
+        const signatureData = canvas.toDataURL();
+        if (type === 'contractor') {
+            contractorSignature = signatureData;
+        } else {
+            contractedSignature = signatureData;
+        }
     }
 
     function stopDrawing() {
         if (isDrawing) {
             isDrawing = false;
             ctx.closePath();
+            
+            // Atualizar preview
             updateSignaturePreview(type);
             showSignatureConfirmation(type);
+            
+            // Atualizar o preview do contrato
+            updatePreview();
         }
     }
 
@@ -941,38 +862,39 @@ function initSignatureCanvas(type) {
         e.preventDefault();
         startDrawing(e);
     });
+    
     canvas.addEventListener('touchmove', function(e) {
         e.preventDefault();
         draw(e);
     });
+    
     canvas.addEventListener('touchend', stopDrawing);
     canvas.addEventListener('touchcancel', stopDrawing);
     
-    console.log(`Canvas ${type} inicializado`);
+    console.log(`✅ Canvas ${type} inicializado`);
 }
 
 // Função para selecionar opção de assinatura
 function selectSignatureOption(type, method, event) {
-    // Prevenir comportamento padrão
     if (event) {
         event.preventDefault();
         event.stopPropagation();
     }
     
-    console.log(`Selecionando assinatura: tipo=${type}, método=${method}`);
+    console.log(`🎯 Selecionando assinatura: ${type} - ${method}`);
     
     // Remover seleção de todas as opções do mesmo tipo
-    const signatureSection = event.currentTarget.closest('.signature-options');
+    const signatureSection = event?.currentTarget?.closest('.signature-options');
     if (signatureSection) {
         const options = signatureSection.querySelectorAll('.signature-option');
         options.forEach(option => {
             option.classList.remove('selected');
         });
-    }
-    
-    // Adicionar seleção à opção clicada
-    if (event && event.currentTarget) {
-        event.currentTarget.classList.add('selected');
+        
+        // Adicionar seleção à opção clicada
+        if (event?.currentTarget) {
+            event.currentTarget.classList.add('selected');
+        }
     }
     
     currentSignatureType = type;
@@ -982,7 +904,7 @@ function selectSignatureOption(type, method, event) {
         // Método de upload - clicar no input file
         const uploadInput = document.getElementById(`${type}SignatureUpload`);
         if (uploadInput) {
-            console.log(`Abrindo upload para ${type}`);
+            console.log(`📁 Abrindo upload para ${type}`);
             uploadInput.click();
         }
     } else if (method === 'draw') {
@@ -991,7 +913,7 @@ function selectSignatureOption(type, method, event) {
         const uploadInput = document.getElementById(`${type}SignatureUpload`);
         
         if (canvas) {
-            console.log(`Mostrando canvas para ${type}`);
+            console.log(`🖌️ Mostrando canvas para ${type}`);
             canvas.style.display = 'block';
             
             // Limpar canvas
@@ -1003,75 +925,72 @@ function selectSignatureOption(type, method, event) {
             ctx.lineWidth = 2;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
+            
+            // Limpar input file
+            if (uploadInput) {
+                uploadInput.value = '';
+            }
+            
+            // Limpar assinatura atual da variável
+            if (type === 'contractor') {
+                contractorSignature = null;
+            } else {
+                contractedSignature = null;
+            }
+            
+            updateSignaturePreview(type);
+            updatePreview();
         }
-        
-        if (uploadInput) {
-            uploadInput.value = '';
-        }
-        
-        // Limpar assinatura atual
-        if (type === 'contractor') {
-            contractorSignature = null;
-        } else {
-            contractedSignature = null;
-        }
-        
-        updateSignaturePreview(type);
     }
 }
 
+// Função para atualizar preview da assinatura - CORRIGIDA
 function updateSignaturePreview(type) {
     const preview = document.getElementById(`${type}SignaturePreview`);
-    let signatureData = null;
-
-    if (type === 'contractor') {
-        signatureData = contractorSignature;
-    } else {
-        signatureData = contractedSignature;
-    }
-
-    // Se não tem signatureData, verificar se tem desenho no canvas
-    if (!signatureData) {
-        const canvas = document.getElementById(`${type}SignatureDraw`);
-        if (canvas && canvas.style.display !== 'none') {
-            // Verificar se o canvas tem conteúdo
-            const ctx = canvas.getContext('2d');
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const hasContent = imageData.data.some(channel => channel !== 0);
-            
-            if (hasContent) {
-                signatureData = canvas.toDataURL();
-                if (type === 'contractor') {
-                    contractorSignature = signatureData;
-                } else {
-                    contractedSignature = signatureData;
-                }
-            }
-        }
-    }
-
-    if (preview && signatureData) {
-        preview.innerHTML = `
-            <div style="text-align: center;">
-                <img src="${signatureData}" alt="Assinatura ${type}" style="max-width: 100%; max-height: 80px; border: 1px solid #ddd; border-radius: 4px;">
-                <p style="margin-top: 0.5rem; font-size: 0.8rem; color: #666;">Pré-visualização da assinatura</p>
-            </div>
-        `;
-    } else if (preview) {
-        preview.innerHTML = '<p style="color: #666; text-align: center;">Assinatura aparecerá aqui</p>';
+    if (!preview) {
+        console.error(`❌ Preview não encontrado para ${type}`);
+        return;
     }
     
-    updatePreview();
+    let signatureData = type === 'contractor' ? contractorSignature : contractedSignature;
+
+    if (signatureData) {
+        console.log(`🖼️ Atualizando preview ${type} (${signatureData.length} bytes)`);
+        
+        preview.innerHTML = `
+            <div style="text-align: center;">
+                <img src="${signatureData}" 
+                     alt="Assinatura ${type === 'contractor' ? 'do Contratante' : 'do Contratado'}" 
+                     style="max-width: 100%; max-height: 80px; border: 1px solid #ddd; border-radius: 4px; background: white;">
+                <p style="margin-top: 0.5rem; font-size: 0.8rem; color: #666;">
+                    Assinatura ${type === 'contractor' ? 'do CONTRATANTE' : 'do CONTRATADO'}
+                </p>
+            </div>
+        `;
+    } else {
+        preview.innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+                <i class="fas fa-signature" style="font-size: 2rem; color: #ccc; margin-bottom: 10px;"></i>
+                <p style="color: #666; font-size: 0.9rem;">
+                    Assinatura ${type === 'contractor' ? 'do CONTRATANTE' : 'do CONTRATADO'} aparecerá aqui
+                </p>
+            </div>
+        `;
+    }
 }
 
 function showSignatureConfirmation(type) {
     const confirmation = document.getElementById(`${type}SignatureConfirmation`);
     if (confirmation) {
         confirmation.style.display = 'flex';
+        console.log(`✅ Confirmação mostrada para ${type}`);
     }
 }
 
 function clearSignature(type) {
+    console.log(`🗑️ Limpando assinatura ${type}`);
+    
+    // Limpar canvas de desenho
     const drawCanvas = document.getElementById(`${type}SignatureDraw`);
     if (drawCanvas) {
         const ctx = drawCanvas.getContext('2d');
@@ -1079,22 +998,32 @@ function clearSignature(type) {
         drawCanvas.style.display = 'none';
     }
     
+    // Limpar input file
     const uploadInput = document.getElementById(`${type}SignatureUpload`);
     if (uploadInput) {
         uploadInput.value = '';
     }
     
+    // Limpar preview
     const preview = document.getElementById(`${type}SignaturePreview`);
     if (preview) {
-        preview.innerHTML = '<p style="color: #666; text-align: center;">Assinatura aparecerá aqui</p>';
+        preview.innerHTML = `
+            <div style="text-align: center; padding: 20px;">
+                <i class="fas fa-signature" style="font-size: 2rem; color: #ccc; margin-bottom: 10px;"></i>
+                <p style="color: #666; font-size: 0.9rem;">
+                    Assinatura ${type === 'contractor' ? 'do CONTRATANTE' : 'do CONTRATADO'} aparecerá aqui
+                </p>
+            </div>
+        `;
     }
     
+    // Limpar confirmação
     const confirmation = document.getElementById(`${type}SignatureConfirmation`);
     if (confirmation) {
         confirmation.style.display = 'none';
     }
     
-    // Remover seleção de todas as opções da mesma seção
+    // Remover seleção de opções
     const signatureSection = document.querySelector(`.signature-options:has(#${type}SignaturePreview)`);
     if (signatureSection) {
         const options = signatureSection.querySelectorAll('.signature-option');
@@ -1118,7 +1047,9 @@ function clearSignature(type) {
 }
 
 function confirmSignature(type) {
+    console.log(`✅ Assinatura ${type} confirmada`);
     showNotification('✅ Assinatura confirmada!');
+    
     const confirmation = document.getElementById(`${type}SignatureConfirmation`);
     if (confirmation) {
         confirmation.style.display = 'none';
@@ -1129,88 +1060,6 @@ function confirmSignature(type) {
     if (canvas) {
         canvas.style.display = 'none';
     }
-}
-
-// =============================================
-// SISTEMA DE VISUALIZAÇÃO SEGURA
-// =============================================
-
-// Gerar URL segura para visualização
-function generateSecureViewURL(contractData) {
-    const contractId = 'contract_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-    
-    // Salvar contrato no localStorage
-    localStorage.setItem(contractId, JSON.stringify(contractData));
-    
-    // Também salvar no sessionStorage para backup
-    sessionStorage.setItem('lastGeneratedContract', JSON.stringify(contractData));
-    
-    // Retornar URL para visualização segura
-    return `view-contract.html?id=${contractId}`;
-}
-
-// Abrir visualização segura
-function openSecurePreview() {
-    if (!currentUser) {
-        showNotification('🔐 Faça login para visualizar contratos');
-        showLoginModal();
-        return;
-    }
-    
-    // Validar dados antes de gerar
-    const validationErrors = validateContractData();
-    if (validationErrors.length > 0) {
-        showNotification(`❌ Corrija os seguintes campos: ${validationErrors.join(', ')}`);
-        return;
-    }
-    
-    try {
-        const contractData = collectContractData();
-        const secureURL = generateSecureViewURL(contractData);
-        
-        // Abrir em nova aba
-        window.open(secureURL, '_blank');
-        
-        showNotification('👁️ Visualização segura aberta em nova aba');
-        
-    } catch (error) {
-        console.error('Erro ao abrir visualização segura:', error);
-        showNotification('❌ Erro ao abrir visualização segura');
-    }
-}
-
-// Coletar dados do contrato
-function collectContractData() {
-    return {
-        contractorName: document.getElementById('contractorName')?.value,
-        contractorDoc: document.getElementById('contractorDoc')?.value,
-        contractorProfession: document.getElementById('contractorProfession')?.value,
-        contractorAddress: document.getElementById('contractorAddress')?.value,
-        contractorCivilState: document.getElementById('contractorCivilState')?.value,
-        
-        contractedName: document.getElementById('contractedName')?.value,
-        contractedDoc: document.getElementById('contractedDoc')?.value,
-        contractedProfession: document.getElementById('contractedProfession')?.value,
-        contractedAddress: document.getElementById('contractedAddress')?.value,
-        contractedCivilState: document.getElementById('contractedCivilState')?.value,
-        
-        serviceDescription: document.getElementById('serviceDescription')?.value,
-        serviceValue: document.getElementById('serviceValue')?.value,
-        paymentMethod: document.getElementById('paymentMethod')?.value,
-        startDate: document.getElementById('startDate')?.value,
-        endDate: document.getElementById('endDate')?.value,
-        contractCity: document.getElementById('contractCity')?.value,
-        
-        contractorSignature: contractorSignature,
-        contractedSignature: contractedSignature,
-        
-        witness1Name: witness1Name,
-        witness1CPF: witness1CPF,
-        witness2Name: witness2Name,
-        witness2CPF: witness2CPF,
-        
-        generatedAt: new Date().toISOString()
-    };
 }
 
 // =============================================
@@ -1617,6 +1466,52 @@ function validateEmail(email) {
 // CONTRATO PROFISSIONAL PLUS - GERADOR MELHORADO
 // =============================================
 
+// Coletar dados do contrato - VERSÃO CORRIGIDA
+function collectContractData() {
+    // Função auxiliar para pegar valor do select com verificação
+    const getSelectValue = (id) => {
+        const element = document.getElementById(id);
+        if (!element) return '';
+        
+        const value = element.value;
+        const text = element.options[element.selectedIndex]?.text;
+        
+        // Se tem valor, retorna o texto da opção selecionada
+        if (value && value !== '') {
+            return text || value;
+        }
+        
+        return ''; // Retorna vazio se não selecionado
+    };
+
+    return {
+        contractorName: document.getElementById('contractorName')?.value || '',
+        contractorDoc: document.getElementById('contractorDoc')?.value || '',
+        contractorProfession: document.getElementById('contractorProfession')?.value || '',
+        contractorAddress: document.getElementById('contractorAddress')?.value || '',
+        // CORREÇÃO: Usar função auxiliar para selects
+        contractorCivilState: getSelectValue('contractorCivilState'),
+        
+        contractedName: document.getElementById('contractedName')?.value || '',
+        contractedDoc: document.getElementById('contractedDoc')?.value || '',
+        contractedProfession: document.getElementById('contractedProfession')?.value || '',
+        contractedAddress: document.getElementById('contractedAddress')?.value || '',
+        // CORREÇÃO: Usar função auxiliar para selects
+        contractedCivilState: getSelectValue('contractedCivilState'),
+        
+        serviceDescription: document.getElementById('serviceDescription')?.value || '',
+        serviceValue: document.getElementById('serviceValue')?.value || '',
+        paymentMethod: document.getElementById('paymentMethod')?.value || '',
+        startDate: document.getElementById('startDate')?.value || '',
+        endDate: document.getElementById('endDate')?.value || '',
+        contractCity: document.getElementById('contractCity')?.value || '',
+        
+        contractorSignature: contractorSignature,
+        contractedSignature: contractedSignature,
+        
+        generatedAt: new Date().toISOString()
+    };
+}
 // Função para gerar o contrato PROFISSIONAL PLUS
 function generateProfessionalContractPlus() {
     const data = collectContractData();
@@ -1666,7 +1561,7 @@ function generateProfessionalContractPlus() {
     const month = getMonthName(currentDate.getMonth());
     const year = currentDate.getFullYear();
 
-    // CORREÇÃO: Determinar tipo de documento e formatar corretamente
+    // Determinar tipo de documento e formatar corretamente
     const getDocumentInfo = (doc) => {
         if (!doc || doc.trim() === '') {
             return {
@@ -1701,7 +1596,7 @@ function generateProfessionalContractPlus() {
     const contractorDocInfo = getDocumentInfo(data.contractorDoc);
     const contractedDocInfo = getDocumentInfo(data.contractedDoc);
 
-    // Construir o contrato PROFISSIONAL PLUS - CORRIGIDO
+    // Construir o contrato PROFISSIONAL PLUS
     const contractHTML = `
         <div class="contract-header">
             <div class="contract-title">CONTRATO DE PRESTAÇÃO DE SERVIÇOS PROFISSIONAIS</div>
@@ -1717,7 +1612,7 @@ function generateProfessionalContractPlus() {
                 </p>
             </div>
 
-            <!-- CLÁUSULA 1 - IDENTIFICAÇÃO DAS PARTES - CORRIGIDO -->
+            <!-- CLÁUSULA 1 - IDENTIFICAÇÃO DAS PARTES -->
             <div class="contract-clause">
                 <h4>CLÁUSULA PRIMEIRA - DAS PARTES CONTRATANTES</h4>
                 <p><strong>CONTRATANTE:</strong> ${data.contractorName || '________________________'}, ${data.contractorCivilState || '______________'}, ${data.contractorProfession || '________________________'}, portador(a) do ${contractorDocInfo.type} nº ${contractorDocInfo.number}, residente e domiciliado(a) na ${data.contractorAddress || '______________________________________'}.</p>
@@ -1781,88 +1676,115 @@ function generateProfessionalContractPlus() {
                 <p><strong>4.4.</strong> O CONTRATADO emitirá a nota fiscal correspondente aos serviços prestados, com retenção dos tributos incidentes na fonte, quando aplicável.</p>
             </div>
 
-            <!-- Restante das cláusulas continua igual... -->
-
-            <!-- CLÁUSULA 13 - ELEIÇÃO DE FORO -->
+            <!-- CLÁUSULA 5 - DIREITOS E OBRIGAÇÕES -->
             <div class="contract-clause">
-                <h4>CLÁUSULA DÉCIMA TERCEIRA - DO FORO E LEGISLAÇÃO APLICÁVEL</h4>
-                <p><strong>13.1.</strong> Para dirimir quaisquer controvérsias oriundas deste contrato, as partes elegem o foro da comarca de <strong>${data.contractCity || '________________________'}</strong>, com expressa renúncia a qualquer outro, por mais privilegiado que seja.</p>
+                <h4>CLÁUSULA QUINTA - DOS DIREITOS E OBRIGAÇÕES</h4>
+                <p><strong>5.1.</strong> São obrigações do CONTRATADO:</p>
+                <ol type="a">
+                    <li>Executar os serviços com zelo, diligência e eficiência;</li>
+                    <li>Cumprir os prazos estabelecidos;</li>
+                    <li>Fornecer relatórios periódicos de andamento;</li>
+                    <li>Manter sigilo sobre informações confidenciais.</li>
+                </ol>
                 
-                <p><strong>13.2.</strong> Este contrato rege-se pelas leis da República Federativa do Brasil.</p>
-                
-                <p><strong>13.3.</strong> As partes comprometem-se a tentar solucionar amigavelmente eventuais controvérsias antes de recorrer ao Poder Judiciário.</p>
+                <p><strong>5.2.</strong> São obrigações do CONTRANTE:</p>
+                <ol type="a">
+                    <li>Fornecer todas as informações necessárias;</li>
+                    <li>Realizar os pagamentos nos prazos acordados;</li>
+                    <li>Colaborar para a execução dos serviços;</li>
+                    <li>Fornecer ambiente adequado quando necessário.</li>
+                </ol>
             </div>
 
-            <!-- CLÁUSULA 14 - DISPOSIÇÕES GERAIS -->
+            <!-- CLÁUSULA 6 - CONFIDENCIALIDADE -->
             <div class="contract-clause">
-                <h4>CLÁUSULA DÉCIMA QUARTA - DAS DISPOSIÇÕES GERAIS</h4>
-                <p><strong>14.1.</strong> As tolerâncias eventualmente concedidas por qualquer das partes não constituirão novação ou renúncia a quaisquer direitos.</p>
-                
-                <p><strong>14.2.</strong> As comunicações entre as partes serão consideradas válidas se realizadas por escrito, inclusive por e-mail.</p>
-                
-                <p><strong>14.3.</strong> Este contrato poderá ser alterado apenas mediante aditivo escrito e assinado por ambas as partes.</p>
-                
-                <p><strong>14.4.</strong> A nulidade de qualquer cláusula não afetará a validade das demais disposições contratuais.</p>
-                
-                <p><strong>14.5.</strong> O presente contrato vincula as partes e seus sucessores a qualquer título.</p>
+                <h4>CLÁUSULA SEXTA - DA CONFIDENCIALIDADE</h4>
+                <p><strong>6.1.</strong> As partes se comprometem a manter sigilo absoluto sobre todas as informações confidenciais a que tiverem acesso durante a vigência deste contrato.</p>
+                <p><strong>6.2.</strong> A obrigação de confidencialidade permanecerá válida mesmo após o término do contrato.</p>
+            </div>
+
+            <!-- CLÁUSULA 7 - PROPRIEDADE INTELECTUAL -->
+            <div class="contract-clause">
+                <h4>CLÁUSULA SÉTIMA - DA PROPRIEDADE INTELECTUAL</h4>
+                <p><strong>7.1.</strong> Todo e qualquer material intelectual produzido durante a execução deste contrato será de propriedade exclusiva do CONTRATANTE.</p>
+                <p><strong>7.2.</strong> O CONTRATADO não poderá utilizar os materiais produzidos para outros clientes sem autorização por escrito.</p>
+            </div>
+
+            <!-- CLÁUSULA 8 - RESCISÃO -->
+            <div class="contract-clause">
+                <h4>CLÁUSULA OITAVA - DA RESCISÃO</h4>
+                <p><strong>8.1.</strong> Este contrato poderá ser rescindido por qualquer das partes mediante aviso prévio de 30 (trinta) dias.</p>
+                <p><strong>8.2.</strong> Em caso de descumprimento de cláusulas essenciais, a rescisão poderá ser imediata.</p>
+            </div>
+
+            <!-- CLÁUSULA 9 - PENALIDADES -->
+            <div class="contract-clause">
+                <h4>CLÁUSULA NONA - DAS PENALIDADES</h4>
+                <p><strong>9.1.</strong> Em caso de descumprimento contratual, a parte inadimplente pagará multa equivalente a 10% (dez por cento) do valor total do contrato.</p>
+            </div>
+
+            <!-- CLÁUSULA 10 - FORÇA MAIOR -->
+            <div class="contract-clause">
+                <h4>CLÁUSULA DÉCIMA - DA FORÇA MAIOR</h4>
+                <p><strong>10.1.</strong> Eventos de força maior que impeçam a execução do contrato não caracterizarão descumprimento.</p>
+            </div>
+
+            <!-- CLÁUSULA 11 - INDENIZAÇÃO -->
+            <div class="contract-clause">
+                <h4>CLÁUSULA DÉCIMA PRIMEIRA - DA INDENIZAÇÃO</h4>
+                <p><strong>11.1.</strong> A parte que causar danos à outra em decorrência do descumprimento deste contrato indenizará integralmente os prejuízos causados.</p>
+            </div>
+
+            <!-- CLÁUSULA 12 - ELEIÇÃO DE FORO -->
+            <div class="contract-clause">
+                <h4>CLÁUSULA DÉCIMA SEGUNDA - DO FORO</h4>
+                <p><strong>12.1.</strong> Para dirimir quaisquer controvérsias oriundas deste contrato, as partes elegem o foro da comarca de <strong>${data.contractCity || '________________________'}</strong>.</p>
+            </div>
+
+            <!-- CLÁUSULA 13 - DISPOSIÇÕES GERAIS -->
+            <div class="contract-clause">
+                <h4>CLÁUSULA DÉCIMA TERCEIRA - DAS DISPOSIÇÕES GERAIS</h4>
+                <p><strong>13.1.</strong> Este contrato constitui acordo completo entre as partes.</p>
+                <p><strong>13.2.</strong> Quaisquer alterações devem ser feitas por escrito e assinadas por ambas as partes.</p>
             </div>
 
             <!-- ÁREA DE ASSINATURAS -->
             <div class="signature-area">
                 <p>E por estarem assim justos e contratados, firmam o presente instrumento em duas vias de igual teor e forma, na presença de duas testemunhas.</p>
                 
-                <div class="signature-line-improved">
-                    <div class="signature-box-improved">
+                <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                    <!-- CONTRATANTE -->
+                    <div style="width: 48%; text-align: center;">
                         <p><strong>${data.contractCity || '________________________'}</strong>, ${day} de ${month} de ${year}.</p>
-                        <div class="signature-space"></div>
-                        ${data.contractorSignature ? `
-                            <div style="text-align: center; margin: 10px 0;">
-                                <img src="${data.contractorSignature}" style="max-width: 200px; max-height: 60px; border: 1px solid #ddd;">
-                                <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">Assinatura digital do CONTRATANTE</p>
-                            </div>
-                        ` : '<div style="height: 80px; margin: 10px 0; border-bottom: 1px solid #000;"></div>'}
-                        <div class="signature-name">${data.contractorName || '________________________'}</div>
-                        <div class="signature-role">CONTRATANTE</div>
-                        <div class="signature-document">${contractorDocInfo.type}: ${contractorDocInfo.number}</div>
+                        
+                        <div style="margin: 1rem 0; min-height: 80px; display: flex; align-items: center; justify-content: center;">
+                            ${data.contractorSignature ? `
+                                <img src="${data.contractorSignature}" 
+                                     style="max-width: 200px; max-height: 60px; border: 1px solid #ddd; background: white; padding: 5px;">
+                            ` : '<div style="width: 100%; height: 80px; border-bottom: 1px solid #000;"></div>'}
+                        </div>
+                        
+                        <div style="margin-top: 0.5rem; font-weight: bold;">${data.contractorName || '________________________'}</div>
+                        <div style="font-style: italic; color: #666; margin-bottom: 0.3rem;">CONTRATANTE</div>
+                        <div style="font-size: 0.8em; color: #555;">${contractorDocInfo.type}: ${contractorDocInfo.number}</div>
                     </div>
                     
-                    <div class="signature-box-improved">
+                    <!-- CONTRATADO -->
+                    <div style="width: 48%; text-align: center;">
                         <p>&nbsp;</p>
-                        <div class="signature-space"></div>
-                        ${data.contractedSignature ? `
-                            <div style="text-align: center; margin: 10px 0;">
-                                <img src="${data.contractedSignature}" style="max-width: 200px; max-height: 60px; border: 1px solid #ddd;">
-                                <p style="font-size: 0.8rem; color: #666; margin-top: 5px;">Assinatura digital do CONTRATADO(A)</p>
-                            </div>
-                        ` : '<div style="height: 80px; margin: 10px 0; border-bottom: 1px solid #000;"></div>'}
-                        <div class="signature-name">${data.contractedName || '________________________'}</div>
-                        <div class="signature-role">CONTRATADO(A)</div>
-                        <div class="signature-document">${contractedDocInfo.type}: ${contractedDocInfo.number}</div>
+                        
+                        <div style="margin: 1rem 0; min-height: 80px; display: flex; align-items: center; justify-content: center;">
+                            ${data.contractedSignature ? `
+                                <img src="${data.contractedSignature}" 
+                                     style="max-width: 200px; max-height: 60px; border: 1px solid #ddd; background: white; padding: 5px;">
+                            ` : '<div style="width: 100%; height: 80px; border-bottom: 1px solid #000;"></div>'}
+                        </div>
+                        
+                        <div style="margin-top: 0.5rem; font-weight: bold;">${data.contractedName || '________________________'}</div>
+                        <div style="font-style: italic; color: #666; margin-bottom: 0.3rem;">CONTRATADO(A)</div>
+                        <div style="font-size: 0.8em; color: #555;">${contractedDocInfo.type}: ${contractedDocInfo.number}</div>
                     </div>
                 </div>
-
-                <!-- TESTEMUNHAS (OPCIONAL) -->
-                ${(witness1Name || witness2Name) ? `
-                <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                    ${witness1Name ? `
-                    <div style="text-align: center;">
-                        <div style="border-bottom: 1px solid #000; margin: 10px 0; padding-top: 0.5rem;"></div>
-                        <div style="font-weight: bold;">${witness1Name}</div>
-                        <div style="font-size: 0.8rem; color: #666;">CPF: ${witness1CPF || '__________________'}</div>
-                        <div style="font-size: 0.8rem; color: #666; font-style: italic;">Testemunha 1</div>
-                    </div>
-                    ` : ''}
-                    
-                    ${witness2Name ? `
-                    <div style="text-align: center;">
-                        <div style="border-bottom: 1px solid #000; margin: 10px 0; padding-top: 0.5rem;"></div>
-                        <div style="font-weight: bold;">${witness2Name}</div>
-                        <div style="font-size: 0.8rem; color: #666;">CPF: ${witness2CPF || '__________________'}</div>
-                        <div style="font-size: 0.8rem; color: #666; font-style: italic;">Testemunha 2</div>
-                    </div>
-                    ` : ''}
-                </div>
-                ` : ''}
 
                 <!-- RODAPÉ -->
                 <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #000; text-align: center; font-size: 0.8rem; color: #666;">
@@ -1875,28 +1797,6 @@ function generateProfessionalContractPlus() {
     `;
     
     return contractHTML;
-}
-
-// =============================================
-// ATUALIZAR FUNÇÃO PRINCIPAL DE PREVIEW
-// =============================================
-
-// Update contract preview
-function updatePreview() {
-    try {
-        const contractPreview = document.getElementById('contractPreview');
-        if (contractPreview) {
-            contractPreview.innerHTML = generateProfessionalContractPlus();
-            
-            // Incrementar contador de visualizações
-            if (currentUser) {
-                incrementContractCount();
-            }
-        }
-    } catch (error) {
-        console.error('Erro ao atualizar preview:', error);
-        showNotification('❌ Erro ao atualizar visualização do contrato');
-    }
 }
 
 // =============================================
@@ -2071,7 +1971,7 @@ function selectPayment(element, type) {
 // SISTEMA DE DOWNLOAD E EXPORTAÇÃO
 // =============================================
 
-// Função para gerar Word - VERSÃO MELHORADA
+// Função para gerar Word
 function generateWordPlus() {
     if (!canDownloadContract()) {
         return;
@@ -2143,39 +2043,6 @@ function generateWordPlus() {
             margin-bottom: 4px;
             line-height: 1.4;
         }
-        .signature-line-improved {
-            display: table;
-            width: 100%;
-            margin-top: 2rem;
-            padding-top: 1rem;
-            border-top: 2px solid #000;
-        }
-        .signature-box-improved {
-            display: table-cell;
-            width: 50%;
-            vertical-align: top;
-            padding: 0 15px;
-        }
-        .signature-space {
-            border-top: 1px solid #000;
-            margin: 1rem 0 0.5rem 0;
-            padding-top: 0.5rem;
-        }
-        .signature-name {
-            margin-top: 0.3rem;
-            font-weight: bold;
-            font-size: 1em;
-        }
-        .signature-role {
-            font-style: italic;
-            color: #666;
-            margin-bottom: 0.3rem;
-            font-size: 0.9em;
-        }
-        .signature-document {
-            font-size: 0.8em;
-            color: #555;
-        }
         @media print {
             body { margin: 1.5cm; }
             .contract-clause { page-break-inside: avoid; }
@@ -2191,7 +2058,6 @@ function generateWordPlus() {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         
-        // Nome do arquivo mais profissional
         const contractorName = document.getElementById('contractorName')?.value || 'contratante';
         const fileName = `Contrato_${contractorName.replace(/\s+/g, '_')}_${new Date().getTime()}.doc`;
         
@@ -2205,7 +2071,7 @@ function generateWordPlus() {
         // Incrementar contador de downloads
         incrementDownloadCount();
         
-        showNotification('✅ Contrato profissional baixado com sucesso!');
+        showNotification('✅ Contrato baixado com sucesso!');
         
     } catch (error) {
         console.error('Erro no generateWord:', error);
@@ -2368,40 +2234,143 @@ function showNotification(message) {
     }, 5000);
 }
 
-// Função para formatar CPF/CNPJ
-function formatCPFCNPJ(value) {
-    const cleanValue = value.replace(/\D/g, '');
-    
-    if (cleanValue.length <= 11) {
-        // CPF
-        return cleanValue.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-    } else {
-        // CNPJ
-        return cleanValue.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+// =============================================
+// FUNÇÕES GLOBAIS
+// =============================================
+
+// Scroll para o gerador
+function scrollToGenerator() {
+    document.getElementById('generator').scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+    });
+    showNotification('🎯 Agora crie seu contrato profissional!');
+}
+
+// Modal de upgrade persuasivo
+function showUpgradeModal() {
+    const modal = document.createElement('div');
+    modal.className = 'modal active upgrade-modal';
+    modal.style.zIndex = '3000';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>🚀 Upgrade Necessário</h3>
+                <button class="close-modal" onclick="this.closest('.modal').remove(); document.body.style.overflow='auto'">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="upgrade-content">
+                    <div class="upgrade-header">
+                        <h4>Seu Contrato Está Quase Pronto!</h4>
+                        <p>Você já criou um contrato profissional. Agora falta pouco para ter acesso completo:</p>
+                    </div>
+                    
+                    <div class="benefits-grid">
+                        <div class="benefit-card">
+                            <i class="fas fa-download"></i>
+                            <strong>Download Imediato</strong>
+                            <p>Baixe em Word e PDF</p>
+                        </div>
+                        <div class="benefit-card">
+                            <i class="fas fa-edit"></i>
+                            <strong>Edição Completa</strong>
+                            <p>Modifique quando quiser</p>
+                        </div>
+                        <div class="benefit-card">
+                            <i class="fas fa-shield-alt"></i>
+                            <strong>Proteção Total</strong>
+                            <p>Cláusulas jurídicas</p>
+                        </div>
+                    </div>
+                    
+                    <div class="upgrade-options">
+                        <div class="upgrade-option featured">
+                            <div class="option-header">
+                                <h5>💎 MAIS POPULAR</h5>
+                                <div class="price">R$ 6,99</div>
+                                <div class="period">por contrato</div>
+                            </div>
+                            <ul>
+                                <li>✅ Download imediato</li>
+                                <li>✅ Contrato editável</li>
+                                <li>✅ Formato Word + PDF</li>
+                                <li>✅ Reutilizável</li>
+                            </ul>
+                            <button class="btn btn-success" onclick="openPaymentModal('avulsa'); this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%;">
+                                <i class="fas fa-bolt"></i> Comprar Agora
+                            </button>
+                        </div>
+                        
+                        <div class="upgrade-option">
+                            <div class="option-header">
+                                <h5>🚀 PROFISSIONAL</h5>
+                                <div class="price">R$ 29,99</div>
+                                <div class="period">por mês</div>
+                            </div>
+                            <ul>
+                                <li>✅ Contratos Ilimitados</li>
+                                <li>✅ Todos os modelos</li>
+                                <li>✅ Suporte prioritário</li>
+                                <li>✅ Armazenamento</li>
+                            </ul>
+                            <button class="btn" onclick="openPaymentModal('profissional'); this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%;">
+                                <i class="fas fa-crown"></i> Assinar Plano
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-warning">
+                        <p>⚠️ <strong>Não arrisque:</strong> Um contrato mal elaborado pode custar muito mais que R$ 6,99</p>
+                    </div>
+                    
+                    <div class="upgrade-footer">
+                        <button class="btn-login" onclick="this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%; margin-top: 1rem;">
+                            <i class="fas fa-eye"></i> Continuar Visualizando Gratuitamente
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+}
+
+// Visualização segura
+function openSecurePreview() {
+    if (!currentUser) {
+        showNotification('🔐 Faça login para visualizar contratos');
+        showLoginModal();
+        return;
     }
-}
-
-// Função para gerar ID único
-function generateUniqueId() {
-    return 'id_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
-}
-
-// Função para debounce (otimização de performance)
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// Aplicar debounce no updatePreview para mobile
-if (isMobileDevice()) {
-    window.updatePreview = debounce(updatePreview, 500);
+    
+    // Validar dados antes de gerar
+    const validationErrors = validateContractData();
+    if (validationErrors.length > 0) {
+        showNotification(`❌ Corrija os seguintes campos: ${validationErrors.join(', ')}`);
+        return;
+    }
+    
+    try {
+        const contractData = collectContractData();
+        const contractId = 'contract_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        sessionStorage.setItem('secureContractData', JSON.stringify(contractData));
+        sessionStorage.setItem('secureContractId', contractId);
+        
+        // Abrir em nova aba
+        const secureWindow = window.open('view-contract.html', '_blank');
+        
+        if (secureWindow) {
+            showNotification('👁️ Visualização segura aberta em nova aba');
+        } else {
+            showNotification('❌ Permita pop-ups para visualização segura');
+        }
+        
+    } catch (error) {
+        console.error('Erro ao abrir visualização segura:', error);
+        showNotification('❌ Erro ao abrir visualização segura');
+    }
 }
 
 // =============================================
@@ -2414,7 +2383,6 @@ window.showUpgradeModal = showUpgradeModal;
 window.handleGoogleSignIn = handleGoogleSignIn;
 window.showLoginModal = showLoginModal;
 window.closeLoginModal = closeLoginModal;
-window.showUserMenu = showUserMenu;
 window.signOut = signOut;
 window.selectSignatureOption = selectSignatureOption;
 window.handleSignatureUpload = handleSignatureUpload;
@@ -2431,18 +2399,5 @@ window.openSecurePreview = openSecurePreview;
 window.showContactModal = showContactModal;
 window.closeContactModal = closeContactModal;
 window.submitContactForm = submitContactForm;
-window.showWitnessModal = showWitnessModal;
-window.closeWitnessModal = closeWitnessModal;
-window.saveWitnesses = saveWitnesses;
-window.clearWitnesses = clearWitnesses;
 
 console.log('📦 Todas as funções JavaScript carregadas com sucesso!');
-
-// Inicialização final
-setTimeout(() => {
-    if (currentUser) {
-        console.log(`👤 Usuário logado: ${currentUser.name}`);
-    } else {
-        console.log('🔒 Usuário não logado - Modo visualização ativo');
-    }
-}, 1000);
