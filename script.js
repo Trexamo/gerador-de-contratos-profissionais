@@ -11,11 +11,6 @@ let isDrawing = false;
 let currentCanvas = null;
 let lastX = 0;
 let lastY = 0;
-let activeFAQ = null;
-let currentSignatureType = null;
-let currentSignatureMethod = null;
-
-// Estado do usuário
 let currentUser = null;
 
 // Preços dos planos
@@ -24,12 +19,6 @@ const planPrices = {
     'basico': 9.99,
     'profissional': 29.99
 };
-
-// Testemunhas
-let witness1Name = '';
-let witness1CPF = '';
-let witness2Name = '';
-let witness2CPF = '';
 
 // =============================================
 // INICIALIZAÇÃO DO SISTEMA
@@ -41,29 +30,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     checkUserLogin();
     initMobileMenu();
-    initEnhancedMobileMenu();
     initSignatureSystem();
-    initMobileSignatureSystem();
-    optimizeForMobile();
     setupEventListeners();
     initDateSettings();
-    
-    // Novas inicializações
     updateStatusBar();
     setupContactForm();
-    
-    // Setup auto-preview
     setupAutoPreview();
     
     console.log('✅ ContratoFácil inicializado com sucesso!');
-    
-    // Forçar primeira atualização após 1 segundo
-    setTimeout(function() {
-        if (currentUser) {
-            console.log('🔄 Forçando primeira atualização do preview...');
-            updatePreview();
-        }
-    }, 1000);
 });
 
 // =============================================
@@ -73,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupEventListeners() {
     console.log('🔧 Configurando event listeners...');
     
-    // Atualizar preview em tempo real PARA TODOS OS CAMPOS
+    // Atualizar preview em tempo real
     const formInputs = document.querySelectorAll('#generatorForm input, #generatorForm select, #generatorForm textarea');
     console.log(`✅ Encontrados ${formInputs.length} campos do formulário`);
     
@@ -191,7 +165,7 @@ function initDateSettings() {
 }
 
 // =============================================
-// FUNÇÃO DE ATUALIZAÇÃO DO PREVIEW (CORRIGIDA)
+// FUNÇÃO DE ATUALIZAÇÃO DO PREVIEW
 // =============================================
 
 // Update contract preview - FUNÇÃO PRINCIPAL
@@ -207,6 +181,7 @@ function updatePreview() {
         
         if (!currentUser) {
             console.log('⚠️ Usuário não logado, não pode mostrar preview');
+            contractPreview.innerHTML = '<p style="color: #666; text-align: center;">Faça login para visualizar o contrato...</p>';
             return;
         }
         
@@ -334,14 +309,14 @@ function updateUIAfterLogin() {
     const userNav = document.getElementById('userNav');
     
     if (loginButton) loginButton.style.display = 'none';
-    if (userButton) userButton.style.display = 'inline-block';
+    if (userButton) userButton.style.display = 'block';
     if (userNav) userNav.style.display = 'list-item';
     
-    // Atualizar nome do usuário no header
+    // Atualizar nome do usuário
     const userNameNav = document.getElementById('userNameNav');
-    if (userNameNav) {
-        userNameNav.textContent = currentUser.name.split(' ')[0];
-    }
+    const userNameButton = document.getElementById('userNameButton');
+    if (userNameNav) userNameNav.textContent = currentUser.name.split(' ')[0];
+    if (userNameButton) userNameButton.textContent = currentUser.name.split(' ')[0];
     
     // Atualizar seções principais
     const loginRequired = document.getElementById('loginRequired');
@@ -350,12 +325,14 @@ function updateUIAfterLogin() {
     if (loginRequired) loginRequired.style.display = 'none';
     if (generatorForm) generatorForm.style.display = 'flex';
     
-    // Atualizar dashboard do usuário
-    updateUserDashboard();
+    // Atualizar status bar
     updateStatusBar();
     
     // Configurar event listeners após login
     setupEventListeners();
+    
+    // Forçar primeira atualização
+    setTimeout(updatePreview, 500);
 }
 
 // Atualizar UI após logout
@@ -365,7 +342,7 @@ function updateUIAfterLogout() {
     const userButton = document.getElementById('userButton');
     const userNav = document.getElementById('userNav');
     
-    if (loginButton) loginButton.style.display = 'inline-block';
+    if (loginButton) loginButton.style.display = 'block';
     if (userButton) userButton.style.display = 'none';
     if (userNav) userNav.style.display = 'none';
     
@@ -377,67 +354,6 @@ function updateUIAfterLogout() {
     if (generatorForm) generatorForm.style.display = 'none';
     
     updateStatusBar();
-}
-
-// Atualizar dashboard do usuário
-function updateUserDashboard() {
-    if (!currentUser) return;
-    
-    // Atualizar avatar
-    const userAvatar = document.getElementById('userAvatar');
-    if (userAvatar) {
-        if (currentUser.picture) {
-            userAvatar.src = currentUser.picture;
-            userAvatar.onerror = function() {
-                this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiMyYzlhYTAiLz4KPHBhdGggZD0iTTQwIDQ0QzQ2LjYgNDQgNTIgMzguNiA1MiAzMkM1MiAyNS40IDQ2LjYgMjAgNDAgMjBDMzMuNCAyMCAyOCAyNS40IDI4IDMyQzI4IDM4LjYgMzMuNCA0NCA0MCA0NFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yOCA1MkMyOCA1OC42IDMzLjQgNjQgNDAgNjRDNDYuNiA2NCA1MiA1OC42IDUyIDUyVjUySDI4VjUyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+';
-            };
-        } else {
-            userAvatar.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiMyYzlhYTAiLz4KPHBhdGggZD0iTTQwIDQ0QzQ2LjYgNDQgNTIgMzguNiA1MiAzMkM1MiAyNS40IDQ2LjYgMjAgNDAgMjBDMzMuNCAyMCAyOCAyNS40IDI4IDMyQzI4IDM4LjYgMzMuNCA0NCA0MCA0NFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yOCA1MkMyOCA1OC42IDMzLjQgNjQgNDAgNjRDNDYuNiA2NCA1MiA1OC42IDUyIDUyVjUySDI4VjUyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+';
-        }
-    }
-    
-    // Atualizar nome e email
-    const userName = document.getElementById('userName');
-    const userEmail = document.getElementById('userEmail');
-    if (userName) userName.textContent = currentUser.name;
-    if (userEmail) userEmail.textContent = currentUser.email;
-    
-    // Atualizar informações do plano
-    updatePlanInfo();
-}
-
-// Atualizar informações do plano
-function updatePlanInfo() {
-    if (!currentUser) return;
-    
-    const userPlan = document.getElementById('userPlan');
-    const planExpiry = document.getElementById('planExpiry');
-    const contractsCount = document.getElementById('contractsCount');
-    const remainingContracts = document.getElementById('remainingContracts');
-    
-    if (userPlan) {
-        userPlan.textContent = currentUser.plan === 'free' ? 'Plano Gratuito' : 
-                              currentUser.plan === 'basico' ? 'Plano Básico' : 'Plano Profissional';
-        
-        // Cor do badge conforme o plano
-        userPlan.className = 'plan-badge ' + currentUser.plan;
-    }
-    
-    if (planExpiry) {
-        planExpiry.textContent = currentUser.plan === 'free' ? 'Visualização Gratuita' : 
-                                currentUser.plan === 'basico' ? '5 contratos/mês' : 'Ilimitado';
-    }
-    
-    if (contractsCount) {
-        contractsCount.textContent = currentUser.contractsGenerated || 0;
-    }
-    
-    if (remainingContracts) {
-        const remaining = currentUser.plan === 'free' ? 
-                         '-' :
-                         currentUser.plan === 'basico' ? (5 - (currentUser.contractsDownloaded || 0)) : '-';
-        remainingContracts.textContent = remaining;
-    }
 }
 
 // Funções do Modal de Login
@@ -457,181 +373,17 @@ function closeLoginModal() {
     }
 }
 
-// Função de Logout
-function signOut() {
-    // Limpar dados do usuário
-    currentUser = null;
-    localStorage.removeItem('currentUser');
-    
-    // Fazer logout do Google
-    if (window.google && google.accounts && google.accounts.id) {
-        google.accounts.id.disableAutoSelect();
-        google.accounts.id.revoke(localStorage.getItem('currentUser'), done => {
-            console.log('Google Sign-In revogado');
-        });
-    }
-    
-    // Atualizar UI
-    updateUIAfterLogout();
-    
-    showNotification('👋 Logout realizado com sucesso!');
-}
-
-// Verificar se usuário pode baixar contrato
-function canDownloadContract() {
-    if (!currentUser) {
-        showNotification('❌ Faça login para baixar contratos');
-        showLoginModal();
-        return false;
-    }
-    
-    // Usuário free não pode baixar, só visualizar
-    if (currentUser.plan === 'free') {
-        showUpgradeModal();
-        return false;
-    }
-    
-    // Verificar limite do plano básico
-    if (currentUser.plan === 'basico' && (currentUser.contractsDownloaded || 0) >= 5) {
-        showNotification('❌ Você atingiu o limite de 5 contratos deste mês. Faça upgrade para o plano profissional.');
-        openPaymentModal('profissional');
-        return false;
-    }
-    
-    return true;
-}
-
 // Função para incrementar contador de contratos
 function incrementContractCount() {
     if (!currentUser) return;
     
     currentUser.contractsGenerated = (currentUser.contractsGenerated || 0) + 1;
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    updatePlanInfo();
-    updateStatusBar();
-}
-
-// Função para incrementar contador de downloads
-function incrementDownloadCount() {
-    if (!currentUser) return;
-    
-    currentUser.contractsDownloaded = (currentUser.contractsDownloaded || 0) + 1;
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    updatePlanInfo();
     updateStatusBar();
 }
 
 // =============================================
-// SISTEMA DE PLANOS
-// =============================================
-
-// Atualizar plano do usuário
-function updateUserPlan(planType) {
-    if (!currentUser) return;
-    
-    currentUser.plan = planType;
-    
-    // Configurar limites conforme o plano
-    switch(planType) {
-        case 'free':
-            currentUser.remainingContracts = 999;
-            break;
-        case 'basico':
-            currentUser.remainingContracts = 5;
-            break;
-        case 'profissional':
-            currentUser.remainingContracts = 999;
-            break;
-    }
-    
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    updatePlanInfo();
-    updateStatusBar();
-    
-    showNotification(`🎉 Plano atualizado para ${planType === 'basico' ? 'Básico' : 'Profissional'}!`);
-}
-
-// =============================================
-// SISTEMA DE MOBILE
-// =============================================
-
-// Mobile Menu Toggle
-function initMobileMenu() {
-    const menuToggle = document.querySelector('.mobile-menu-toggle');
-    const navMenu = document.querySelector('.nav-menu');
-    
-    if (menuToggle && navMenu) {
-        menuToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-            const icon = menuToggle.querySelector('i');
-            if (navMenu.classList.contains('active')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-                document.body.style.overflow = 'hidden';
-            } else {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-                document.body.style.overflow = 'auto';
-            }
-        });
-        
-        const navLinks = navMenu.querySelectorAll('a');
-        navLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                navMenu.classList.remove('active');
-                menuToggle.querySelector('i').classList.remove('fa-times');
-                menuToggle.querySelector('i').classList.add('fa-bars');
-                document.body.style.overflow = 'auto';
-            });
-        });
-    }
-}
-
-// Enhanced mobile menu
-function initEnhancedMobileMenu() {
-    const menuToggle = document.querySelector('.mobile-menu-toggle');
-    const navMenu = document.querySelector('.nav-menu');
-    
-    if (menuToggle && navMenu) {
-        let isOpen = false;
-        
-        menuToggle.addEventListener('click', function(e) {
-            e.stopPropagation();
-            isOpen = !isOpen;
-            
-            if (isOpen) {
-                navMenu.classList.add('active');
-                document.body.style.overflow = 'hidden';
-                menuToggle.querySelector('i').classList.replace('fa-bars', 'fa-times');
-            } else {
-                closeMobileMenu();
-            }
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (isOpen && !navMenu.contains(e.target) && !menuToggle.contains(e.target)) {
-                closeMobileMenu();
-            }
-        });
-        
-        // Close menu on link click
-        const navLinks = navMenu.querySelectorAll('a');
-        navLinks.forEach(link => {
-            link.addEventListener('click', closeMobileMenu);
-        });
-        
-        function closeMobileMenu() {
-            navMenu.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            menuToggle.querySelector('i').classList.replace('fa-times', 'fa-bars');
-            isOpen = false;
-        }
-    }
-}
-
-// =============================================
-// SISTEMA DE ASSINATURAS (CORRIGIDO)
+// SISTEMA DE ASSINATURAS
 // =============================================
 
 // Sistema de Assinaturas
@@ -658,7 +410,74 @@ function initSignatureSystem() {
     console.log('✅ Sistema de assinatura inicializado');
 }
 
-// Função para lidar com upload de assinatura - CORRIGIDA
+// Função para selecionar opção de assinatura
+function selectSignatureOption(type, method, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    
+    console.log(`🎯 Selecionando assinatura: ${type} - ${method}`);
+    
+    // Remover seleção de todas as opções do mesmo tipo
+    const signatureSection = event?.currentTarget?.closest('.signature-options');
+    if (signatureSection) {
+        const options = signatureSection.querySelectorAll('.signature-option');
+        options.forEach(option => {
+            option.classList.remove('selected');
+        });
+        
+        // Adicionar seleção à opção clicada
+        if (event?.currentTarget) {
+            event.currentTarget.classList.add('selected');
+        }
+    }
+    
+    if (method === 'upload') {
+        // Método de upload - clicar no input file
+        const uploadInput = document.getElementById(`${type}SignatureUpload`);
+        if (uploadInput) {
+            console.log(`📁 Abrindo upload para ${type}`);
+            uploadInput.click();
+        }
+    } else if (method === 'draw') {
+        // Método de desenho - mostrar canvas
+        const canvas = document.getElementById(`${type}SignatureDraw`);
+        const uploadInput = document.getElementById(`${type}SignatureUpload`);
+        
+        if (canvas) {
+            console.log(`🖌️ Mostrando canvas para ${type}`);
+            canvas.style.display = 'block';
+            
+            // Limpar canvas
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Configurar estilo do pincel
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // Limpar input file
+            if (uploadInput) {
+                uploadInput.value = '';
+            }
+            
+            // Limpar assinatura atual da variável
+            if (type === 'contractor') {
+                contractorSignature = null;
+            } else {
+                contractedSignature = null;
+            }
+            
+            updateSignaturePreview(type);
+            updatePreview();
+        }
+    }
+}
+
+// Função para lidar com upload de assinatura
 function handleSignatureUpload(event, type) {
     console.log(`📤 Processando upload para ${type}`);
     
@@ -683,10 +502,6 @@ function handleSignatureUpload(event, type) {
     }
 
     const reader = new FileReader();
-    
-    reader.onloadstart = function() {
-        console.log(`📖 Lendo arquivo ${type}...`);
-    };
     
     reader.onload = function(e) {
         console.log(`✅ Arquivo ${type} lido com sucesso`);
@@ -874,97 +689,26 @@ function initSignatureCanvas(type) {
     console.log(`✅ Canvas ${type} inicializado`);
 }
 
-// Função para selecionar opção de assinatura
-function selectSignatureOption(type, method, event) {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-    
-    console.log(`🎯 Selecionando assinatura: ${type} - ${method}`);
-    
-    // Remover seleção de todas as opções do mesmo tipo
-    const signatureSection = event?.currentTarget?.closest('.signature-options');
-    if (signatureSection) {
-        const options = signatureSection.querySelectorAll('.signature-option');
-        options.forEach(option => {
-            option.classList.remove('selected');
-        });
-        
-        // Adicionar seleção à opção clicada
-        if (event?.currentTarget) {
-            event.currentTarget.classList.add('selected');
-        }
-    }
-    
-    currentSignatureType = type;
-    currentSignatureMethod = method;
-    
-    if (method === 'upload') {
-        // Método de upload - clicar no input file
-        const uploadInput = document.getElementById(`${type}SignatureUpload`);
-        if (uploadInput) {
-            console.log(`📁 Abrindo upload para ${type}`);
-            uploadInput.click();
-        }
-    } else if (method === 'draw') {
-        // Método de desenho - mostrar canvas
-        const canvas = document.getElementById(`${type}SignatureDraw`);
-        const uploadInput = document.getElementById(`${type}SignatureUpload`);
-        
-        if (canvas) {
-            console.log(`🖌️ Mostrando canvas para ${type}`);
-            canvas.style.display = 'block';
-            
-            // Limpar canvas
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Configurar estilo do pincel
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            
-            // Limpar input file
-            if (uploadInput) {
-                uploadInput.value = '';
-            }
-            
-            // Limpar assinatura atual da variável
-            if (type === 'contractor') {
-                contractorSignature = null;
-            } else {
-                contractedSignature = null;
-            }
-            
-            updateSignaturePreview(type);
-            updatePreview();
-        }
-    }
-}
-
-// Função para atualizar preview da assinatura - CORRIGIDA
+// Função para atualizar preview da assinatura
 function updateSignaturePreview(type) {
     const preview = document.getElementById(`${type}SignaturePreview`);
-    if (!preview) {
-        console.error(`❌ Preview não encontrado para ${type}`);
-        return;
-    }
+    if (!preview) return;
     
-    let signatureData = type === 'contractor' ? contractorSignature : contractedSignature;
-
+    const signatureData = type === 'contractor' ? contractorSignature : contractedSignature;
+    
     if (signatureData) {
-        console.log(`🖼️ Atualizando preview ${type} (${signatureData.length} bytes)`);
-        
         preview.innerHTML = `
             <div style="text-align: center;">
                 <img src="${signatureData}" 
                      alt="Assinatura ${type === 'contractor' ? 'do Contratante' : 'do Contratado'}" 
                      style="max-width: 100%; max-height: 80px; border: 1px solid #ddd; border-radius: 4px; background: white;">
                 <p style="margin-top: 0.5rem; font-size: 0.8rem; color: #666;">
-                    Assinatura ${type === 'contractor' ? 'do CONTRATANTE' : 'do CONTRATADO'}
+                    ✅ Assinatura confirmada
                 </p>
+                <button onclick="clearSignature('${type}')" 
+                        style="margin-top: 5px; padding: 3px 10px; font-size: 0.7rem; background: #ff6b6b; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                    Remover
+                </button>
             </div>
         `;
     } else {
@@ -979,29 +723,26 @@ function updateSignaturePreview(type) {
     }
 }
 
+// Função para mostrar confirmação de assinatura
 function showSignatureConfirmation(type) {
     const confirmation = document.getElementById(`${type}SignatureConfirmation`);
     if (confirmation) {
-        confirmation.style.display = 'flex';
-        console.log(`✅ Confirmação mostrada para ${type}`);
+        confirmation.style.display = 'block';
+        setTimeout(() => {
+            confirmation.style.display = 'none';
+        }, 3000);
     }
 }
 
+// Função para limpar assinatura
 function clearSignature(type) {
     console.log(`🗑️ Limpando assinatura ${type}`);
     
-    // Limpar canvas de desenho
-    const drawCanvas = document.getElementById(`${type}SignatureDraw`);
-    if (drawCanvas) {
-        const ctx = drawCanvas.getContext('2d');
-        ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
-        drawCanvas.style.display = 'none';
-    }
-    
-    // Limpar input file
-    const uploadInput = document.getElementById(`${type}SignatureUpload`);
-    if (uploadInput) {
-        uploadInput.value = '';
+    // Limpar variável
+    if (type === 'contractor') {
+        contractorSignature = null;
+    } else {
+        contractedSignature = null;
     }
     
     // Limpar preview
@@ -1017,10 +758,17 @@ function clearSignature(type) {
         `;
     }
     
-    // Limpar confirmação
-    const confirmation = document.getElementById(`${type}SignatureConfirmation`);
-    if (confirmation) {
-        confirmation.style.display = 'none';
+    // Limpar canvas
+    const canvas = document.getElementById(`${type}SignatureDraw`);
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    
+    // Limpar input file
+    const uploadInput = document.getElementById(`${type}SignatureUpload`);
+    if (uploadInput) {
+        uploadInput.value = '';
     }
     
     // Remover seleção de opções
@@ -1031,16 +779,6 @@ function clearSignature(type) {
             option.classList.remove('selected');
         });
     }
-    
-    // Limpar variáveis
-    if (type === 'contractor') {
-        contractorSignature = null;
-    } else {
-        contractedSignature = null;
-    }
-    
-    currentSignatureType = null;
-    currentSignatureMethod = null;
     
     updatePreview();
     showNotification('🔄 Assinatura removida');
@@ -1097,111 +835,196 @@ function updateStatusBar() {
 }
 
 // =============================================
-// SISTEMA DE CONTATO COM EMAILJS
+// SISTEMA DE PAGAMENTO
 // =============================================
 
-// Configurar formulário de contato
-function setupContactForm() {
-    const contactForm = document.getElementById('contactForm');
-    if (contactForm) {
-        contactForm.addEventListener('submit', submitContactForm);
+// Payment modal functions
+function openPaymentModal(plan) {
+    if (plan !== 'avulsa' && !currentUser) {
+        showNotification('❌ Faça login para assinar um plano');
+        showLoginModal();
+        return;
     }
-}
-
-// Mostrar modal de contato
-function showContactModal() {
-    const contactModal = document.getElementById('contactModal');
-    if (contactModal) {
-        contactModal.classList.add('active');
+    
+    // Validar dados para contrato avulso
+    if (plan === 'avulsa') {
+        const validationErrors = validateContractData();
+        if (validationErrors.length > 0) {
+            showNotification(`❌ Preencha corretamente: ${validationErrors.join(', ')}`);
+            
+            // Scroll para o primeiro campo com erro
+            const firstErrorField = document.getElementById(Object.keys(validationErrors)[0]);
+            if (firstErrorField) {
+                firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstErrorField.focus();
+            }
+            return;
+        }
+    }
+    
+    selectedPlan = plan;
+    
+    // Configurar modal
+    const modalTitle = document.getElementById('modalTitle');
+    const modalPlanDescription = document.getElementById('modalPlanDescription');
+    const modalPrice = document.getElementById('modalPrice');
+    const pixValue = document.getElementById('pixValue');
+    const cardValue = document.getElementById('cardValue');
+    const pixLink = document.getElementById('pixLink');
+    const cardLink = document.getElementById('cardLink');
+    
+    if (modalTitle && modalPlanDescription && modalPrice) {
+        let price = '0,00';
+        let description = '';
+        let pixUrl = '#';
+        let cardUrl = '#';
+        
+        switch(plan) {
+            case 'avulsa':
+                modalTitle.textContent = 'Comprar Contrato Avulso';
+                description = '1 Contrato de Prestação de Serviços Personalizado';
+                modalPrice.textContent = 'Total: R$ 6,99';
+                price = '6,99';
+                pixUrl = 'https://mpago.la/1FgMNje';
+                cardUrl = 'https://mpago.la/1FgMNje';
+                break;
+            case 'basico':
+                modalTitle.textContent = 'Assinar Plano Básico';
+                description = 'Plano Básico - 5 contratos por mês';
+                modalPrice.textContent = 'Total: R$ 9,99/mês';
+                price = '9,99';
+                pixUrl = 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=c1073157a14d42759dd4bdc289e876e4';
+                cardUrl = 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=c1073157a14d42759dd4bdc289e876e4';
+                break;
+            case 'profissional':
+                modalTitle.textContent = 'Assinar Plano Profissional';
+                description = 'Plano Profissional - Contratos ilimitados';
+                modalPrice.textContent = 'Total: R$ 29,99/mês';
+                price = '29,99';
+                pixUrl = 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=762ad37ac4344ac2b71741512b53272c';
+                cardUrl = 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=762ad37ac4344ac2b71741512b53272c';
+                break;
+        }
+        
+        modalPlanDescription.textContent = description;
+        
+        // Atualizar links de pagamento
+        if (pixValue) pixValue.textContent = `R$ ${price}`;
+        if (cardValue) cardValue.textContent = `R$ ${price}`;
+        if (pixLink) {
+            pixLink.href = pixUrl;
+            pixLink.onclick = function() {
+                if (plan !== 'avulsa') {
+                    setTimeout(() => {
+                        updateUserPlan(plan);
+                        showNotification(`🎉 Plano ${plan} ativado com sucesso!`);
+                        closePaymentModal();
+                    }, 2000);
+                } else {
+                    // Para contrato avulso, gerar download após pagamento
+                    setTimeout(() => {
+                        generateWordPlus();
+                        closePaymentModal();
+                    }, 2000);
+                }
+                return true;
+            };
+        }
+        if (cardLink) {
+            cardLink.href = cardUrl;
+            cardLink.onclick = function() {
+                if (plan !== 'avulsa') {
+                    setTimeout(() => {
+                        updateUserPlan(plan);
+                        showNotification(`🎉 Plano ${plan} ativado com sucesso!`);
+                        closePaymentModal();
+                    }, 2000);
+                } else {
+                    // Para contrato avulso, gerar download após pagamento
+                    setTimeout(() => {
+                        generateWordPlus();
+                        closePaymentModal();
+                    }, 2000);
+                }
+                return true;
+            };
+        }
+    }
+    
+    // Reset payment selection
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Esconder detalhes de pagamento
+    const pixDetails = document.getElementById('pixDetails');
+    const cardDetails = document.getElementById('cardDetails');
+    if (pixDetails) pixDetails.style.display = 'none';
+    if (cardDetails) cardDetails.style.display = 'none';
+    
+    selectedPaymentMethod = '';
+    
+    const paymentModal = document.getElementById('paymentModal');
+    if (paymentModal) {
+        paymentModal.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
 }
 
-// Fechar modal de contato
-function closeContactModal() {
-    const contactModal = document.getElementById('contactModal');
-    if (contactModal) {
-        contactModal.classList.remove('active');
+function closePaymentModal() {
+    const paymentModal = document.getElementById('paymentModal');
+    if (paymentModal) {
+        paymentModal.classList.remove('active');
         document.body.style.overflow = 'auto';
     }
 }
 
-// Enviar formulário de contato
-function submitContactForm(event) {
-    event.preventDefault();
+function selectPayment(element, type) {
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.classList.remove('selected');
+    });
     
-    const contactName = document.getElementById('contactName');
-    const contactEmail = document.getElementById('contactEmail');
-    const contactSubject = document.getElementById('contactSubject');
-    const contactMessage = document.getElementById('contactMessage');
-    
-    if (!contactName || !contactEmail || !contactSubject || !contactMessage) {
-        showNotification('❌ Erro: Formulário de contato não encontrado');
-        return;
+    if (element) {
+        element.classList.add('selected');
+        
+        const pixDetails = document.getElementById('pixDetails');
+        const cardDetails = document.getElementById('cardDetails');
+        if (pixDetails) pixDetails.style.display = 'none';
+        if (cardDetails) cardDetails.style.display = 'none';
+        
+        if (type === 'pix') {
+            if (pixDetails) pixDetails.style.display = 'block';
+            selectedPaymentMethod = 'pix';
+        } else if (type === 'cartao') {
+            if (cardDetails) cardDetails.style.display = 'block';
+            selectedPaymentMethod = 'cartao';
+        }
     }
-    
-    // Validar campos
-    if (!contactName.value || !contactEmail.value || !contactSubject.value || !contactMessage.value) {
-        showNotification('❌ Preencha todos os campos obrigatórios');
-        return;
-    }
-    
-    if (!validateEmail(contactEmail.value)) {
-        showNotification('❌ Email inválido');
-        return;
-    }
-    
-    const templateParams = {
-        from_name: contactName.value,
-        from_email: contactEmail.value,
-        subject: contactSubject.value,
-        message: contactMessage.value,
-        to_email: 'luhkaimn@gmail.com'
-    };
-
-    // Mostrar loading
-    const submitBtn = event.target.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-    submitBtn.disabled = true;
-
-    emailjs.send('service_s6hcwoa', 'template_wx7bj1m', templateParams)
-        .then(function(response) {
-            showNotification('✅ Mensagem enviada com sucesso! Entraremos em contato em breve.');
-            closeContactModal();
-            document.getElementById('contactForm').reset();
-            
-            // Restaurar botão
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }, function(error) {
-            showNotification('❌ Erro ao enviar mensagem. Tente novamente ou entre em contato via WhatsApp.');
-            console.error('EmailJS error:', error);
-            
-            // Restaurar botão
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        });
 }
 
-// =============================================
-// FUNÇÕES DO FAQ
-// =============================================
-
-function toggleFAQ(element) {
-    const item = element.parentElement;
+// Atualizar plano do usuário
+function updateUserPlan(planType) {
+    if (!currentUser) return;
     
-    if (activeFAQ && activeFAQ !== item) {
-        activeFAQ.classList.remove('active');
+    currentUser.plan = planType;
+    
+    // Configurar limites conforme o plano
+    switch(planType) {
+        case 'free':
+            currentUser.remainingContracts = 999;
+            break;
+        case 'basico':
+            currentUser.remainingContracts = 5;
+            break;
+        case 'profissional':
+            currentUser.remainingContracts = 999;
+            break;
     }
     
-    item.classList.toggle('active');
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    updateStatusBar();
     
-    if (item.classList.contains('active')) {
-        activeFAQ = item;
-    } else {
-        activeFAQ = null;
-    }
+    showNotification(`🎉 Plano atualizado para ${planType === 'basico' ? 'Básico' : 'Profissional'}!`);
 }
 
 // =============================================
@@ -1263,33 +1086,33 @@ function formatarValorExtenso(valor) {
                 }
             }
             
-            return resultado;
+        return resultado;
+    }
+    
+    let parteInteira = Math.floor(valorNumero);
+    let parteDecimal = Math.round((valorNumero - parteInteira) * 100);
+    
+    let extenso = '';
+    
+    if (parteInteira > 0) {
+        if (parteInteira === 1) {
+            extenso = 'um real';
+        } else {
+            extenso = converterNumero(parteInteira) + ' reais';
         }
-        
-        let parteInteira = Math.floor(valorNumero);
-        let parteDecimal = Math.round((valorNumero - parteInteira) * 100);
-        
-        let extenso = '';
-        
-        if (parteInteira > 0) {
-            if (parteInteira === 1) {
-                extenso = 'um real';
-            } else {
-                extenso = converterNumero(parteInteira) + ' reais';
-            }
+    }
+    
+    if (parteDecimal > 0) {
+        if (extenso !== '') extenso += ' e ';
+        if (parteDecimal === 1) {
+            extenso += 'um centavo';
+        } else {
+            extenso += converterNumero(parteDecimal) + ' centavos';
         }
-        
-        if (parteDecimal > 0) {
-            if (extenso !== '') extenso += ' e ';
-            if (parteDecimal === 1) {
-                extenso += 'um centavo';
-            } else {
-                extenso += converterNumero(parteDecimal) + ' centavos';
-            }
-        }
-        
-        return extenso || '_________________________';
-        
+    }
+    
+    return extenso || '_________________________';
+    
     } catch (e) {
         console.error('Erro ao converter valor:', e);
         return '_________________________';
@@ -1456,17 +1279,11 @@ function formatCurrencyInput(e) {
     e.target.value = value;
 }
 
-// Função para validar email
-function validateEmail(email) {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-}
-
 // =============================================
 // CONTRATO PROFISSIONAL PLUS - GERADOR MELHORADO
 // =============================================
 
-// Coletar dados do contrato - VERSÃO CORRIGIDA
+// Coletar dados do contrato
 function collectContractData() {
     // Função auxiliar para pegar valor do select com verificação
     const getSelectValue = (id) => {
@@ -1489,14 +1306,12 @@ function collectContractData() {
         contractorDoc: document.getElementById('contractorDoc')?.value || '',
         contractorProfession: document.getElementById('contractorProfession')?.value || '',
         contractorAddress: document.getElementById('contractorAddress')?.value || '',
-        // CORREÇÃO: Usar função auxiliar para selects
         contractorCivilState: getSelectValue('contractorCivilState'),
         
         contractedName: document.getElementById('contractedName')?.value || '',
         contractedDoc: document.getElementById('contractedDoc')?.value || '',
         contractedProfession: document.getElementById('contractedProfession')?.value || '',
         contractedAddress: document.getElementById('contractedAddress')?.value || '',
-        // CORREÇÃO: Usar função auxiliar para selects
         contractedCivilState: getSelectValue('contractedCivilState'),
         
         serviceDescription: document.getElementById('serviceDescription')?.value || '',
@@ -1512,6 +1327,7 @@ function collectContractData() {
         generatedAt: new Date().toISOString()
     };
 }
+
 // Função para gerar o contrato PROFISSIONAL PLUS
 function generateProfessionalContractPlus() {
     const data = collectContractData();
@@ -1800,176 +1616,41 @@ function generateProfessionalContractPlus() {
 }
 
 // =============================================
-// SISTEMA DE PAGAMENTO INTEGRADO
-// =============================================
-
-// Payment modal functions
-function openPaymentModal(plan) {
-    if (plan !== 'avulsa' && !currentUser) {
-        showNotification('❌ Faça login para assinar um plano');
-        showLoginModal();
-        return;
-    }
-    
-    // Validar dados para contrato avulso
-    if (plan === 'avulsa') {
-        const validationErrors = validateContractData();
-        if (validationErrors.length > 0) {
-            showNotification(`❌ Preencha corretamente: ${validationErrors.join(', ')}`);
-            
-            // Scroll para o primeiro campo com erro
-            const firstErrorField = document.getElementById(Object.keys(validationErrors)[0]);
-            if (firstErrorField) {
-                firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                firstErrorField.focus();
-            }
-            return;
-        }
-    }
-    
-    selectedPlan = plan;
-    
-    // Configurar modal
-    const modalTitle = document.getElementById('modalTitle');
-    const modalPlanDescription = document.getElementById('modalPlanDescription');
-    const modalPrice = document.getElementById('modalPrice');
-    const pixValue = document.getElementById('pixValue');
-    const cardValue = document.getElementById('cardValue');
-    const pixLink = document.getElementById('pixLink');
-    const cardLink = document.getElementById('cardLink');
-    
-    if (modalTitle && modalPlanDescription && modalPrice) {
-        let price = '0,00';
-        let description = '';
-        let pixUrl = '#';
-        let cardUrl = '#';
-        
-        switch(plan) {
-            case 'avulsa':
-                modalTitle.textContent = 'Comprar Contrato Avulso';
-                description = '1 Contrato de Prestação de Serviços Personalizado';
-                modalPrice.textContent = 'Total: R$ 6,99';
-                price = '6,99';
-                pixUrl = 'https://mpago.la/1FgMNje';
-                cardUrl = 'https://mpago.la/1FgMNje';
-                break;
-            case 'basico':
-                modalTitle.textContent = 'Assinar Plano Básico';
-                description = 'Plano Básico - 5 contratos por mês';
-                modalPrice.textContent = 'Total: R$ 9,99/mês';
-                price = '9,99';
-                pixUrl = 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=c1073157a14d42759dd4bdc289e876e4';
-                cardUrl = 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=c1073157a14d42759dd4bdc289e876e4';
-                break;
-            case 'profissional':
-                modalTitle.textContent = 'Assinar Plano Profissional';
-                description = 'Plano Profissional - Contratos ilimitados';
-                modalPrice.textContent = 'Total: R$ 29,99/mês';
-                price = '29,99';
-                pixUrl = 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=762ad37ac4344ac2b71741512b53272c';
-                cardUrl = 'https://www.mercadopago.com.br/subscriptions/checkout?preapproval_plan_id=762ad37ac4344ac2b71741512b53272c';
-                break;
-        }
-        
-        modalPlanDescription.textContent = description;
-        
-        // Atualizar links de pagamento
-        if (pixValue) pixValue.textContent = `R$ ${price}`;
-        if (cardValue) cardValue.textContent = `R$ ${price}`;
-        if (pixLink) {
-            pixLink.href = pixUrl;
-            pixLink.onclick = function() {
-                if (plan !== 'avulsa') {
-                    setTimeout(() => {
-                        updateUserPlan(plan);
-                        showNotification(`🎉 Plano ${plan} ativado com sucesso!`);
-                        closePaymentModal();
-                    }, 2000);
-                } else {
-                    // Para contrato avulso, gerar download após pagamento
-                    setTimeout(() => {
-                        generateWordPlus();
-                        closePaymentModal();
-                    }, 2000);
-                }
-                return true;
-            };
-        }
-        if (cardLink) {
-            cardLink.href = cardUrl;
-            cardLink.onclick = function() {
-                if (plan !== 'avulsa') {
-                    setTimeout(() => {
-                        updateUserPlan(plan);
-                        showNotification(`🎉 Plano ${plan} ativado com sucesso!`);
-                        closePaymentModal();
-                    }, 2000);
-                } else {
-                    // Para contrato avulso, gerar download após pagamento
-                    setTimeout(() => {
-                        generateWordPlus();
-                        closePaymentModal();
-                    }, 2000);
-                }
-                return true;
-            };
-        }
-    }
-    
-    // Reset payment selection
-    document.querySelectorAll('.payment-option').forEach(option => {
-        option.classList.remove('selected');
-    });
-    
-    // Esconder detalhes de pagamento
-    const pixDetails = document.getElementById('pixDetails');
-    const cardDetails = document.getElementById('cardDetails');
-    if (pixDetails) pixDetails.style.display = 'none';
-    if (cardDetails) cardDetails.style.display = 'none';
-    
-    selectedPaymentMethod = '';
-    
-    const paymentModal = document.getElementById('paymentModal');
-    if (paymentModal) {
-        paymentModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-}
-
-function closePaymentModal() {
-    const paymentModal = document.getElementById('paymentModal');
-    if (paymentModal) {
-        paymentModal.classList.remove('active');
-        document.body.style.overflow = 'auto';
-    }
-}
-
-function selectPayment(element, type) {
-    document.querySelectorAll('.payment-option').forEach(option => {
-        option.classList.remove('selected');
-    });
-    
-    if (element) {
-        element.classList.add('selected');
-        
-        const pixDetails = document.getElementById('pixDetails');
-        const cardDetails = document.getElementById('cardDetails');
-        if (pixDetails) pixDetails.style.display = 'none';
-        if (cardDetails) cardDetails.style.display = 'none';
-        
-        if (type === 'pix') {
-            if (pixDetails) pixDetails.style.display = 'block';
-            selectedPaymentMethod = 'pix';
-        } else if (type === 'cartao') {
-            if (cardDetails) cardDetails.style.display = 'block';
-            selectedPaymentMethod = 'cartao';
-        }
-    }
-}
-
-// =============================================
 // SISTEMA DE DOWNLOAD E EXPORTAÇÃO
 // =============================================
+
+// Verificar se usuário pode baixar contrato
+function canDownloadContract() {
+    if (!currentUser) {
+        showNotification('❌ Faça login para baixar contratos');
+        showLoginModal();
+        return false;
+    }
+    
+    // Usuário free não pode baixar, só visualizar
+    if (currentUser.plan === 'free') {
+        showUpgradeModal();
+        return false;
+    }
+    
+    // Verificar limite do plano básico
+    if (currentUser.plan === 'basico' && (currentUser.contractsDownloaded || 0) >= 5) {
+        showNotification('❌ Você atingiu o limite de 5 contratos deste mês. Faça upgrade para o plano profissional.');
+        openPaymentModal('profissional');
+        return false;
+    }
+    
+    return true;
+}
+
+// Função para incrementar contador de downloads
+function incrementDownloadCount() {
+    if (!currentUser) return;
+    
+    currentUser.contractsDownloaded = (currentUser.contractsDownloaded || 0) + 1;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    updateStatusBar();
+}
 
 // Função para gerar Word
 function generateWordPlus() {
@@ -2080,163 +1761,171 @@ function generateWordPlus() {
 }
 
 // =============================================
-// MOBILE OPTIMIZATIONS
+// SISTEMA DE MOBILE
 // =============================================
 
-// Detect mobile device
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-           window.innerWidth < 768;
-}
-
-// Optimize for mobile on load
-function optimizeForMobile() {
-    if (isMobileDevice()) {
-        document.body.classList.add('mobile-device');
+// Mobile Menu Toggle
+function initMobileMenu() {
+    const menuToggle = document.querySelector('.mobile-menu-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            const icon = menuToggle.querySelector('i');
+            if (navMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+                document.body.style.overflow = 'hidden';
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+                document.body.style.overflow = 'auto';
+            }
+        });
         
-        // Adjust video autoplay for mobile
-        const video = document.querySelector('.intro-video');
-        if (video) {
-            video.removeAttribute('autoplay');
-            video.setAttribute('playsinline', '');
-            video.setAttribute('controls', '');
-        }
-        
-        // Improve touch interactions
-        improveTouchInteractions();
+        const navLinks = navMenu.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navMenu.classList.remove('active');
+                menuToggle.querySelector('i').classList.remove('fa-times');
+                menuToggle.querySelector('i').classList.add('fa-bars');
+                document.body.style.overflow = 'auto';
+            });
+        });
     }
 }
 
-// Improve touch interactions
-function improveTouchInteractions() {
-    // Add touch-friendly class to interactive elements
-    const touchElements = document.querySelectorAll('.btn, .nav-menu a, .signature-option');
-    touchElements.forEach(element => {
-        element.classList.add('touch-friendly');
-    });
+// =============================================
+// SISTEMA DE CONTATO COM EMAILJS
+// =============================================
+
+// Configurar formulário de contato
+function setupContactForm() {
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', submitContactForm);
+    }
+}
+
+// Mostrar modal de contato
+function showContactModal() {
+    const contactModal = document.getElementById('contactModal');
+    if (contactModal) {
+        contactModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+// Fechar modal de contato
+function closeContactModal() {
+    const contactModal = document.getElementById('contactModal');
+    if (contactModal) {
+        contactModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Enviar formulário de contato
+function submitContactForm(event) {
+    event.preventDefault();
     
-    // Prevent zoom on inputs
-    const inputs = document.querySelectorAll('input, select, textarea');
-    inputs.forEach(input => {
-        input.addEventListener('touchstart', function(e) {
-            this.style.fontSize = '16px'; // Prevent zoom
+    const contactName = document.getElementById('contactName');
+    const contactEmail = document.getElementById('contactEmail');
+    const contactSubject = document.getElementById('contactSubject');
+    const contactMessage = document.getElementById('contactMessage');
+    
+    if (!contactName || !contactEmail || !contactSubject || !contactMessage) {
+        showNotification('❌ Erro: Formulário de contato não encontrado');
+        return;
+    }
+    
+    // Validar campos
+    if (!contactName.value || !contactEmail.value || !contactSubject.value || !contactMessage.value) {
+        showNotification('❌ Preencha todos os campos obrigatórios');
+        return;
+    }
+    
+    if (!validateEmail(contactEmail.value)) {
+        showNotification('❌ Email inválido');
+        return;
+    }
+    
+    const templateParams = {
+        from_name: contactName.value,
+        from_email: contactEmail.value,
+        subject: contactSubject.value,
+        message: contactMessage.value,
+        to_email: 'luhkaimn@gmail.com'
+    };
+
+    // Mostrar loading
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    submitBtn.disabled = true;
+
+    emailjs.send('service_s6hcwoa', 'template_wx7bj1m', templateParams)
+        .then(function(response) {
+            showNotification('✅ Mensagem enviada com sucesso! Entraremos em contato em breve.');
+            closeContactModal();
+            document.getElementById('contactForm').reset();
+            
+            // Restaurar botão
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }, function(error) {
+            showNotification('❌ Erro ao enviar mensagem. Tente novamente ou entre em contato via WhatsApp.');
+            console.error('EmailJS error:', error);
+            
+            // Restaurar botão
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         });
-    });
 }
 
-// Enhanced signature system for mobile
-function initMobileSignatureSystem() {
-    if (!isMobileDevice()) return;
-    
-    const signatureCanvases = document.querySelectorAll('canvas');
-    signatureCanvases.forEach(canvas => {
-        canvas.style.touchAction = 'none';
-        
-        // Improve touch drawing
-        canvas.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent('mousedown', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            canvas.dispatchEvent(mouseEvent);
-        }, { passive: false });
-        
-        canvas.addEventListener('touchmove', function(e) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent('mousemove', {
-                clientX: touch.clientX,
-                clientY: touch.clientY
-            });
-            canvas.dispatchEvent(mouseEvent);
-        }, { passive: false });
-    });
-}
-
-// Mobile-friendly notifications
-function showMobileNotification(message) {
-    const notification = document.createElement('div');
-    notification.className = 'notification mobile-notification';
-    notification.innerHTML = `
-        <div style="text-align: center; padding: 1rem;">
-            <strong>${message}</strong>
-        </div>
-    `;
-    
-    // Mobile-specific styles
-    notification.style.cssText = `
-        position: fixed;
-        top: 70px;
-        left: 10px;
-        right: 10px;
-        background: var(--success);
-        color: white;
-        padding: 0;
-        border-radius: 12px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        z-index: 10000;
-        max-width: none;
-        opacity: 0;
-        transform: translateY(-20px);
-        transition: all 0.3s ease;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.opacity = '1';
-        notification.style.transform = 'translateY(0)';
-    }, 10);
-    
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateY(-20px)';
-        setTimeout(() => {
-            if (document.body.contains(notification)) {
-                document.body.removeChild(notification);
-            }
-        }, 300);
-    }, 4000);
+// Função para validar email
+function validateEmail(email) {
+    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
 }
 
 // =============================================
 // FUNÇÕES UTILITÁRIAS FINAIS
 // =============================================
 
-function showNotification(message) {
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-        existingNotification.remove();
-    }
+// Sistema de notificações
+function showNotification(message, type = 'success') {
+    // Remover notificações anteriores
+    const existing = document.querySelectorAll('.custom-notification');
+    existing.forEach(el => el.remove());
 
     const notification = document.createElement('div');
-    notification.className = 'notification';
+    notification.className = `custom-notification`;
     notification.innerHTML = `
-        <div>
-            <strong>${message}</strong>
+        <div class="notification-content">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
         </div>
+        <button onclick="this.parentElement.remove()">&times;</button>
     `;
+
     document.body.appendChild(notification);
 
+    // Remover automaticamente após 5 segundos
     setTimeout(() => {
-        notification.classList.add('show');
-    }, 10);
-
-    setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            if (document.body.contains(notification)) {
-                document.body.removeChild(notification);
-            }
-        }, 300);
+        if (notification.parentElement) {
+            notification.style.animation = 'slideOut 0.3s ease';
+            notification.style.transform = 'translateX(100%)';
+            notification.style.opacity = '0';
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 300);
+        }
     }, 5000);
 }
-
-// =============================================
-// FUNÇÕES GLOBAIS
-// =============================================
 
 // Scroll para o gerador
 function scrollToGenerator() {
@@ -2336,7 +2025,22 @@ function showUpgradeModal() {
     document.body.style.overflow = 'hidden';
 }
 
-// Visualização segura
+// Função para tratar erro no vídeo
+function handleVideoError() {
+    const videoWrapper = document.getElementById('videoWrapper');
+    const videoFallback = document.getElementById('videoFallback');
+    
+    if (videoWrapper && videoFallback) {
+        videoWrapper.style.display = 'none';
+        videoFallback.style.display = 'block';
+    }
+}
+
+// =============================================
+// FUNÇÃO OPEN SECURE PREVIEW (VERSÃO ÚNICA)
+// =============================================
+
+// Visualização segura - VERSÃO FINAL CORRIGIDA
 function openSecurePreview() {
     if (!currentUser) {
         showNotification('🔐 Faça login para visualizar contratos');
@@ -2352,24 +2056,82 @@ function openSecurePreview() {
     }
     
     try {
+        // Mostrar loading
+        const previewBtn = document.getElementById('previewBtn');
+        const originalText = previewBtn.querySelector('#previewText').textContent;
+        previewBtn.querySelector('#previewText').textContent = 'Abrindo visualização...';
+        previewBtn.disabled = true;
+        
+        // Coletar dados do contrato
         const contractData = collectContractData();
-        const contractId = 'contract_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         
-        sessionStorage.setItem('secureContractData', JSON.stringify(contractData));
-        sessionStorage.setItem('secureContractId', contractId);
+        // Remover assinaturas base64 (muito grandes para localStorage)
+        const safeContractData = {
+            contractorName: contractData.contractorName,
+            contractorDoc: contractData.contractorDoc,
+            contractorProfession: contractData.contractorProfession,
+            contractorAddress: contractData.contractorAddress,
+            contractorCivilState: contractData.contractorCivilState,
+            contractedName: contractData.contractedName,
+            contractedDoc: contractData.contractedDoc,
+            contractedProfession: contractData.contractedProfession,
+            contractedAddress: contractData.contractedAddress,
+            contractedCivilState: contractData.contractedCivilState,
+            serviceDescription: contractData.serviceDescription,
+            serviceValue: contractData.serviceValue,
+            paymentMethod: contractData.paymentMethod,
+            startDate: contractData.startDate,
+            endDate: contractData.endDate,
+            contractCity: contractData.contractCity,
+            // Não incluir assinaturas base64 (são muito grandes)
+            generatedAt: contractData.generatedAt
+        };
         
-        // Abrir em nova aba
-        const secureWindow = window.open('view-contract.html', '_blank');
+        console.log('📤 Preparando dados para visualização:', safeContractData);
         
-        if (secureWindow) {
-            showNotification('👁️ Visualização segura aberta em nova aba');
-        } else {
-            showNotification('❌ Permita pop-ups para visualização segura');
+        // Salvar os dados no localStorage com timestamp
+        localStorage.setItem('tempContractData', JSON.stringify(safeContractData));
+        localStorage.setItem('tempContractTimestamp', Date.now().toString());
+        
+        // Verificar se os dados foram salvos
+        const savedData = localStorage.getItem('tempContractData');
+        if (!savedData) {
+            throw new Error('Falha ao salvar dados no navegador');
         }
         
+        console.log('✅ Dados salvos com sucesso no localStorage');
+        
+        // Abrir nova aba
+        const newWindow = window.open('view-contract.html', '_blank', 'noopener,noreferrer');
+        
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+            showNotification('❌ Pop-up bloqueado! Permita pop-ups para visualizar o contrato.');
+            
+            // Alternativa: abrir na mesma janela
+            setTimeout(() => {
+                const userConfirmed = confirm('A janela pop-up foi bloqueada. Deseja abrir a visualização em uma nova guia?');
+                if (userConfirmed) {
+                    window.open('view-contract.html', '_blank');
+                }
+            }, 500);
+        } else {
+            showNotification('✅ Visualização segura aberta em nova aba');
+        }
+        
+        // Restaurar botão
+        setTimeout(() => {
+            previewBtn.querySelector('#previewText').textContent = originalText;
+            previewBtn.disabled = false;
+        }, 1000);
+        
     } catch (error) {
-        console.error('Erro ao abrir visualização segura:', error);
-        showNotification('❌ Erro ao abrir visualização segura');
+        console.error('❌ Erro ao abrir visualização segura:', error);
+        showNotification('❌ Erro ao abrir visualização segura: ' + error.message);
+        
+        // Restaurar botão em caso de erro
+        const previewBtn = document.getElementById('previewBtn');
+        previewBtn.querySelector('#previewText').textContent = 'Visualizar Gratuitamente';
+        previewBtn.disabled = false;
     }
 }
 
@@ -2383,12 +2145,10 @@ window.showUpgradeModal = showUpgradeModal;
 window.handleGoogleSignIn = handleGoogleSignIn;
 window.showLoginModal = showLoginModal;
 window.closeLoginModal = closeLoginModal;
-window.signOut = signOut;
 window.selectSignatureOption = selectSignatureOption;
 window.handleSignatureUpload = handleSignatureUpload;
 window.clearSignature = clearSignature;
 window.confirmSignature = confirmSignature;
-window.toggleFAQ = toggleFAQ;
 window.updatePreview = updatePreview;
 window.openPaymentModal = openPaymentModal;
 window.closePaymentModal = closePaymentModal;
@@ -2399,5 +2159,16 @@ window.openSecurePreview = openSecurePreview;
 window.showContactModal = showContactModal;
 window.closeContactModal = closeContactModal;
 window.submitContactForm = submitContactForm;
+window.handleVideoError = handleVideoError;
 
 console.log('📦 Todas as funções JavaScript carregadas com sucesso!');
+
+// Função goBack para view-contract.html
+function goBack() {
+    // Verificar se veio do index.html
+    if (document.referrer.includes('index.html') || document.referrer.includes(window.location.origin)) {
+        window.history.back();
+    } else {
+        window.location.href = 'index.html';
+    }
+}
