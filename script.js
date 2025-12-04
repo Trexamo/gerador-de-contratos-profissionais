@@ -2172,3 +2172,157 @@ function goBack() {
         window.location.href = 'index.html';
     }
 }
+// =============================================
+// EXPORTAÇÃO DE FUNÇÕES GLOBAIS - COMPLETO
+// =============================================
+
+// Funções principais
+window.scrollToGenerator = scrollToGenerator;
+window.showUpgradeModal = showUpgradeModal;
+window.handleGoogleSignIn = handleGoogleSignIn;
+window.showLoginModal = showLoginModal;
+window.closeLoginModal = closeLoginModal;
+window.selectSignatureOption = selectSignatureOption;
+window.handleSignatureUpload = handleSignatureUpload;
+window.clearSignature = clearSignature;
+window.confirmSignature = confirmSignature;
+window.updatePreview = updatePreview;
+window.openPaymentModal = openPaymentModal;
+window.closePaymentModal = closePaymentModal;
+window.selectPayment = selectPayment;
+window.generateWordPlus = generateWordPlus;
+window.canDownloadContract = canDownloadContract;
+window.openSecurePreview = openSecurePreview;
+window.showContactModal = showContactModal;
+window.closeContactModal = closeContactModal;
+window.submitContactForm = submitContactForm;
+window.handleVideoError = handleVideoError;
+
+// Funções utilitárias
+window.formatCurrencyInput = formatCurrencyInput;
+window.handleFormInput = handleFormInput;
+window.validateContractData = validateContractData;
+window.validateCPFCNPJ = validateCPFCNPJ;
+window.updateStatusBar = updateStatusBar;
+window.getMonthName = getMonthName;
+window.formatarValorExtenso = formatarValorExtenso;
+window.incrementContractCount = incrementContractCount;
+window.updateUIAfterLogin = updateUIAfterLogin;
+window.updateUIAfterLogout = updateUIAfterLogout;
+window.checkUserLogin = checkUserLogin;
+window.initMobileMenu = initMobileMenu;
+window.initSignatureSystem = initSignatureSystem;
+window.setupEventListeners = setupEventListeners;
+window.initDateSettings = initDateSettings;
+window.setupAutoPreview = setupAutoPreview;
+window.setupContactForm = setupContactForm;
+window.validateEmail = validateEmail;
+window.generateProfessionalContractPlus = generateProfessionalContractPlus;
+window.collectContractData = collectContractData;
+window.incrementDownloadCount = incrementDownloadCount;
+
+// Funções de navegação
+window.goBack = goBack;
+
+// NOVA FUNÇÃO: Abrir visualização segura CORRIGIDA
+window.openSecurePreview = function() {
+    if (!currentUser) {
+        showNotification('🔐 Faça login para visualizar contratos');
+        showLoginModal();
+        return;
+    }
+    
+    // Validar dados antes de gerar
+    const validationErrors = validateContractData();
+    if (validationErrors.length > 0) {
+        showNotification(`❌ Corrija os seguintes campos: ${validationErrors.join(', ')}`);
+        return;
+    }
+    
+    try {
+        // Mostrar loading
+        const previewBtn = document.getElementById('previewBtn');
+        if (previewBtn) {
+            const originalText = previewBtn.querySelector('#previewText').textContent;
+            previewBtn.querySelector('#previewText').textContent = 'Abrindo visualização...';
+            previewBtn.disabled = true;
+        }
+        
+        // Coletar dados do contrato
+        const contractData = collectContractData();
+        
+        console.log('📤 Preparando visualização segura:', contractData);
+        
+        // Criar dados simplificados (sem assinaturas base64)
+        const safeContractData = {
+            contractorName: contractData.contractorName,
+            contractorDoc: contractData.contractorDoc,
+            contractorProfession: contractData.contractorProfession,
+            contractorAddress: contractData.contractorAddress,
+            contractorCivilState: contractData.contractorCivilState,
+            contractedName: contractData.contractedName,
+            contractedDoc: contractData.contractedDoc,
+            contractedProfession: contractData.contractedProfession,
+            contractedAddress: contractData.contractedAddress,
+            contractedCivilState: contractData.contractedCivilState,
+            serviceDescription: contractData.serviceDescription,
+            serviceValue: contractData.serviceValue,
+            paymentMethod: contractData.paymentMethod,
+            startDate: contractData.startDate,
+            endDate: contractData.endDate,
+            contractCity: contractData.contractCity,
+            generatedAt: new Date().toISOString()
+        };
+        
+        // Codificar dados para URL
+        const encodedData = btoa(encodeURIComponent(JSON.stringify(safeContractData)));
+        
+        // Salvar também no localStorage como backup
+        localStorage.setItem('tempContractData', JSON.stringify(safeContractData));
+        localStorage.setItem('tempContractTimestamp', Date.now().toString());
+        
+        // Abrir view-contract.html com os dados na URL
+        const viewUrl = `view-contract.html?data=${encodeURIComponent(encodedData)}&t=${Date.now()}`;
+        const newWindow = window.open(viewUrl, '_blank', 'width=1200,height=700,toolbar=no,location=no,status=no,menubar=no');
+        
+        if (newWindow) {
+            showNotification('✅ Visualização segura aberta em nova janela');
+            
+            // Focar na nova janela
+            setTimeout(() => {
+                if (newWindow && !newWindow.closed) {
+                    newWindow.focus();
+                }
+            }, 500);
+        } else {
+            showNotification('❌ Pop-up bloqueado! Permita pop-ups para visualizar.');
+            
+            // Alternativa: abrir na mesma janela
+            const userConfirmed = confirm('A janela pop-up foi bloqueada. Deseja abrir a visualização nesta guia?');
+            if (userConfirmed) {
+                window.location.href = viewUrl;
+            }
+        }
+        
+        // Restaurar botão
+        if (previewBtn) {
+            setTimeout(() => {
+                previewBtn.querySelector('#previewText').textContent = 'Visualizar Gratuitamente';
+                previewBtn.disabled = false;
+            }, 1000);
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro ao abrir visualização segura:', error);
+        showNotification('❌ Erro ao abrir visualização segura');
+        
+        // Restaurar botão em caso de erro
+        const previewBtn = document.getElementById('previewBtn');
+        if (previewBtn) {
+            previewBtn.querySelector('#previewText').textContent = 'Visualizar Gratuitamente';
+            previewBtn.disabled = false;
+        }
+    }
+};
+
+console.log('📦 Todas as funções JavaScript carregadas com sucesso!');
