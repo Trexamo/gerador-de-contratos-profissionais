@@ -6,6 +6,8 @@
     <title>ContratoFácil - Contratos Profissionais em 5 Minutos</title>
     <link rel="icon" href="logo.jpg" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
+    <!-- Correções de Mobile e Bugs -->
+    <link rel="stylesheet" href="fixes.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Google Sign-In -->
@@ -23,6 +25,98 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007bff">
+    <script>
+// Correção de emergência para mobile
+(function() {
+    console.log('📱 Aplicando correções mobile de emergência...');
+    
+    // 1. Corrigir o bug do zoom out
+    document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(e) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
+    
+    // 2. Corrigir layout do gerador em mobile
+    function fixMobileLayout() {
+        if (window.innerWidth <= 768) {
+            const generatorContainer = document.querySelector('.generator-container');
+            if (generatorContainer) {
+                generatorContainer.style.display = 'flex';
+                generatorContainer.style.flexDirection = 'column';
+            }
+            
+            // Corrigir preview para mobile
+            const contractPreview = document.getElementById('contractPreview');
+            if (contractPreview) {
+                contractPreview.style.width = '100%';
+                contractPreview.style.minWidth = '100%';
+                contractPreview.style.fontSize = '13px';
+            }
+        }
+    }
+    
+    // Executar na inicialização e no redimensionamento
+    fixMobileLayout();
+    window.addEventListener('resize', fixMobileLayout);
+    
+    // 3. Corrigir abertura do view-contract
+    window.openSecurePreview = function() {
+        if (!currentUser) {
+            showNotification('🔐 Faça login para visualizar contratos');
+            showLoginModal();
+            return;
+        }
+        
+        // Validar dados
+        const validationErrors = validateContractData();
+        if (validationErrors.length > 0) {
+            showNotification(`❌ Corrija: ${validationErrors.join(', ')}`);
+            return;
+        }
+        
+        try {
+            // Coletar dados
+            const contractData = collectContractData();
+            
+            // Verificar mobile
+            const isMobile = window.innerWidth <= 768;
+            
+            if (isMobile) {
+                // Em mobile, abrir na mesma janela
+                localStorage.setItem('tempContractData', JSON.stringify(contractData));
+                localStorage.setItem('tempContractTimestamp', Date.now().toString());
+                
+                window.location.href = 'view-contract.html?mobile=true&t=' + Date.now();
+            } else {
+                // Em desktop, abrir nova janela
+                const encodedData = btoa(encodeURIComponent(JSON.stringify(contractData)));
+                const viewUrl = `view-contract.html?data=${encodedData}&t=${Date.now()}`;
+                
+                const newWindow = window.open(viewUrl, '_blank', 'width=1200,height=700');
+                
+                if (!newWindow) {
+                    // Pop-up bloqueado, usar mesma janela
+                    window.location.href = viewUrl;
+                }
+            }
+        } catch (error) {
+            showNotification('❌ Erro ao abrir visualização');
+        }
+    };
+    
+    console.log('✅ Correções mobile aplicadas!');
+})();
+</script>
 </head>
 <body>
     <!-- Status Bar -->
