@@ -7,10 +7,6 @@ let selectedPlan = 'avulsa';
 let selectedPaymentMethod = '';
 let contractorSignature = null;
 let contractedSignature = null;
-let isDrawing = false;
-let currentCanvas = null;
-let lastX = 0;
-let lastY = 0;
 let currentUser = null;
 
 // Preços dos planos
@@ -21,12 +17,60 @@ const planPrices = {
 };
 
 // =============================================
+// CORREÇÃO DO BUG DO CONTADOR DE VISUALIZAÇÃO
+// =============================================
+
+function fixContractCounterBug() {
+    console.log('🔧 Verificando bug do contador de visualizações...');
+    
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user) return true; // Sem usuário, pode continuar
+    
+    // Verificar se o contador está inflado (mais de 50 visualizações em menos de 1 hora)
+    if (user.contractsGenerated > 50) {
+        const lastLogin = new Date(user.lastLogin || user.joinDate);
+        const now = new Date();
+        const hoursDiff = Math.abs(now - lastLogin) / 36e5; // horas
+        
+        // Se mais de 50 visualizações em menos de 1 hora, provavelmente é bug
+        if (hoursDiff < 1) {
+            console.log('🐛 Bug do contador detectado! Resolvendo...');
+            
+            // Resetar para um valor razoável (máximo 3 por hora)
+            const maxReasonable = Math.min(3 * Math.ceil(hoursDiff), 10);
+            user.contractsGenerated = Math.min(user.contractsGenerated, maxReasonable);
+            
+            // Atualizar localStorage
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            
+            console.log('✅ Contador corrigido para:', user.contractsGenerated);
+        }
+    }
+    
+    // Rate limiting: Só permitir 1 visualização por segundo
+    window.lastContractView = window.lastContractView || 0;
+    const now = Date.now();
+    const timeSinceLastView = now - window.lastContractView;
+    
+    if (timeSinceLastView < 1000) {
+        console.log('⏱️  Rate limiting: Aguarde antes de nova visualização');
+        return false;
+    }
+    
+    window.lastContractView = now;
+    return true;
+}
+
+// =============================================
 // INICIALIZAÇÃO DO SISTEMA
 // =============================================
 
 // Inicialização quando DOM carregar
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 ContratoFácil inicializando...');
+    console.log('🚀 Inicializando ContratoFácil...');
+    
+    // Verificar e corrigir dados do usuário
+    checkAndFixUserData();
     
     checkUserLogin();
     initMobileMenu();
@@ -36,20 +80,71 @@ document.addEventListener('DOMContentLoaded', function() {
     updateStatusBar();
     setupContactForm();
     setupAutoPreview();
-    
-    console.log('✅ ContratoFácil inicializado com sucesso!');
 });
+
+// =============================================
+// FUNÇÃO PARA VERIFICAR E CORRIGIR DADOS DO USUÁRIO
+// =============================================
+
+function checkAndFixUserData() {
+    const savedUser = localStorage.getItem('currentUser');
+    if (!savedUser) return;
+    
+    try {
+        const user = JSON.parse(savedUser);
+        let needsUpdate = false;
+        
+        // Verificar se o plano está definido
+        if (!user.plan || user.plan === '') {
+            console.log('🔧 Corrigindo: Plano não definido');
+            user.plan = 'free';
+            needsUpdate = true;
+        }
+        
+        // Verificar se os contadores existem
+        if (typeof user.contractsGenerated === 'undefined') {
+            console.log('🔧 Corrigindo: contractsGenerated não definido');
+            user.contractsGenerated = 0;
+            needsUpdate = true;
+        }
+        
+        if (typeof user.contractsDownloaded === 'undefined') {
+            console.log('🔧 Corrigindo: contractsDownloaded não definido');
+            user.contractsDownloaded = 0;
+            needsUpdate = true;
+        }
+        
+        // Garantir que o plano esteja em minúsculas
+        if (user.plan && user.plan !== user.plan.toLowerCase()) {
+            console.log('🔧 Corrigindo: Plano em maiúsculas');
+            user.plan = user.plan.toLowerCase();
+            needsUpdate = true;
+        }
+        
+        // Adicionar data de atualização do plano se não existir
+        if (!user.planUpdated) {
+            user.planUpdated = new Date().toISOString();
+            needsUpdate = true;
+        }
+        
+        // Salvar se houve alterações
+        if (needsUpdate) {
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            console.log('✅ Dados do usuário corrigidos');
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro ao verificar dados do usuário:', error);
+    }
+}
 
 // =============================================
 // CONFIGURAÇÃO DE EVENT LISTENERS
 // =============================================
 
 function setupEventListeners() {
-    console.log('🔧 Configurando event listeners...');
-    
     // Atualizar preview em tempo real
     const formInputs = document.querySelectorAll('#generatorForm input, #generatorForm select, #generatorForm textarea');
-    console.log(`✅ Encontrados ${formInputs.length} campos do formulário`);
     
     formInputs.forEach(input => {
         // Remover event listeners antigos para evitar duplicação
@@ -129,7 +224,6 @@ function setupEventListeners() {
 
 // Função para lidar com input do formulário
 function handleFormInput(e) {
-    console.log(`📝 Campo alterado: ${e.target.id}`);
     updatePreview();
 }
 
@@ -171,16 +265,12 @@ function initDateSettings() {
 // Update contract preview - FUNÇÃO PRINCIPAL
 function updatePreview() {
     try {
-        console.log('🔄 Atualizando preview do contrato...');
-        
         const contractPreview = document.getElementById('contractPreview');
         if (!contractPreview) {
-            console.error('❌ Elemento contractPreview não encontrado!');
             return;
         }
         
         if (!currentUser) {
-            console.log('⚠️ Usuário não logado, não pode mostrar preview');
             contractPreview.innerHTML = '<p style="color: #666; text-align: center;">Faça login para visualizar o contrato...</p>';
             return;
         }
@@ -189,7 +279,6 @@ function updatePreview() {
         const contractHTML = generateProfessionalContractPlus();
         
         if (!contractHTML || contractHTML.trim() === '') {
-            console.error('❌ HTML do contrato está vazio!');
             contractPreview.innerHTML = '<p style="color: #666; text-align: center;">Preencha os campos acima para gerar o contrato...</p>';
             return;
         }
@@ -202,18 +291,13 @@ function updatePreview() {
             incrementContractCount();
         }
         
-        console.log('✅ Preview atualizado com sucesso!');
-        
     } catch (error) {
-        console.error('❌ Erro ao atualizar preview:', error);
         showNotification('❌ Erro ao atualizar visualização do contrato');
     }
 }
 
 // Função para setup automático do preview
 function setupAutoPreview() {
-    console.log('🔧 Configurando auto-preview...');
-    
     // Verificar se o usuário está logado
     if (currentUser) {
         // Atualizar uma vez para mostrar contrato inicial
@@ -231,9 +315,15 @@ function checkUserLogin() {
     if (savedUser) {
         try {
             currentUser = JSON.parse(savedUser);
+            
+            // Garantir que o plano esteja em minúsculas
+            if (currentUser.plan) {
+                currentUser.plan = currentUser.plan.toLowerCase();
+            }
+            
             updateUIAfterLogin();
         } catch (e) {
-            console.error('Erro ao carregar usuário:', e);
+            console.error('❌ Erro ao carregar usuário:', e);
             localStorage.removeItem('currentUser');
             updateUIAfterLogout();
         }
@@ -244,8 +334,6 @@ function checkUserLogin() {
 
 // Função para processar login do Google
 function handleGoogleSignIn(response) {
-    console.log('Google Sign-In response:', response);
-    
     try {
         // Decodifica o JWT para obter os dados do usuário
         const userData = parseJwt(response.credential);
@@ -261,7 +349,8 @@ function handleGoogleSignIn(response) {
             contractsDownloaded: 0,
             remainingContracts: 999, // Visualizações ilimitadas
             joinDate: new Date().toISOString(),
-            lastLogin: new Date().toISOString()
+            lastLogin: new Date().toISOString(),
+            planUpdated: new Date().toISOString()
         };
         
         // Salva no localStorage
@@ -279,7 +368,7 @@ function handleGoogleSignIn(response) {
         setTimeout(updatePreview, 500);
         
     } catch (error) {
-        console.error('Erro no login:', error);
+        console.error('❌ Erro no login:', error);
         showNotification('❌ Erro ao fazer login. Tente novamente.');
     }
 }
@@ -294,7 +383,6 @@ function parseJwt(token) {
         }).join(''));
         return JSON.parse(jsonPayload);
     } catch (error) {
-        console.error('Error parsing JWT:', error);
         throw new Error('Token inválido');
     }
 }
@@ -302,6 +390,9 @@ function parseJwt(token) {
 // Atualizar UI após login
 function updateUIAfterLogin() {
     if (!currentUser) return;
+    
+    console.log('👤 Usuário logado:', currentUser.name);
+    console.log('📋 Plano:', currentUser.plan);
     
     // Atualizar header
     const loginButton = document.getElementById('loginButton');
@@ -377,9 +468,22 @@ function closeLoginModal() {
 function incrementContractCount() {
     if (!currentUser) return;
     
+    // Usar o rate limiting
+    if (!fixContractCounterBug()) return;
+    
+    // Incrementar normalmente
     currentUser.contractsGenerated = (currentUser.contractsGenerated || 0) + 1;
+    currentUser.lastLogin = new Date().toISOString();
+    
+    // Garantir que não passe de um limite razoável
+    if (currentUser.contractsGenerated > 999) {
+        currentUser.contractsGenerated = 999;
+    }
+    
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
     updateStatusBar();
+    
+    console.log('📊 Contador atualizado:', currentUser.contractsGenerated);
 }
 
 // =============================================
@@ -388,16 +492,12 @@ function incrementContractCount() {
 
 // Sistema de Assinaturas
 function initSignatureSystem() {
-    console.log('🔧 Inicializando sistema de assinatura...');
-    
     // Inicializar ambas as assinaturas
     ['contractor', 'contracted'].forEach(type => {
         // Configurar eventos de upload
         const uploadInput = document.getElementById(`${type}SignatureUpload`);
         if (uploadInput) {
-            // Remover event listener antigo se existir
             uploadInput.removeEventListener('change', handleSignatureUpload);
-            // Adicionar novo
             uploadInput.addEventListener('change', function(e) {
                 handleSignatureUpload(e, type);
             });
@@ -406,8 +506,6 @@ function initSignatureSystem() {
         // Inicializar canvas
         initSignatureCanvas(type);
     });
-    
-    console.log('✅ Sistema de assinatura inicializado');
 }
 
 // Função para selecionar opção de assinatura
@@ -416,8 +514,6 @@ function selectSignatureOption(type, method, event) {
         event.preventDefault();
         event.stopPropagation();
     }
-    
-    console.log(`🎯 Selecionando assinatura: ${type} - ${method}`);
     
     // Remover seleção de todas as opções do mesmo tipo
     const signatureSection = event?.currentTarget?.closest('.signature-options');
@@ -437,7 +533,6 @@ function selectSignatureOption(type, method, event) {
         // Método de upload - clicar no input file
         const uploadInput = document.getElementById(`${type}SignatureUpload`);
         if (uploadInput) {
-            console.log(`📁 Abrindo upload para ${type}`);
             uploadInput.click();
         }
     } else if (method === 'draw') {
@@ -446,7 +541,6 @@ function selectSignatureOption(type, method, event) {
         const uploadInput = document.getElementById(`${type}SignatureUpload`);
         
         if (canvas) {
-            console.log(`🖌️ Mostrando canvas para ${type}`);
             canvas.style.display = 'block';
             
             // Limpar canvas
@@ -479,15 +573,10 @@ function selectSignatureOption(type, method, event) {
 
 // Função para lidar com upload de assinatura
 function handleSignatureUpload(event, type) {
-    console.log(`📤 Processando upload para ${type}`);
-    
     const file = event.target.files[0];
     if (!file) {
-        console.log('❌ Nenhum arquivo selecionado');
         return;
     }
-    
-    console.log(`📄 Arquivo: ${file.name} (${file.type}, ${file.size} bytes)`);
 
     // Validar tipo de arquivo
     if (!file.type.match('image.*')) {
@@ -504,13 +593,9 @@ function handleSignatureUpload(event, type) {
     const reader = new FileReader();
     
     reader.onload = function(e) {
-        console.log(`✅ Arquivo ${type} lido com sucesso`);
-        
         const img = new Image();
         
         img.onload = function() {
-            console.log(`🖼️ Imagem ${type} carregada: ${img.width}x${img.height}`);
-            
             // Criar canvas para processar a imagem
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
@@ -541,10 +626,8 @@ function handleSignatureUpload(event, type) {
             // Salvar na variável correspondente
             if (type === 'contractor') {
                 contractorSignature = signatureData;
-                console.log(`✅ Assinatura do contratante salva (${signatureData.length} bytes)`);
             } else {
                 contractedSignature = signatureData;
-                console.log(`✅ Assinatura do contratado salva (${signatureData.length} bytes)`);
             }
             
             // Atualizar preview
@@ -566,7 +649,6 @@ function handleSignatureUpload(event, type) {
         };
         
         img.onerror = function() {
-            console.error(`❌ Erro ao carregar imagem ${type}`);
             showNotification('❌ Erro ao carregar a imagem');
         };
         
@@ -574,7 +656,6 @@ function handleSignatureUpload(event, type) {
     };
     
     reader.onerror = function() {
-        console.error(`❌ Erro ao ler arquivo ${type}`);
         showNotification('❌ Erro ao ler o arquivo');
     };
     
@@ -587,7 +668,6 @@ function initSignatureCanvas(type) {
     const canvas = document.getElementById(canvasId);
     
     if (!canvas) {
-        console.error(`❌ Canvas não encontrado: ${canvasId}`);
         return;
     }
 
@@ -685,8 +765,6 @@ function initSignatureCanvas(type) {
     
     canvas.addEventListener('touchend', stopDrawing);
     canvas.addEventListener('touchcancel', stopDrawing);
-    
-    console.log(`✅ Canvas ${type} inicializado`);
 }
 
 // Função para atualizar preview da assinatura
@@ -736,8 +814,6 @@ function showSignatureConfirmation(type) {
 
 // Função para limpar assinatura
 function clearSignature(type) {
-    console.log(`🗑️ Limpando assinatura ${type}`);
-    
     // Limpar variável
     if (type === 'contractor') {
         contractorSignature = null;
@@ -785,7 +861,6 @@ function clearSignature(type) {
 }
 
 function confirmSignature(type) {
-    console.log(`✅ Assinatura ${type} confirmada`);
     showNotification('✅ Assinatura confirmada!');
     
     const confirmation = document.getElementById(`${type}SignatureConfirmation`);
@@ -801,10 +876,10 @@ function confirmSignature(type) {
 }
 
 // =============================================
-// SISTEMA DE BARRA DE STATUS
+// SISTEMA DE BARRA DE STATUS - VERSÃO CORRIGIDA
 // =============================================
 
-// Atualizar barra de status
+// Atualizar barra de status - VERSÃO CORRIGIDA
 function updateStatusBar() {
     const statusBar = document.getElementById('statusBar');
     const statusIcon = document.getElementById('statusIcon');
@@ -818,6 +893,9 @@ function updateStatusBar() {
     
     statusBar.style.display = 'block';
     
+    // CORREÇÃO: Verificar plano corretamente
+    console.log('📊 Atualizando status bar - Plano:', currentUser.plan);
+    
     if (currentUser.plan === 'free') {
         statusIcon.className = 'fas fa-eye';
         statusText.textContent = 'Plano Gratuito - Visualizações Ilimitadas';
@@ -825,21 +903,29 @@ function updateStatusBar() {
     } else if (currentUser.plan === 'basico') {
         statusIcon.className = 'fas fa-crown';
         statusText.textContent = 'Plano Básico - 5 contratos/mês';
-        const remaining = 5 - (currentUser.contractsDownloaded || 0);
+        const remaining = Math.max(0, 5 - (currentUser.contractsDownloaded || 0));
         statusCount.innerHTML = `Contratos restantes: <strong>${remaining}</strong>`;
-    } else {
+    } else if (currentUser.plan === 'profissional') {
         statusIcon.className = 'fas fa-gem';
-        statusText.textContent = 'Plano Profissional - Ilimitado';
-        statusCount.innerHTML = `Contratos baixados: <strong>${currentUser.contractsDownloaded || 0}</strong>`;
+        statusText.textContent = 'Plano Profissional - Downloads Ilimitados';
+        const downloads = currentUser.contractsDownloaded || 0;
+        statusCount.innerHTML = `Contratos baixados: <strong>${downloads}</strong>`;
+    } else {
+        // Fallback para plano não reconhecido
+        statusIcon.className = 'fas fa-user';
+        statusText.textContent = 'Plano Gratuito - Visualizações Ilimitadas';
+        statusCount.innerHTML = `Contratos visualizados: <strong>${currentUser.contractsGenerated || 0}</strong>`;
     }
 }
 
 // =============================================
-// SISTEMA DE PAGAMENTO
+// SISTEMA DE PAGAMENTO - VERSÃO CORRIGIDA
 // =============================================
 
 // Payment modal functions
 function openPaymentModal(plan) {
+    console.log('💰 Abrindo modal de pagamento para plano:', plan);
+    
     if (plan !== 'avulsa' && !currentUser) {
         showNotification('❌ Faça login para assinar um plano');
         showLoginModal();
@@ -1002,29 +1088,71 @@ function selectPayment(element, type) {
     }
 }
 
-// Atualizar plano do usuário
+// Atualizar plano do usuário - VERSÃO CORRIGIDA
 function updateUserPlan(planType) {
-    if (!currentUser) return;
+    if (!currentUser) {
+        console.error('❌ Nenhum usuário para atualizar plano');
+        return;
+    }
     
+    console.log('🔄 Atualizando plano para:', planType);
+    console.log('📋 Plano anterior:', currentUser.plan);
+    
+    // Salvar plano anterior para referência
+    const previousPlan = currentUser.plan;
+    
+    // Atualizar plano
     currentUser.plan = planType;
+    currentUser.planUpdated = new Date().toISOString();
     
     // Configurar limites conforme o plano
     switch(planType) {
         case 'free':
             currentUser.remainingContracts = 999;
+            currentUser.maxDownloads = 0;
             break;
         case 'basico':
             currentUser.remainingContracts = 5;
+            currentUser.maxDownloads = 5;
+            // Resetar contador de downloads se estiver mudando de outro plano
+            if (previousPlan !== 'basico') {
+                currentUser.contractsDownloaded = 0;
+                console.log('🔄 Resetando contador de downloads para plano básico');
+            }
             break;
         case 'profissional':
-            currentUser.remainingContracts = 999;
+            currentUser.remainingContracts = 9999; // Praticamente ilimitado
+            currentUser.maxDownloads = 9999;
             break;
+        case 'avulsa':
+            // Para contrato avulso, não mudar o plano principal
+            console.log('💰 Contrato avulso comprado - Plano principal mantido:', currentUser.plan);
+            // Mas permitir o download imediato
+            setTimeout(() => {
+                generateWordPlus();
+            }, 1000);
+            return;
     }
     
+    // Salvar no localStorage
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
-    updateStatusBar();
     
-    showNotification(`🎉 Plano atualizado para ${planType === 'basico' ? 'Básico' : 'Profissional'}!`);
+    // Atualizar UI
+    updateStatusBar();
+    updateUIAfterLogin();
+    
+    // Mostrar notificação
+    let planName = '';
+    switch(planType) {
+        case 'free': planName = 'Gratuito'; break;
+        case 'basico': planName = 'Básico'; break;
+        case 'profissional': planName = 'Profissional'; break;
+    }
+    
+    showNotification(`🎉 Plano ${planName} ativado com sucesso!`);
+    
+    // Log para debug
+    console.log('✅ Plano atualizado com sucesso:', currentUser);
 }
 
 // =============================================
@@ -1086,35 +1214,34 @@ function formatarValorExtenso(valor) {
                 }
             }
             
-        return resultado;
-    }
-    
-    let parteInteira = Math.floor(valorNumero);
-    let parteDecimal = Math.round((valorNumero - parteInteira) * 100);
-    
-    let extenso = '';
-    
-    if (parteInteira > 0) {
-        if (parteInteira === 1) {
-            extenso = 'um real';
-        } else {
-            extenso = converterNumero(parteInteira) + ' reais';
+            return resultado;
         }
-    }
     
-    if (parteDecimal > 0) {
-        if (extenso !== '') extenso += ' e ';
-        if (parteDecimal === 1) {
-            extenso += 'um centavo';
-        } else {
-            extenso += converterNumero(parteDecimal) + ' centavos';
+        let parteInteira = Math.floor(valorNumero);
+        let parteDecimal = Math.round((valorNumero - parteInteira) * 100);
+        
+        let extenso = '';
+        
+        if (parteInteira > 0) {
+            if (parteInteira === 1) {
+                extenso = 'um real';
+            } else {
+                extenso = converterNumero(parteInteira) + ' reais';
+            }
         }
-    }
-    
-    return extenso || '_________________________';
-    
+        
+        if (parteDecimal > 0) {
+            if (extenso !== '') extenso += ' e ';
+            if (parteDecimal === 1) {
+                extenso += 'um centavo';
+            } else {
+                extenso += converterNumero(parteDecimal) + ' centavos';
+            }
+        }
+        
+        return extenso || '_________________________';
+        
     } catch (e) {
-        console.error('Erro ao converter valor:', e);
         return '_________________________';
     }
 }
@@ -1144,7 +1271,6 @@ function validateContractData() {
             errors.push(fieldName);
             if (field) {
                 field.style.borderColor = 'var(--danger)';
-                // Adicionar animação de shake
                 field.style.animation = 'shake 0.5s ease-in-out';
                 setTimeout(() => {
                     field.style.animation = '';
@@ -1616,47 +1742,80 @@ function generateProfessionalContractPlus() {
 }
 
 // =============================================
-// SISTEMA DE DOWNLOAD E EXPORTAÇÃO
+// SISTEMA DE DOWNLOAD E EXPORTAÇÃO - VERSÃO CORRIGIDA
 // =============================================
 
-// Verificar se usuário pode baixar contrato
+// Verificar se usuário pode baixar contrato - VERSÃO CORRIGIDA
 function canDownloadContract() {
+    console.log('🔍 Verificando permissões de download...');
+    
     if (!currentUser) {
         showNotification('❌ Faça login para baixar contratos');
         showLoginModal();
         return false;
     }
     
-    // Usuário free não pode baixar, só visualizar
+    console.log('👤 Usuário:', currentUser.name);
+    console.log('📋 Plano atual:', currentUser.plan);
+    console.log('📊 Downloads feitos:', currentUser.contractsDownloaded || 0);
+    console.log('📈 Visualizações:', currentUser.contractsGenerated || 0);
+    
+    // CORREÇÃO: Verificar plano do usuário corretamente
     if (currentUser.plan === 'free') {
+        console.log('🆓 Usuário free - Mostrando modal de upgrade');
         showUpgradeModal();
         return false;
     }
     
-    // Verificar limite do plano básico
-    if (currentUser.plan === 'basico' && (currentUser.contractsDownloaded || 0) >= 5) {
-        showNotification('❌ Você atingiu o limite de 5 contratos deste mês. Faça upgrade para o plano profissional.');
-        openPaymentModal('profissional');
-        return false;
+    // CORREÇÃO: Verificar limite do plano básico
+    if (currentUser.plan === 'basico') {
+        const downloadsFeitos = currentUser.contractsDownloaded || 0;
+        if (downloadsFeitos >= 5) {
+            console.log('📉 Limite do plano básico atingido:', downloadsFeitos);
+            showNotification('❌ Você atingiu o limite de 5 contratos deste mês. Faça upgrade para o plano profissional.');
+            openPaymentModal('profissional');
+            return false;
+        }
+        console.log('✅ Plano básico - Downloads restantes:', (5 - downloadsFeitos));
+        return true;
     }
     
-    return true;
+    // CORREÇÃO: Plano profissional sempre permite download
+    if (currentUser.plan === 'profissional') {
+        console.log('💎 Plano profissional - Download permitido');
+        return true;
+    }
+    
+    // CORREÇÃO: Planos avulsos (pagamento único)
+    if (selectedPlan === 'avulsa') {
+        console.log('💰 Contrato avulso - Download permitido após pagamento');
+        return true;
+    }
+    
+    console.log('⚠️ Plano não reconhecido:', currentUser.plan);
+    showNotification('❌ Seu plano não foi reconhecido. Entre em contato com o suporte.');
+    return false;
 }
 
-// Função para incrementar contador de downloads
+// Função para incrementar contador de downloads - VERSÃO CORRIGIDA
 function incrementDownloadCount() {
     if (!currentUser) return;
     
     currentUser.contractsDownloaded = (currentUser.contractsDownloaded || 0) + 1;
+    currentUser.lastDownload = new Date().toISOString();
+    
+    // Atualizar no localStorage
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    
+    // Atualizar status bar
     updateStatusBar();
+    
+    console.log('✅ Download contabilizado. Total:', currentUser.contractsDownloaded);
 }
 
-// Função para gerar Word
+// Função para gerar Word - VERSÃO CORRIGIDA
 function generateWordPlus() {
-    if (!canDownloadContract()) {
-        return;
-    }
+    console.log('🖨️ Iniciando geração de Word...');
     
     // Validar dados antes de gerar
     const validationErrors = validateContractData();
@@ -1665,9 +1824,25 @@ function generateWordPlus() {
         return;
     }
     
+    // Verificar se pode baixar
+    if (!canDownloadContract()) {
+        console.log('❌ Download não autorizado');
+        return;
+    }
+    
     try {
+        // Mostrar loading
+        const downloadBtn = document.getElementById('downloadBtn');
+        if (downloadBtn) {
+            const originalText = downloadBtn.querySelector('#downloadText').textContent;
+            downloadBtn.querySelector('#downloadText').textContent = 'Gerando contrato...';
+            downloadBtn.disabled = true;
+        }
+        
+        // Gerar conteúdo do contrato
         const contractContent = generateProfessionalContractPlus();
         
+        // Criar HTML completo para Word
         const fullHTML = `
 <!DOCTYPE html>
 <html>
@@ -1735,12 +1910,15 @@ function generateWordPlus() {
 </body>
 </html>`;
         
+        // Criar blob e link de download
         const blob = new Blob([fullHTML], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         
+        // Nome do arquivo
         const contractorName = document.getElementById('contractorName')?.value || 'contratante';
-        const fileName = `Contrato_${contractorName.replace(/\s+/g, '_')}_${new Date().getTime()}.doc`;
+        const cleanName = contractorName.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_');
+        const fileName = `Contrato_${cleanName}_${new Date().getTime()}.doc`;
         
         a.href = url;
         a.download = fileName;
@@ -1752,11 +1930,27 @@ function generateWordPlus() {
         // Incrementar contador de downloads
         incrementDownloadCount();
         
+        // Mostrar notificação de sucesso
         showNotification('✅ Contrato baixado com sucesso!');
         
+        // Restaurar botão
+        if (downloadBtn) {
+            setTimeout(() => {
+                downloadBtn.querySelector('#downloadText').textContent = originalText;
+                downloadBtn.disabled = false;
+            }, 1000);
+        }
+        
     } catch (error) {
-        console.error('Erro no generateWord:', error);
-        showNotification('❌ Erro ao gerar documento Word');
+        console.error('❌ Erro ao gerar documento Word:', error);
+        showNotification('❌ Erro ao baixar contrato. Tente novamente.');
+        
+        // Restaurar botão em caso de erro
+        const downloadBtn = document.getElementById('downloadBtn');
+        if (downloadBtn) {
+            downloadBtn.querySelector('#downloadText').textContent = 'Baixar Contrato - R$ 6,99';
+            downloadBtn.disabled = false;
+        }
     }
 }
 
@@ -1876,7 +2070,6 @@ function submitContactForm(event) {
             submitBtn.disabled = false;
         }, function(error) {
             showNotification('❌ Erro ao enviar mensagem. Tente novamente ou entre em contato via WhatsApp.');
-            console.error('EmailJS error:', error);
             
             // Restaurar botão
             submitBtn.innerHTML = originalText;
@@ -2037,7 +2230,7 @@ function handleVideoError() {
 }
 
 // =============================================
-// FUNÇÃO OPEN SECURE PREVIEW (VERSÃO ÚNICA)
+// FUNÇÃO OPEN SECURE PREVIEW (VERSÃO CORRIGIDA)
 // =============================================
 
 // Visualização segura - VERSÃO FINAL CORRIGIDA
@@ -2058,14 +2251,16 @@ function openSecurePreview() {
     try {
         // Mostrar loading
         const previewBtn = document.getElementById('previewBtn');
-        const originalText = previewBtn.querySelector('#previewText').textContent;
-        previewBtn.querySelector('#previewText').textContent = 'Abrindo visualização...';
-        previewBtn.disabled = true;
+        if (previewBtn) {
+            const originalText = previewBtn.querySelector('#previewText').textContent;
+            previewBtn.querySelector('#previewText').textContent = 'Abrindo visualização...';
+            previewBtn.disabled = true;
+        }
         
         // Coletar dados do contrato
         const contractData = collectContractData();
         
-        // Remover assinaturas base64 (muito grandes para localStorage)
+        // Criar dados simplificados (sem assinaturas base64)
         const safeContractData = {
             contractorName: contractData.contractorName,
             contractorDoc: contractData.contractorDoc,
@@ -2083,97 +2278,63 @@ function openSecurePreview() {
             startDate: contractData.startDate,
             endDate: contractData.endDate,
             contractCity: contractData.contractCity,
-            // Não incluir assinaturas base64 (são muito grandes)
-            generatedAt: contractData.generatedAt
+            contractorSignature: contractData.contractorSignature,
+            contractedSignature: contractData.contractedSignature,
+            generatedAt: new Date().toISOString()
         };
         
-        console.log('📤 Preparando dados para visualização:', safeContractData);
+        // Codificar dados para URL
+        const encodedData = btoa(encodeURIComponent(JSON.stringify(safeContractData)));
         
-        // Salvar os dados no localStorage com timestamp
+        // Salvar também no localStorage como backup
         localStorage.setItem('tempContractData', JSON.stringify(safeContractData));
         localStorage.setItem('tempContractTimestamp', Date.now().toString());
         
-        // Verificar se os dados foram salvos
-        const savedData = localStorage.getItem('tempContractData');
-        if (!savedData) {
-            throw new Error('Falha ao salvar dados no navegador');
-        }
+        // Abrir view-contract.html com os dados na URL
+        const viewUrl = `view-contract.html?data=${encodeURIComponent(encodedData)}&t=${Date.now()}`;
+        const newWindow = window.open(viewUrl, '_blank', 'width=1200,height=700,toolbar=no,location=no,status=no,menubar=no');
         
-        console.log('✅ Dados salvos com sucesso no localStorage');
-        
-        // Abrir nova aba
-        const newWindow = window.open('view-contract.html', '_blank', 'noopener,noreferrer');
-        
-        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-            showNotification('❌ Pop-up bloqueado! Permita pop-ups para visualizar o contrato.');
+        if (newWindow) {
+            showNotification('✅ Visualização segura aberta em nova janela');
             
-            // Alternativa: abrir na mesma janela
+            // Focar na nova janela
             setTimeout(() => {
-                const userConfirmed = confirm('A janela pop-up foi bloqueada. Deseja abrir a visualização em uma nova guia?');
-                if (userConfirmed) {
-                    window.open('view-contract.html', '_blank');
+                if (newWindow && !newWindow.closed) {
+                    newWindow.focus();
                 }
             }, 500);
         } else {
-            showNotification('✅ Visualização segura aberta em nova aba');
+            showNotification('❌ Pop-up bloqueado! Permita pop-ups para visualizar.');
+            
+            // Alternativa: abrir na mesma janela
+            const userConfirmed = confirm('A janela pop-up foi bloqueada. Deseja abrir a visualização nesta guia?');
+            if (userConfirmed) {
+                window.location.href = viewUrl;
+            }
         }
         
         // Restaurar botão
-        setTimeout(() => {
-            previewBtn.querySelector('#previewText').textContent = originalText;
-            previewBtn.disabled = false;
-        }, 1000);
+        if (previewBtn) {
+            setTimeout(() => {
+                previewBtn.querySelector('#previewText').textContent = 'Visualizar Gratuitamente';
+                previewBtn.disabled = false;
+            }, 1000);
+        }
         
     } catch (error) {
-        console.error('❌ Erro ao abrir visualização segura:', error);
-        showNotification('❌ Erro ao abrir visualização segura: ' + error.message);
+        showNotification('❌ Erro ao abrir visualização segura');
         
         // Restaurar botão em caso de erro
         const previewBtn = document.getElementById('previewBtn');
-        previewBtn.querySelector('#previewText').textContent = 'Visualizar Gratuitamente';
-        previewBtn.disabled = false;
+        if (previewBtn) {
+            previewBtn.querySelector('#previewText').textContent = 'Visualizar Gratuitamente';
+            previewBtn.disabled = false;
+        }
     }
 }
 
 // =============================================
 // EXPORTAÇÃO DE FUNÇÕES GLOBAIS
-// =============================================
-
-// Exportar funções para o escopo global
-window.scrollToGenerator = scrollToGenerator;
-window.showUpgradeModal = showUpgradeModal;
-window.handleGoogleSignIn = handleGoogleSignIn;
-window.showLoginModal = showLoginModal;
-window.closeLoginModal = closeLoginModal;
-window.selectSignatureOption = selectSignatureOption;
-window.handleSignatureUpload = handleSignatureUpload;
-window.clearSignature = clearSignature;
-window.confirmSignature = confirmSignature;
-window.updatePreview = updatePreview;
-window.openPaymentModal = openPaymentModal;
-window.closePaymentModal = closePaymentModal;
-window.selectPayment = selectPayment;
-window.generateWordPlus = generateWordPlus;
-window.canDownloadContract = canDownloadContract;
-window.openSecurePreview = openSecurePreview;
-window.showContactModal = showContactModal;
-window.closeContactModal = closeContactModal;
-window.submitContactForm = submitContactForm;
-window.handleVideoError = handleVideoError;
-
-console.log('📦 Todas as funções JavaScript carregadas com sucesso!');
-
-// Função goBack para view-contract.html
-function goBack() {
-    // Verificar se veio do index.html
-    if (document.referrer.includes('index.html') || document.referrer.includes(window.location.origin)) {
-        window.history.back();
-    } else {
-        window.location.href = 'index.html';
-    }
-}
-// =============================================
-// EXPORTAÇÃO DE FUNÇÕES GLOBAIS - COMPLETO
 // =============================================
 
 // Funções principais
@@ -2222,107 +2383,10 @@ window.collectContractData = collectContractData;
 window.incrementDownloadCount = incrementDownloadCount;
 
 // Funções de navegação
-window.goBack = goBack;
-
-// NOVA FUNÇÃO: Abrir visualização segura CORRIGIDA
-window.openSecurePreview = function() {
-    if (!currentUser) {
-        showNotification('🔐 Faça login para visualizar contratos');
-        showLoginModal();
-        return;
-    }
-    
-    // Validar dados antes de gerar
-    const validationErrors = validateContractData();
-    if (validationErrors.length > 0) {
-        showNotification(`❌ Corrija os seguintes campos: ${validationErrors.join(', ')}`);
-        return;
-    }
-    
-    try {
-        // Mostrar loading
-        const previewBtn = document.getElementById('previewBtn');
-        if (previewBtn) {
-            const originalText = previewBtn.querySelector('#previewText').textContent;
-            previewBtn.querySelector('#previewText').textContent = 'Abrindo visualização...';
-            previewBtn.disabled = true;
-        }
-        
-        // Coletar dados do contrato
-        const contractData = collectContractData();
-        
-        console.log('📤 Preparando visualização segura:', contractData);
-        
-        // Criar dados simplificados (sem assinaturas base64)
-        const safeContractData = {
-            contractorName: contractData.contractorName,
-            contractorDoc: contractData.contractorDoc,
-            contractorProfession: contractData.contractorProfession,
-            contractorAddress: contractData.contractorAddress,
-            contractorCivilState: contractData.contractorCivilState,
-            contractedName: contractData.contractedName,
-            contractedDoc: contractData.contractedDoc,
-            contractedProfession: contractData.contractedProfession,
-            contractedAddress: contractData.contractedAddress,
-            contractedCivilState: contractData.contractedCivilState,
-            serviceDescription: contractData.serviceDescription,
-            serviceValue: contractData.serviceValue,
-            paymentMethod: contractData.paymentMethod,
-            startDate: contractData.startDate,
-            endDate: contractData.endDate,
-            contractCity: contractData.contractCity,
-            generatedAt: new Date().toISOString()
-        };
-        
-        // Codificar dados para URL
-        const encodedData = btoa(encodeURIComponent(JSON.stringify(safeContractData)));
-        
-        // Salvar também no localStorage como backup
-        localStorage.setItem('tempContractData', JSON.stringify(safeContractData));
-        localStorage.setItem('tempContractTimestamp', Date.now().toString());
-        
-        // Abrir view-contract.html com os dados na URL
-        const viewUrl = `view-contract.html?data=${encodeURIComponent(encodedData)}&t=${Date.now()}`;
-        const newWindow = window.open(viewUrl, '_blank', 'width=1200,height=700,toolbar=no,location=no,status=no,menubar=no');
-        
-        if (newWindow) {
-            showNotification('✅ Visualização segura aberta em nova janela');
-            
-            // Focar na nova janela
-            setTimeout(() => {
-                if (newWindow && !newWindow.closed) {
-                    newWindow.focus();
-                }
-            }, 500);
-        } else {
-            showNotification('❌ Pop-up bloqueado! Permita pop-ups para visualizar.');
-            
-            // Alternativa: abrir na mesma janela
-            const userConfirmed = confirm('A janela pop-up foi bloqueada. Deseja abrir a visualização nesta guia?');
-            if (userConfirmed) {
-                window.location.href = viewUrl;
-            }
-        }
-        
-        // Restaurar botão
-        if (previewBtn) {
-            setTimeout(() => {
-                previewBtn.querySelector('#previewText').textContent = 'Visualizar Gratuitamente';
-                previewBtn.disabled = false;
-            }, 1000);
-        }
-        
-    } catch (error) {
-        console.error('❌ Erro ao abrir visualização segura:', error);
-        showNotification('❌ Erro ao abrir visualização segura');
-        
-        // Restaurar botão em caso de erro
-        const previewBtn = document.getElementById('previewBtn');
-        if (previewBtn) {
-            previewBtn.querySelector('#previewText').textContent = 'Visualizar Gratuitamente';
-            previewBtn.disabled = false;
-        }
+window.goBack = function() {
+    if (document.referrer.includes('index.html') || document.referrer.includes(window.location.origin)) {
+        window.history.back();
+    } else {
+        window.location.href = 'index.html';
     }
 };
-
-console.log('📦 Todas as funções JavaScript carregadas com sucesso!');
