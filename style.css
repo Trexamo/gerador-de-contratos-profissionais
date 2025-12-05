@@ -1124,3 +1124,73 @@ footer::before {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* Estilos para o modal de visualização do contrato */
+.modal-full .modal-content {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: 90vw;
+    height: 90vh;
+}
+
+.modal-full .modal-body {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 60px);
+    overflow: hidden;
+}
+
+.contract-view-container {
+    flex: 1;
+    overflow-y: auto;
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    margin: 0;
+}
+
+/* Bloquear seleção de texto no modal de visualização */
+.contract-view-container {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Bloquear copiar/colar */
+.contract-view-container {
+    -webkit-user-drag: none;
+}
+
+/* Estilos para impressão */
+@media print {
+    .modal-header,
+    .modal-actions,
+    .close-modal {
+        display: none !important;
+    }
+    
+    .modal-content {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        max-width: none !important;
+        max-height: none !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: white !important;
+    }
+    
+    .modal-body {
+        height: auto !important;
+        overflow: visible !important;
+    }
+    
+    #contractViewContent {
+        height: auto !important;
+        overflow: visible !important;
+        padding: 0 !important;
+    }
+}
