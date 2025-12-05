@@ -208,7 +208,7 @@
                     </div>
                 </div>
                 <div class="user-actions">
-                    <button class="btn" onclick="openPaymentModal('profissional')">
+                    <button class="btn" onclick="window.location.href='planos.html'">
                         <i class="fas fa-crown"></i> Fazer Upgrade
                     </button>
                 </div>
@@ -241,7 +241,7 @@
                     <div class="progress-fill" id="usageProgress"></div>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--gray);">
-                    <span id="usageText">0 de ∞ visualizações</span>
+                    <span id="usageText">0 visualizações</span>
                     <span id="usagePercentage">0%</span>
                 </div>
             </div>
@@ -270,7 +270,7 @@
                     <i class="fas fa-crown" style="font-size: 2rem; color: var(--success); margin-bottom: 1rem;"></i>
                     <h4 style="margin-bottom: 0.5rem; color: var(--success);">Fazer Upgrade</h4>
                     <p style="font-size: 0.9rem; color: var(--gray); margin-bottom: 1rem;">Acesse todos os recursos</p>
-                    <button class="btn btn-success" onclick="openPaymentModal('profissional')" style="width: 100%;">Ver Planos</button>
+                    <a href="planos.html" class="btn btn-success" style="width: 100%;">Ver Planos</a>
                 </div>
                 
                 <div class="action-card" style="border: 2px solid var(--secondary);">
@@ -311,7 +311,7 @@
                 <div class="footer-column">
                     <h3>Contato</h3>
                     <ul>
-                        <li><a href="https://wa.me/556299290737?text=Olá! Gostaria de mais informações sobre o ContratoFácil" target="_blank"><i class="fab fa-whatsapp"></i> (62) 99290-0737</a></li>
+                        <li><a href="mailto:luhkaimn@gmail.com"><i class="fas fa-envelope"></i> luhkaimn@gmail.com</a></li>
                         <li><i class="fas fa-map-marker-alt"></i> Goiânia, GO</li>
                     </ul>
                 </div>
@@ -347,7 +347,7 @@
             if (user.picture) {
                 userAvatar.src = user.picture;
                 userAvatar.onerror = function() {
-                    // Fallback para avatar padrão se a imagem não carregar
+                    // Fallback para avatar padrão
                     this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiMyYzlhYTAiLz4KPHBhdGggZD0iTTQwIDQ0QzQ2LjYgNDQgNTIgMzguNiA1MiAzMkM1MiAyNS40IDQ2LjYgMjAgNDAgMjBDMzMuNCAyMCAyOCAyNS40IDI4IDMyQzI4IDM4LjYgMzMuNCA0NCA0MCA0NFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yOCA1MkMyOCA1OC42IDMzLjQgNjQgNDAgNjRDNDYuNiA2NCA1MiA1OC42IDUyIDUyVjUySDI4VjUyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+';
                 };
             } else {
@@ -373,13 +373,13 @@
             contractsCount.textContent = user.contractsGenerated || 0;
             contractsDownloaded.textContent = user.contractsDownloaded || 0;
             
-            // Calcular dias restantes (simulação)
+            // Calcular visualizações restantes
             if (user.plan === 'free') {
                 remainingContracts.textContent = '∞';
                 daysLeft.textContent = '∞';
             } else if (user.plan === 'basico') {
-                const remaining = 5 - (user.contractsDownloaded || 0);
-                remainingContracts.textContent = Math.max(0, remaining);
+                const remaining = Math.max(0, 5 - (user.contractsDownloaded || 0));
+                remainingContracts.textContent = remaining;
                 daysLeft.textContent = calculateDaysLeft(user.joinDate);
             } else {
                 remainingContracts.textContent = '∞';
@@ -398,7 +398,7 @@
 
         function getPlanDescription(plan) {
             const descriptions = {
-                'free': 'Visualização Gratuita Ilimitada',
+                'free': 'Visualização Ilimitada',
                 'basico': '5 contratos por mês',
                 'profissional': 'Contratos Ilimitados'
             };
@@ -435,9 +435,8 @@
                 usageText.textContent = `${used} de 5 contratos baixados`;
                 usagePercentage.textContent = Math.round(percentage) + '%';
                 
-                // Mudar cor se estiver perto do limite
                 if (percentage >= 80) {
-                    progressFill.style.background = 'linear-gradient(135deg, var(--warning) 0%, var(--warning-dark) 100%)';
+                    progressFill.style.background = 'linear-gradient(135deg, #ffc107 0%, #e0a800 100%)';
                 }
             } else {
                 progressFill.style.width = '100%';
@@ -448,31 +447,9 @@
 
         function loadContractsHistory(user) {
             const contractsList = document.getElementById('contractsList');
-            
-            // Simular histórico de contratos (em produção, isso viria do backend)
             const contracts = user.contractsHistory || [];
-            
-            // Se não há histórico, tentar criar a partir dos contadores
-            if (contracts.length === 0 && (user.contractsGenerated > 0 || user.contractsDownloaded > 0)) {
-                const mockContracts = [];
-                const totalContracts = Math.max(user.contractsGenerated, user.contractsDownloaded);
-                
-                for (let i = 0; i < totalContracts; i++) {
-                    mockContracts.push({
-                        id: 'contract_' + i,
-                        name: `Contrato de Prestação de Serviços ${i + 1}`,
-                        createdAt: new Date(Date.now() - (i * 86400000)).toISOString(),
-                        downloaded: i < (user.contractsDownloaded || 0)
-                    });
-                }
-                
-                user.contractsHistory = mockContracts;
-                localStorage.setItem('currentUser', JSON.stringify(user));
-            }
 
-            const finalContracts = user.contractsHistory || [];
-
-            if (finalContracts.length === 0) {
+            if (contracts.length === 0) {
                 contractsList.innerHTML = `
                     <p style="text-align: center; color: var(--gray); padding: 2rem;">
                         <i class="fas fa-file-contract" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
@@ -484,7 +461,7 @@
 
             let html = '<div style="display: grid; gap: 1rem;">';
             
-            finalContracts.slice(0, 10).forEach(contract => {
+            contracts.slice(0, 10).forEach(contract => {
                 const date = new Date(contract.createdAt).toLocaleDateString('pt-BR');
                 const time = new Date(contract.createdAt).toLocaleTimeString('pt-BR', { 
                     hour: '2-digit', 
@@ -492,36 +469,30 @@
                 });
                 
                 html += `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid ${contract.downloaded ? 'var(--success)' : 'var(--primary)'};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid ${contract.downloaded ? '#28a745' : '#2c5aa0'};">
                         <div style="flex: 1;">
-                            <strong style="color: var(--primary);">${contract.name}</strong>
-                            <div style="font-size: 0.8rem; color: var(--gray); margin-top: 0.3rem;">
+                            <strong style="color: #2c5aa0;">${contract.name}</strong>
+                            <div style="font-size: 0.8rem; color: #666; margin-top: 0.3rem;">
                                 📅 ${date} às ${time}
                             </div>
                         </div>
-                        <span style="background: ${contract.downloaded ? 'var(--success)' : 'var(--warning)'}; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem;">
+                        <span style="background: ${contract.downloaded ? '#28a745' : '#ffc107'}; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem;">
                             ${contract.downloaded ? '✅ Baixado' : '👁️ Visualizado'}
                         </span>
                     </div>
                 `;
             });
             
-            if (finalContracts.length > 10) {
+            if (contracts.length > 10) {
                 html += `
-                    <div style="text-align: center; padding: 1rem; color: var(--gray);">
-                        + ${finalContracts.length - 10} contratos anteriores
+                    <div style="text-align: center; padding: 1rem; color: #666;">
+                        + ${contracts.length - 10} contratos anteriores
                     </div>
                 `;
             }
             
             html += '</div>';
-
             contractsList.innerHTML = html;
-        }
-
-        function openPaymentModal(plan) {
-            // Redirecionar para a página de planos
-            window.location.href = 'planos.html';
         }
 
         function signOut() {
@@ -530,28 +501,6 @@
                 window.location.href = 'index.html';
             }
         }
-
-        // Adicionar utilitários para o usuário
-        function getPlanName(plan) {
-            const plans = {
-                'free': 'Plano Gratuito',
-                'basico': 'Plano Básico',
-                'profissional': 'Plano Profissional'
-            };
-            return plans[plan] || 'Plano Gratuito';
-        }
-
-        // Atualizar último acesso
-        function updateLastAccess() {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (currentUser) {
-                currentUser.lastAccess = new Date().toISOString();
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-            }
-        }
-
-        // Atualizar a cada minuto
-        setInterval(updateLastAccess, 60000);
     </script>
 </body>
 </html>
