@@ -1,69 +1,18 @@
 // =============================================
-// VARIÁVEIS GLOBAIS E INICIALIZAÇÃO
+// script.js - ContratoFácil (VERSÃO COMPLETA E CORRIGIDA)
 // =============================================
 
 // Variáveis globais
-let selectedPlan = 'avulsa';
+let currentUser = null;
+let isDrawing = false;
+let drawingCanvas = null;
+let drawingContext = null;
+let drawingFor = null;
+let selectedPlan = null;
 let selectedPaymentMethod = '';
+let modalViewCount = 0;
 let contractorSignature = null;
 let contractedSignature = null;
-let currentUser = null;
-
-// Preços dos planos
-const planPrices = {
-    'avulsa': 6.99,
-    'basico': 9.99,
-    'profissional': 29.99
-};
-
-// =============================================
-// CORREÇÃO DO BUG DO CONTADOR DE VISUALIZAÇÃO
-// =============================================
-
-function fixContractCounterBug() {
-    console.log('🔧 Verificando bug do contador de visualizações...');
-    
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    if (!user) return true; // Sem usuário, pode continuar
-    
-    // Verificar se o contador está inflado (mais de 50 visualizações em menos de 1 hora)
-    if (user.contractsGenerated > 50) {
-        const lastLogin = new Date(user.lastLogin || user.joinDate);
-        const now = new Date();
-        const hoursDiff = Math.abs(now - lastLogin) / 36e5; // horas
-        
-        // Se mais de 50 visualizações em menos de 1 hora, provavelmente é bug
-        if (hoursDiff < 1) {
-            console.log('🐛 Bug do contador detectado! Resolvendo...');
-            
-            // Resetar para um valor razoável (máximo 3 por hora)
-            const maxReasonable = Math.min(3 * Math.ceil(hoursDiff), 10);
-            user.contractsGenerated = Math.min(user.contractsGenerated, maxReasonable);
-            
-            // Atualizar localStorage
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            
-            console.log('✅ Contador corrigido para:', user.contractsGenerated);
-        }
-    }
-    
-    // Rate limiting: Só permitir 1 visualização por segundo
-    window.lastContractView = window.lastContractView || 0;
-    const now = Date.now();
-    const timeSinceLastView = now - window.lastContractView;
-    
-    if (timeSinceLastView < 1000) {
-        console.log('⏱️  Rate limiting: Aguarde antes de nova visualização');
-        return false;
-    }
-    
-    window.lastContractView = now;
-    return true;
-}
-
-// =============================================
-// INICIALIZAÇÃO DO SISTEMA
-// =============================================
 
 // Inicialização quando DOM carregar
 document.addEventListener('DOMContentLoaded', function() {
@@ -139,173 +88,6 @@ function checkAndFixUserData() {
 }
 
 // =============================================
-// CONFIGURAÇÃO DE EVENT LISTENERS
-// =============================================
-
-function setupEventListeners() {
-    // Atualizar preview em tempo real
-    const formInputs = document.querySelectorAll('#generatorForm input, #generatorForm select, #generatorForm textarea');
-    
-    formInputs.forEach(input => {
-        // Remover event listeners antigos para evitar duplicação
-        input.removeEventListener('input', handleFormInput);
-        input.removeEventListener('change', handleFormInput);
-        
-        // Adicionar novos listeners
-        input.addEventListener('input', handleFormInput);
-        input.addEventListener('change', handleFormInput);
-    });
-
-    // Formatação automática do valor
-    const serviceValueInput = document.getElementById('serviceValue');
-    if (serviceValueInput) {
-        serviceValueInput.addEventListener('input', function(e) {
-            formatCurrencyInput(e);
-            updatePreview();
-        });
-    }
-
-    // Fechar modais ao clicar fora
-    document.addEventListener('click', function(event) {
-        const paymentModal = document.getElementById('paymentModal');
-        if (event.target === paymentModal) {
-            closePaymentModal();
-        }
-        
-        const loginModal = document.getElementById('loginModal');
-        if (event.target === loginModal) {
-            closeLoginModal();
-        }
-        
-        const contactModal = document.getElementById('contactModal');
-        if (event.target === contactModal) {
-            closeContactModal();
-        }
-        
-        const upgradeModal = document.querySelector('.modal.upgrade-modal');
-        if (event.target === upgradeModal) {
-            upgradeModal.remove();
-            document.body.style.overflow = 'auto';
-        }
-    });
-
-    // Tecla ESC para fechar modal
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closePaymentModal();
-            closeLoginModal();
-            closeContactModal();
-            const upgradeModal = document.querySelector('.modal.upgrade-modal');
-            if (upgradeModal) {
-                upgradeModal.remove();
-                document.body.style.overflow = 'auto';
-            }
-        }
-    });
-
-    // Prevenir cópia do conteúdo do contrato
-    document.addEventListener('copy', function(e) {
-        const contractPreview = document.getElementById('contractPreview');
-        if (contractPreview && contractPreview.contains(e.target)) {
-            e.preventDefault();
-            showNotification('❌ Cópia do conteúdo do contrato não é permitida');
-        }
-    });
-
-    // Prevenir clique direito no contrato
-    document.addEventListener('contextmenu', function(e) {
-        const contractPreview = document.getElementById('contractPreview');
-        if (contractPreview && contractPreview.contains(e.target)) {
-            e.preventDefault();
-            showNotification('❌ Ação não permitida no contrato');
-        }
-    });
-}
-
-// Função para lidar com input do formulário
-function handleFormInput(e) {
-    updatePreview();
-}
-
-// Configurar datas
-function initDateSettings() {
-    const today = new Date().toISOString().split('T')[0];
-    const startDateInput = document.getElementById('startDate');
-    const endDateInput = document.getElementById('endDate');
-    
-    if (startDateInput) {
-        startDateInput.min = today;
-        startDateInput.value = today;
-    }
-    
-    if (startDateInput && endDateInput) {
-        startDateInput.addEventListener('change', function() {
-            endDateInput.min = this.value;
-            if (!endDateInput.value) {
-                const endDate = new Date(this.value);
-                endDate.setMonth(endDate.getMonth() + 1);
-                endDateInput.value = endDate.toISOString().split('T')[0];
-            }
-            updatePreview();
-        });
-        
-        // Set initial end date
-        if (startDateInput.value && !endDateInput.value) {
-            const endDate = new Date(startDateInput.value);
-            endDate.setMonth(endDate.getMonth() + 1);
-            endDateInput.value = endDate.toISOString().split('T')[0];
-        }
-    }
-}
-
-// =============================================
-// FUNÇÃO DE ATUALIZAÇÃO DO PREVIEW
-// =============================================
-
-// Update contract preview - FUNÇÃO PRINCIPAL
-function updatePreview() {
-    try {
-        const contractPreview = document.getElementById('contractPreview');
-        if (!contractPreview) {
-            return;
-        }
-        
-        if (!currentUser) {
-            contractPreview.innerHTML = '<p style="color: #666; text-align: center;">Faça login para visualizar o contrato...</p>';
-            return;
-        }
-        
-        // Gerar o contrato
-        const contractHTML = generateProfessionalContractPlus();
-        
-        if (!contractHTML || contractHTML.trim() === '') {
-            contractPreview.innerHTML = '<p style="color: #666; text-align: center;">Preencha os campos acima para gerar o contrato...</p>';
-            return;
-        }
-        
-        // Inserir no DOM
-        contractPreview.innerHTML = contractHTML;
-        
-        // Incrementar contador de visualizações
-        if (currentUser) {
-            incrementContractCount();
-        }
-        
-    } catch (error) {
-        showNotification('❌ Erro ao atualizar visualização do contrato');
-    }
-}
-
-// Função para setup automático do preview
-function setupAutoPreview() {
-    // Verificar se o usuário está logado
-    if (currentUser) {
-        // Atualizar uma vez para mostrar contrato inicial
-        setTimeout(updatePreview, 500);
-    }
-}
-
-// =============================================
 // SISTEMA DE LOGIN E AUTENTICAÇÃO
 // =============================================
 
@@ -350,7 +132,9 @@ function handleGoogleSignIn(response) {
             remainingContracts: 999, // Visualizações ilimitadas
             joinDate: new Date().toISOString(),
             lastLogin: new Date().toISOString(),
-            planUpdated: new Date().toISOString()
+            planUpdated: new Date().toISOString(),
+            signatures: {},
+            contractsHistory: []
         };
         
         // Salva no localStorage
@@ -444,14 +228,16 @@ function updateUIAfterLogout() {
     if (loginRequired) loginRequired.style.display = 'block';
     if (generatorForm) generatorForm.style.display = 'none';
     
-    updateStatusBar();
+    // Esconder status bar
+    const statusBar = document.getElementById('statusBar');
+    if (statusBar) statusBar.style.display = 'none';
 }
 
 // Funções do Modal de Login
 function showLoginModal() {
     const loginModal = document.getElementById('loginModal');
     if (loginModal) {
-        loginModal.classList.add('active');
+        loginModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 }
@@ -459,8 +245,190 @@ function showLoginModal() {
 function closeLoginModal() {
     const loginModal = document.getElementById('loginModal');
     if (loginModal) {
-        loginModal.classList.remove('active');
+        loginModal.style.display = 'none';
         document.body.style.overflow = 'auto';
+    }
+}
+
+// Logout
+function signOut() {
+    if (confirm('Tem certeza que deseja sair?')) {
+        localStorage.removeItem('currentUser');
+        currentUser = null;
+        updateUIAfterLogout();
+        showNotification('👋 Até logo!');
+    }
+}
+
+// =============================================
+// CONFIGURAÇÃO DE EVENT LISTENERS
+// =============================================
+
+function setupEventListeners() {
+    // Atualizar preview em tempo real
+    const formInputs = document.querySelectorAll('#generatorForm input, #generatorForm select, #generatorForm textarea');
+    
+    formInputs.forEach(input => {
+        // Remover event listeners antigos para evitar duplicação
+        input.removeEventListener('input', handleFormInput);
+        input.removeEventListener('change', handleFormInput);
+        
+        // Adicionar novos listeners
+        input.addEventListener('input', handleFormInput);
+        input.addEventListener('change', handleFormInput);
+    });
+
+    // Formatação automática do valor
+    const serviceValueInput = document.getElementById('serviceValue');
+    if (serviceValueInput) {
+        serviceValueInput.addEventListener('input', function(e) {
+            formatCurrencyInput(e);
+            updatePreview();
+        });
+    }
+
+    // Fechar modais ao clicar fora
+    document.addEventListener('click', function(event) {
+        const paymentModal = document.getElementById('paymentModal');
+        if (event.target === paymentModal) {
+            closePaymentModal();
+        }
+        
+        const loginModal = document.getElementById('loginModal');
+        if (event.target === loginModal) {
+            closeLoginModal();
+        }
+        
+        const contactModal = document.getElementById('contactModal');
+        if (event.target === contactModal) {
+            closeContactModal();
+        }
+        
+        const contractModal = document.getElementById('contractModal');
+        if (event.target === contractModal) {
+            closeContractModal();
+        }
+        
+        const upgradeModal = document.querySelector('.modal.upgrade-modal');
+        if (event.target === upgradeModal) {
+            upgradeModal.remove();
+            document.body.style.overflow = 'auto';
+        }
+    });
+
+    // Tecla ESC para fechar todos os modais
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closePaymentModal();
+            closeLoginModal();
+            closeContactModal();
+            closeContractModal();
+            
+            const upgradeModal = document.querySelector('.modal.upgrade-modal');
+            if (upgradeModal) {
+                upgradeModal.remove();
+                document.body.style.overflow = 'auto';
+            }
+        }
+    });
+
+    // Prevenir cópia do conteúdo do contrato
+    document.addEventListener('copy', function(e) {
+        const contractPreview = document.getElementById('contractPreview');
+        const contractViewContent = document.getElementById('contractViewContent');
+        
+        if ((contractPreview && contractPreview.contains(e.target)) || 
+            (contractViewContent && contractViewContent.contains(e.target))) {
+            e.preventDefault();
+            showNotification('❌ Cópia do conteúdo do contrato não é permitida');
+        }
+    });
+
+    // Prevenir clique direito no contrato
+    document.addEventListener('contextmenu', function(e) {
+        const contractPreview = document.getElementById('contractPreview');
+        const contractViewContent = document.getElementById('contractViewContent');
+        
+        if ((contractPreview && contractPreview.contains(e.target)) || 
+            (contractViewContent && contractViewContent.contains(e.target))) {
+            e.preventDefault();
+            showNotification('❌ Ação não permitida no contrato');
+        }
+    });
+}
+
+// Função para lidar com input do formulário
+function handleFormInput(e) {
+    updatePreview();
+}
+
+// Configurar datas
+function initDateSettings() {
+    const today = new Date().toISOString().split('T')[0];
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    
+    if (startDateInput) {
+        startDateInput.min = today;
+        startDateInput.value = today;
+    }
+    
+    if (startDateInput && endDateInput) {
+        startDateInput.addEventListener('change', function() {
+            endDateInput.min = this.value;
+            if (!endDateInput.value) {
+                const endDate = new Date(this.value);
+                endDate.setMonth(endDate.getMonth() + 1);
+                endDateInput.value = endDate.toISOString().split('T')[0];
+            }
+            updatePreview();
+        });
+        
+        // Set initial end date
+        if (startDateInput.value && !endDateInput.value) {
+            const endDate = new Date(startDateInput.value);
+            endDate.setMonth(endDate.getMonth() + 1);
+            endDateInput.value = endDate.toISOString().split('T')[0];
+        }
+    }
+}
+
+// =============================================
+// FUNÇÃO DE ATUALIZAÇÃO DO PREVIEW
+// =============================================
+
+// Update contract preview - FUNÇÃO PRINCIPAL
+function updatePreview() {
+    try {
+        const contractPreview = document.getElementById('contractPreview');
+        if (!contractPreview) {
+            return;
+        }
+        
+        if (!currentUser) {
+            contractPreview.innerHTML = '<p style="color: #666; text-align: center;">Faça login para visualizar o contrato...</p>';
+            return;
+        }
+        
+        // Gerar o contrato
+        const contractHTML = generateProfessionalContractPlus();
+        
+        if (!contractHTML || contractHTML.trim() === '') {
+            contractPreview.innerHTML = '<p style="color: #666; text-align: center;">Preencha os campos acima para gerar o contrato...</p>';
+            return;
+        }
+        
+        // Inserir no DOM
+        contractPreview.innerHTML = contractHTML;
+        
+        // Incrementar contador de visualizações
+        if (currentUser) {
+            incrementContractCount();
+        }
+        
+    } catch (error) {
+        console.error('Erro ao atualizar preview:', error);
+        showNotification('❌ Erro ao atualizar visualização do contrato');
     }
 }
 
@@ -468,8 +436,16 @@ function closeLoginModal() {
 function incrementContractCount() {
     if (!currentUser) return;
     
-    // Usar o rate limiting
-    if (!fixContractCounterBug()) return;
+    // Rate limiting: Só permitir 1 visualização por segundo
+    window.lastContractView = window.lastContractView || 0;
+    const now = Date.now();
+    const timeSinceLastView = now - window.lastContractView;
+    
+    if (timeSinceLastView < 1000) {
+        return;
+    }
+    
+    window.lastContractView = now;
     
     // Incrementar normalmente
     currentUser.contractsGenerated = (currentUser.contractsGenerated || 0) + 1;
@@ -486,6 +462,58 @@ function incrementContractCount() {
     console.log('📊 Contador atualizado:', currentUser.contractsGenerated);
 }
 
+// Função para setup automático do preview
+function setupAutoPreview() {
+    // Verificar se o usuário está logado
+    if (currentUser) {
+        // Atualizar uma vez para mostrar contrato inicial
+        setTimeout(updatePreview, 500);
+    }
+}
+
+// =============================================
+// SISTEMA DE BARRA DE STATUS - VERSÃO CORRIGIDA
+// =============================================
+
+// Atualizar barra de status - VERSÃO CORRIGIDA
+function updateStatusBar() {
+    const statusBar = document.getElementById('statusBar');
+    const statusIcon = document.getElementById('statusIcon');
+    const statusText = document.getElementById('statusText');
+    const statusCount = document.getElementById('statusCount');
+    
+    if (!currentUser || !statusBar) {
+        if (statusBar) statusBar.style.display = 'none';
+        return;
+    }
+    
+    statusBar.style.display = 'block';
+    
+    // CORREÇÃO: Verificar plano corretamente
+    console.log('📊 Atualizando status bar - Plano:', currentUser.plan);
+    
+    if (currentUser.plan === 'free') {
+        statusIcon.className = 'fas fa-eye';
+        statusText.textContent = 'Plano Gratuito - Visualizações Ilimitadas';
+        statusCount.innerHTML = `Contratos visualizados: <strong>${currentUser.contractsGenerated || 0}</strong>`;
+    } else if (currentUser.plan === 'basico') {
+        statusIcon.className = 'fas fa-crown';
+        statusText.textContent = 'Plano Básico - 5 contratos/mês';
+        const remaining = Math.max(0, 5 - (currentUser.contractsDownloaded || 0));
+        statusCount.innerHTML = `Contratos restantes: <strong>${remaining}</strong>`;
+    } else if (currentUser.plan === 'profissional') {
+        statusIcon.className = 'fas fa-gem';
+        statusText.textContent = 'Plano Profissional - Downloads Ilimitados';
+        const downloads = currentUser.contractsDownloaded || 0;
+        statusCount.innerHTML = `Contratos baixados: <strong>${downloads}</strong>`;
+    } else {
+        // Fallback para plano não reconhecido
+        statusIcon.className = 'fas fa-user';
+        statusText.textContent = 'Plano Gratuito - Visualizações Ilimitadas';
+        statusCount.innerHTML = `Contratos visualizados: <strong>${currentUser.contractsGenerated || 0}</strong>`;
+    }
+}
+
 // =============================================
 // SISTEMA DE ASSINATURAS
 // =============================================
@@ -497,7 +525,6 @@ function initSignatureSystem() {
         // Configurar eventos de upload
         const uploadInput = document.getElementById(`${type}SignatureUpload`);
         if (uploadInput) {
-            uploadInput.removeEventListener('change', handleSignatureUpload);
             uploadInput.addEventListener('change', function(e) {
                 handleSignatureUpload(e, type);
             });
@@ -509,37 +536,26 @@ function initSignatureSystem() {
 }
 
 // Função para selecionar opção de assinatura
-function selectSignatureOption(type, method, event) {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
+function selectSignatureOption(type, method) {
+    const uploadInput = document.getElementById(`${type}SignatureUpload`);
+    const canvas = document.getElementById(`${type}SignatureDraw`);
     
     // Remover seleção de todas as opções do mesmo tipo
-    const signatureSection = event?.currentTarget?.closest('.signature-options');
-    if (signatureSection) {
-        const options = signatureSection.querySelectorAll('.signature-option');
+    const signatureOptions = document.querySelectorAll(`.signature-options`);
+    signatureOptions.forEach(section => {
+        const options = section.querySelectorAll('.signature-option');
         options.forEach(option => {
             option.classList.remove('selected');
         });
-        
-        // Adicionar seleção à opção clicada
-        if (event?.currentTarget) {
-            event.currentTarget.classList.add('selected');
-        }
-    }
+    });
     
     if (method === 'upload') {
         // Método de upload - clicar no input file
-        const uploadInput = document.getElementById(`${type}SignatureUpload`);
         if (uploadInput) {
             uploadInput.click();
         }
     } else if (method === 'draw') {
         // Método de desenho - mostrar canvas
-        const canvas = document.getElementById(`${type}SignatureDraw`);
-        const uploadInput = document.getElementById(`${type}SignatureUpload`);
-        
         if (canvas) {
             canvas.style.display = 'block';
             
@@ -564,6 +580,11 @@ function selectSignatureOption(type, method, event) {
             } else {
                 contractedSignature = null;
             }
+            
+            // Ativar modo de desenho
+            drawingCanvas = canvas;
+            drawingContext = ctx;
+            drawingFor = type;
             
             updateSignaturePreview(type);
             updatePreview();
@@ -626,15 +647,22 @@ function handleSignatureUpload(event, type) {
             // Salvar na variável correspondente
             if (type === 'contractor') {
                 contractorSignature = signatureData;
+                if (currentUser) {
+                    currentUser.signatures = currentUser.signatures || {};
+                    currentUser.signatures.contractor = signatureData;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
             } else {
                 contractedSignature = signatureData;
+                if (currentUser) {
+                    currentUser.signatures = currentUser.signatures || {};
+                    currentUser.signatures.contracted = signatureData;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
             }
             
             // Atualizar preview
             updateSignaturePreview(type);
-            
-            // Mostrar confirmação
-            showSignatureConfirmation(type);
             
             // Esconder canvas de desenho se estiver visível
             const drawCanvas = document.getElementById(`${type}SignatureDraw`);
@@ -718,9 +746,32 @@ function initSignatureCanvas(type) {
             isDrawing = false;
             ctx.closePath();
             
+            // Salvar assinatura no usuário
+            const signatureData = canvas.toDataURL();
+            if (type === 'contractor') {
+                contractorSignature = signatureData;
+                if (currentUser) {
+                    currentUser.signatures = currentUser.signatures || {};
+                    currentUser.signatures.contractor = signatureData;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+            } else {
+                contractedSignature = signatureData;
+                if (currentUser) {
+                    currentUser.signatures = currentUser.signatures || {};
+                    currentUser.signatures.contracted = signatureData;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+            }
+            
             // Atualizar preview
             updateSignaturePreview(type);
-            showSignatureConfirmation(type);
+            
+            // Mostrar botões de confirmação
+            const confirmation = document.getElementById(`${type}SignatureConfirmation`);
+            if (confirmation) {
+                confirmation.style.display = 'flex';
+            }
             
             // Atualizar o preview do contrato
             updatePreview();
@@ -756,12 +807,12 @@ function initSignatureCanvas(type) {
     canvas.addEventListener('touchstart', function(e) {
         e.preventDefault();
         startDrawing(e);
-    });
+    }, { passive: false });
     
     canvas.addEventListener('touchmove', function(e) {
         e.preventDefault();
         draw(e);
-    });
+    }, { passive: false });
     
     canvas.addEventListener('touchend', stopDrawing);
     canvas.addEventListener('touchcancel', stopDrawing);
@@ -801,17 +852,6 @@ function updateSignaturePreview(type) {
     }
 }
 
-// Função para mostrar confirmação de assinatura
-function showSignatureConfirmation(type) {
-    const confirmation = document.getElementById(`${type}SignatureConfirmation`);
-    if (confirmation) {
-        confirmation.style.display = 'block';
-        setTimeout(() => {
-            confirmation.style.display = 'none';
-        }, 3000);
-    }
-}
-
 // Função para limpar assinatura
 function clearSignature(type) {
     // Limpar variável
@@ -819,6 +859,12 @@ function clearSignature(type) {
         contractorSignature = null;
     } else {
         contractedSignature = null;
+    }
+    
+    // Limpar do usuário
+    if (currentUser && currentUser.signatures) {
+        delete currentUser.signatures[type];
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
     }
     
     // Limpar preview
@@ -839,6 +885,7 @@ function clearSignature(type) {
     if (canvas) {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.style.display = 'none';
     }
     
     // Limpar input file
@@ -856,10 +903,17 @@ function clearSignature(type) {
         });
     }
     
+    // Esconder confirmação
+    const confirmation = document.getElementById(`${type}SignatureConfirmation`);
+    if (confirmation) {
+        confirmation.style.display = 'none';
+    }
+    
     updatePreview();
     showNotification('🔄 Assinatura removida');
 }
 
+// Função para confirmar assinatura desenhada
 function confirmSignature(type) {
     showNotification('✅ Assinatura confirmada!');
     
@@ -872,49 +926,6 @@ function confirmSignature(type) {
     const canvas = document.getElementById(`${type}SignatureDraw`);
     if (canvas) {
         canvas.style.display = 'none';
-    }
-}
-
-// =============================================
-// SISTEMA DE BARRA DE STATUS - VERSÃO CORRIGIDA
-// =============================================
-
-// Atualizar barra de status - VERSÃO CORRIGIDA
-function updateStatusBar() {
-    const statusBar = document.getElementById('statusBar');
-    const statusIcon = document.getElementById('statusIcon');
-    const statusText = document.getElementById('statusText');
-    const statusCount = document.getElementById('statusCount');
-    
-    if (!currentUser || !statusBar) {
-        if (statusBar) statusBar.style.display = 'none';
-        return;
-    }
-    
-    statusBar.style.display = 'block';
-    
-    // CORREÇÃO: Verificar plano corretamente
-    console.log('📊 Atualizando status bar - Plano:', currentUser.plan);
-    
-    if (currentUser.plan === 'free') {
-        statusIcon.className = 'fas fa-eye';
-        statusText.textContent = 'Plano Gratuito - Visualizações Ilimitadas';
-        statusCount.innerHTML = `Contratos visualizados: <strong>${currentUser.contractsGenerated || 0}</strong>`;
-    } else if (currentUser.plan === 'basico') {
-        statusIcon.className = 'fas fa-crown';
-        statusText.textContent = 'Plano Básico - 5 contratos/mês';
-        const remaining = Math.max(0, 5 - (currentUser.contractsDownloaded || 0));
-        statusCount.innerHTML = `Contratos restantes: <strong>${remaining}</strong>`;
-    } else if (currentUser.plan === 'profissional') {
-        statusIcon.className = 'fas fa-gem';
-        statusText.textContent = 'Plano Profissional - Downloads Ilimitados';
-        const downloads = currentUser.contractsDownloaded || 0;
-        statusCount.innerHTML = `Contratos baixados: <strong>${downloads}</strong>`;
-    } else {
-        // Fallback para plano não reconhecido
-        statusIcon.className = 'fas fa-user';
-        statusText.textContent = 'Plano Gratuito - Visualizações Ilimitadas';
-        statusCount.innerHTML = `Contratos visualizados: <strong>${currentUser.contractsGenerated || 0}</strong>`;
     }
 }
 
@@ -1052,7 +1063,7 @@ function openPaymentModal(plan) {
     
     const paymentModal = document.getElementById('paymentModal');
     if (paymentModal) {
-        paymentModal.classList.add('active');
+        paymentModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 }
@@ -1060,7 +1071,7 @@ function openPaymentModal(plan) {
 function closePaymentModal() {
     const paymentModal = document.getElementById('paymentModal');
     if (paymentModal) {
-        paymentModal.classList.remove('active');
+        paymentModal.style.display = 'none';
         document.body.style.overflow = 'auto';
     }
 }
@@ -1156,97 +1167,6 @@ function updateUserPlan(planType) {
 }
 
 // =============================================
-// FUNÇÕES UTILITÁRIAS
-// =============================================
-
-// Função para obter nome do mês
-function getMonthName(monthIndex) {
-    const months = [
-        'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
-        'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
-    ];
-    return months[monthIndex];
-}
-
-// Função para formatar valor por extenso
-function formatarValorExtenso(valor) {
-    if (!valor || valor === '' || valor === '__________') {
-        return '_________________________';
-    }
-    
-    let valorLimpo = valor.toString().replace(/[^\d,]/g, '');
-    
-    try {
-        let valorNumero = parseFloat(valorLimpo.replace(',', '.'));
-        
-        if (isNaN(valorNumero) || valorNumero === 0) {
-            return '_________________________';
-        }
-        
-        function converterNumero(num) {
-            const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
-            const especiais = ['dez', 'onze', 'doze', 'treze', 'catorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
-            const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
-            const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
-            
-            if (num === 0) return '';
-            if (num === 100) return 'cem';
-            
-            let resultado = '';
-            
-            const c = Math.floor(num / 100);
-            if (c > 0) {
-                resultado += centenas[c];
-                num %= 100;
-                if (num > 0) resultado += ' e ';
-            }
-            
-            if (num < 20 && num > 0) {
-                resultado += especiais[num - 10] || unidades[num];
-            } else {
-                const d = Math.floor(num / 10);
-                const u = num % 10;
-                if (d > 0) {
-                    resultado += dezenas[d];
-                    if (u > 0) resultado += ' e ' + unidades[u];
-                } else if (u > 0) {
-                    resultado += unidades[u];
-                }
-            }
-            
-            return resultado;
-        }
-    
-        let parteInteira = Math.floor(valorNumero);
-        let parteDecimal = Math.round((valorNumero - parteInteira) * 100);
-        
-        let extenso = '';
-        
-        if (parteInteira > 0) {
-            if (parteInteira === 1) {
-                extenso = 'um real';
-            } else {
-                extenso = converterNumero(parteInteira) + ' reais';
-            }
-        }
-        
-        if (parteDecimal > 0) {
-            if (extenso !== '') extenso += ' e ';
-            if (parteDecimal === 1) {
-                extenso += 'um centavo';
-            } else {
-                extenso += converterNumero(parteDecimal) + ' centavos';
-            }
-        }
-        
-        return extenso || '_________________________';
-        
-    } catch (e) {
-        return '_________________________';
-    }
-}
-
-// =============================================
 // VALIDAÇÕES AVANÇADAS
 // =============================================
 
@@ -1270,7 +1190,7 @@ function validateContractData() {
         if (!field || !field.value.trim()) {
             errors.push(fieldName);
             if (field) {
-                field.style.borderColor = 'var(--danger)';
+                field.style.borderColor = '#dc3545';
                 field.style.animation = 'shake 0.5s ease-in-out';
                 setTimeout(() => {
                     field.style.animation = '';
@@ -1452,6 +1372,93 @@ function collectContractData() {
         
         generatedAt: new Date().toISOString()
     };
+}
+
+// Função para obter nome do mês
+function getMonthName(monthIndex) {
+    const months = [
+        'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+        'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'
+    ];
+    return months[monthIndex];
+}
+
+// Função para formatar valor por extenso
+function formatarValorExtenso(valor) {
+    if (!valor || valor === '' || valor === '__________') {
+        return '_________________________';
+    }
+    
+    let valorLimpo = valor.toString().replace(/[^\d,]/g, '');
+    
+    try {
+        let valorNumero = parseFloat(valorLimpo.replace(',', '.'));
+        
+        if (isNaN(valorNumero) || valorNumero === 0) {
+            return '_________________________';
+        }
+        
+        function converterNumero(num) {
+            const unidades = ['', 'um', 'dois', 'três', 'quatro', 'cinco', 'seis', 'sete', 'oito', 'nove'];
+            const especiais = ['dez', 'onze', 'doze', 'treze', 'catorze', 'quinze', 'dezesseis', 'dezessete', 'dezoito', 'dezenove'];
+            const dezenas = ['', '', 'vinte', 'trinta', 'quarenta', 'cinquenta', 'sessenta', 'setenta', 'oitenta', 'noventa'];
+            const centenas = ['', 'cento', 'duzentos', 'trezentos', 'quatrocentos', 'quinhentos', 'seiscentos', 'setecentos', 'oitocentos', 'novecentos'];
+            
+            if (num === 0) return '';
+            if (num === 100) return 'cem';
+            
+            let resultado = '';
+            
+            const c = Math.floor(num / 100);
+            if (c > 0) {
+                resultado += centenas[c];
+                num %= 100;
+                if (num > 0) resultado += ' e ';
+            }
+            
+            if (num < 20 && num > 0) {
+                resultado += especiais[num - 10] || unidades[num];
+            } else {
+                const d = Math.floor(num / 10);
+                const u = num % 10;
+                if (d > 0) {
+                    resultado += dezenas[d];
+                    if (u > 0) resultado += ' e ' + unidades[u];
+                } else if (u > 0) {
+                    resultado += unidades[u];
+                }
+            }
+            
+            return resultado;
+        }
+    
+        let parteInteira = Math.floor(valorNumero);
+        let parteDecimal = Math.round((valorNumero - parteInteira) * 100);
+        
+        let extenso = '';
+        
+        if (parteInteira > 0) {
+            if (parteInteira === 1) {
+                extenso = 'um real';
+            } else {
+                extenso = converterNumero(parteInteira) + ' reais';
+            }
+        }
+        
+        if (parteDecimal > 0) {
+            if (extenso !== '') extenso += ' e ';
+            if (parteDecimal === 1) {
+                extenso += 'um centavo';
+            } else {
+                extenso += converterNumero(parteDecimal) + ' centavos';
+            }
+        }
+        
+        return extenso || '_________________________';
+        
+    } catch (e) {
+        return '_________________________';
+    }
 }
 
 // Função para gerar o contrato PROFISSIONAL PLUS
@@ -1804,6 +1811,15 @@ function incrementDownloadCount() {
     currentUser.contractsDownloaded = (currentUser.contractsDownloaded || 0) + 1;
     currentUser.lastDownload = new Date().toISOString();
     
+    // Adicionar ao histórico
+    currentUser.contractsHistory = currentUser.contractsHistory || [];
+    currentUser.contractsHistory.push({
+        id: Date.now(),
+        name: `Contrato de Prestação de Serviços`,
+        createdAt: new Date().toISOString(),
+        downloaded: true
+    });
+    
     // Atualizar no localStorage
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
     
@@ -1834,8 +1850,10 @@ function generateWordPlus() {
         // Mostrar loading
         const downloadBtn = document.getElementById('downloadBtn');
         if (downloadBtn) {
-            const originalText = downloadBtn.querySelector('#downloadText').textContent;
+            const originalText = downloadBtn.querySelector('#downloadText')?.textContent || 'Baixar Contrato - R$ 6,99';
+            const spinner = downloadBtn.querySelector('.spinner');
             downloadBtn.querySelector('#downloadText').textContent = 'Gerando contrato...';
+            if (spinner) spinner.style.display = 'inline-block';
             downloadBtn.disabled = true;
         }
         
@@ -1937,6 +1955,8 @@ function generateWordPlus() {
         if (downloadBtn) {
             setTimeout(() => {
                 downloadBtn.querySelector('#downloadText').textContent = originalText;
+                const spinner = downloadBtn.querySelector('.spinner');
+                if (spinner) spinner.style.display = 'none';
                 downloadBtn.disabled = false;
             }, 1000);
         }
@@ -1949,9 +1969,206 @@ function generateWordPlus() {
         const downloadBtn = document.getElementById('downloadBtn');
         if (downloadBtn) {
             downloadBtn.querySelector('#downloadText').textContent = 'Baixar Contrato - R$ 6,99';
+            const spinner = downloadBtn.querySelector('.spinner');
+            if (spinner) spinner.style.display = 'none';
             downloadBtn.disabled = false;
         }
     }
+}
+
+// =============================================
+// SISTEMA DE VISUALIZAÇÃO EM MODAL
+// =============================================
+
+// Função para abrir visualização no modal
+function openSecurePreview() {
+    if (!currentUser) {
+        showNotification('🔐 Faça login para visualizar contratos');
+        showLoginModal();
+        return;
+    }
+    
+    // Validar dados antes de gerar
+    const validationErrors = validateContractData();
+    if (validationErrors.length > 0) {
+        showNotification(`❌ Corrija os seguintes campos: ${validationErrors.join(', ')}`);
+        return;
+    }
+    
+    try {
+        // Coletar dados do contrato
+        const contractData = collectContractData();
+        
+        // Gerar HTML do contrato
+        const contractHTML = generateProfessionalContractPlus();
+        
+        // Incrementar contador de visualizações
+        incrementContractCount();
+        
+        // Atualizar contador no modal
+        modalViewCount++;
+        updateContractCountDisplay();
+        
+        // Mostrar modal com o contrato
+        showContractModal(contractHTML);
+        
+        // Bloquear funcionalidades de cópia
+        setupContractProtection();
+        
+        showNotification('✅ Contrato carregado para visualização');
+        
+    } catch (error) {
+        console.error('❌ Erro ao carregar contrato:', error);
+        showNotification('❌ Erro ao carregar contrato para visualização');
+    }
+}
+
+// Função para mostrar o modal do contrato
+function showContractModal(contractHTML) {
+    const modal = document.getElementById('contractModal');
+    const content = document.getElementById('contractViewContent');
+    
+    if (content) {
+        content.innerHTML = contractHTML;
+    }
+    
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        // Adicionar event listeners para proteção
+        setupContractProtection();
+    }
+}
+
+// Função para fechar o modal do contrato
+function closeContractModal() {
+    const modal = document.getElementById('contractModal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Atualizar contador de visualizações no modal
+function updateContractCountDisplay() {
+    const counter = document.getElementById('contractCount');
+    if (counter) {
+        counter.textContent = `Visualizações: ${modalViewCount}`;
+    }
+}
+
+// Configurar proteção contra cópia no modal
+function setupContractProtection() {
+    const contractContent = document.getElementById('contractViewContent');
+    if (!contractContent) return;
+    
+    // Prevenir seleção de texto
+    contractContent.style.userSelect = 'none';
+    contractContent.style.webkitUserSelect = 'none';
+    contractContent.style.mozUserSelect = 'none';
+    contractContent.style.msUserSelect = 'none';
+    
+    // Prevenir menu de contexto
+    contractContent.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        showNotification('❌ Ação não permitida no contrato');
+        return false;
+    });
+    
+    // Prevenir cópia
+    contractContent.addEventListener('copy', function(e) {
+        e.preventDefault();
+        showNotification('❌ Cópia do conteúdo do contrato não é permitida');
+        return false;
+    });
+    
+    // Prevenir arrastar imagens
+    contractContent.addEventListener('dragstart', function(e) {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
+    // Prevenir screenshots com PrintScreen (parcialmente)
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'PrintScreen' || (e.ctrlKey && e.key === 'p')) {
+            if (document.getElementById('contractModal').style.display === 'flex') {
+                e.preventDefault();
+                showNotification('❌ Captura de tela não permitida durante a visualização do contrato');
+                return false;
+            }
+        }
+    });
+}
+
+// Função para imprimir o contrato
+function printContract() {
+    if (!canPrintContract()) {
+        showNotification('❌ Faça upgrade para imprimir o contrato');
+        openPaymentModal('avulsa');
+        return;
+    }
+    
+    const printWindow = window.open('', '_blank');
+    const contractHTML = document.getElementById('contractViewContent').innerHTML;
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Contrato - ContratoFácil</title>
+            <style>
+                body { font-family: 'Times New Roman', serif; margin: 2cm; line-height: 1.6; }
+                .contract-clause { margin-bottom: 15px; }
+                @media print {
+                    .no-print { display: none !important; }
+                }
+            </style>
+        </head>
+        <body>
+            ${contractHTML}
+            <div class="no-print" style="text-align: center; margin-top: 2rem; color: #666; font-size: 0.8rem;">
+                <p>Contrato gerado por ContratoFácil - www.contratofacil.com.br</p>
+            </div>
+            <script>
+                window.onload = function() {
+                    window.print();
+                    setTimeout(function() {
+                        window.close();
+                    }, 100);
+                };
+            </script>
+        </body>
+        </html>
+    `);
+    
+    printWindow.document.close();
+}
+
+// Função para exportar como PDF
+function downloadContractPDF() {
+    if (!canDownloadContract()) {
+        showNotification('❌ Faça upgrade para baixar o contrato em PDF');
+        openPaymentModal('avulsa');
+        return;
+    }
+    
+    // Usar a função de download normal
+    generateWordPlus();
+}
+
+// Verificar se pode imprimir
+function canPrintContract() {
+    if (!currentUser) return false;
+    
+    // Usuários free não podem imprimir
+    if (currentUser.plan === 'free') {
+        return false;
+    }
+    
+    return true;
 }
 
 // =============================================
@@ -2006,7 +2223,7 @@ function setupContactForm() {
 function showContactModal() {
     const contactModal = document.getElementById('contactModal');
     if (contactModal) {
-        contactModal.classList.add('active');
+        contactModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 }
@@ -2015,7 +2232,7 @@ function showContactModal() {
 function closeContactModal() {
     const contactModal = document.getElementById('contactModal');
     if (contactModal) {
-        contactModal.classList.remove('active');
+        contactModal.style.display = 'none';
         document.body.style.overflow = 'auto';
     }
 }
@@ -2105,6 +2322,52 @@ function showNotification(message, type = 'success') {
 
     document.body.appendChild(notification);
 
+    // Adicionar estilos de animação
+    const style = document.createElement('style');
+    if (!document.querySelector('#notification-styles')) {
+        style.id = 'notification-styles';
+        style.textContent = `
+            .custom-notification {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#17a2b8'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .notification-content {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .custom-notification button {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.2rem;
+                cursor: pointer;
+                margin-left: 10px;
+            }
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
     // Remover automaticamente após 5 segundos
     setTimeout(() => {
         if (notification.parentElement) {
@@ -2132,81 +2395,95 @@ function scrollToGenerator() {
 // Modal de upgrade persuasivo
 function showUpgradeModal() {
     const modal = document.createElement('div');
-    modal.className = 'modal active upgrade-modal';
-    modal.style.zIndex = '3000';
+    modal.className = 'modal upgrade-modal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+        padding: 20px;
+    `;
+    
     modal.innerHTML = `
-        <div class="modal-content" style="max-width: 600px;">
-            <div class="modal-header">
-                <h3>🚀 Upgrade Necessário</h3>
-                <button class="close-modal" onclick="this.closest('.modal').remove(); document.body.style.overflow='auto'">&times;</button>
+        <div class="modal-content" style="background: white; border-radius: 12px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header" style="padding: 1.5rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; color: #2c5aa0;">🚀 Upgrade Necessário</h3>
+                <button class="close-modal" onclick="this.closest('.modal').remove(); document.body.style.overflow='auto'" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">&times;</button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="padding: 1.5rem;">
                 <div class="upgrade-content">
-                    <div class="upgrade-header">
-                        <h4>Seu Contrato Está Quase Pronto!</h4>
-                        <p>Você já criou um contrato profissional. Agora falta pouco para ter acesso completo:</p>
+                    <div class="upgrade-header" style="text-align: center; margin-bottom: 1.5rem;">
+                        <h4 style="color: #2c5aa0; margin-bottom: 0.5rem;">Seu Contrato Está Quase Pronto!</h4>
+                        <p style="color: #666;">Você já criou um contrato profissional. Agora falta pouco para ter acesso completo:</p>
                     </div>
                     
-                    <div class="benefits-grid">
-                        <div class="benefit-card">
-                            <i class="fas fa-download"></i>
-                            <strong>Download Imediato</strong>
-                            <p>Baixe em Word e PDF</p>
+                    <div class="benefits-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="benefit-card" style="text-align: center; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 8px;">
+                            <i class="fas fa-download" style="font-size: 2rem; color: #2c5aa0; margin-bottom: 0.5rem;"></i>
+                            <strong style="display: block; margin-bottom: 0.3rem;">Download Imediato</strong>
+                            <p style="font-size: 0.8rem; color: #666; margin: 0;">Baixe em Word e PDF</p>
                         </div>
-                        <div class="benefit-card">
-                            <i class="fas fa-edit"></i>
-                            <strong>Edição Completa</strong>
-                            <p>Modifique quando quiser</p>
+                        <div class="benefit-card" style="text-align: center; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 8px;">
+                            <i class="fas fa-edit" style="font-size: 2rem; color: #2c5aa0; margin-bottom: 0.5rem;"></i>
+                            <strong style="display: block; margin-bottom: 0.3rem;">Edição Completa</strong>
+                            <p style="font-size: 0.8rem; color: #666; margin: 0;">Modifique quando quiser</p>
                         </div>
-                        <div class="benefit-card">
-                            <i class="fas fa-shield-alt"></i>
-                            <strong>Proteção Total</strong>
-                            <p>Cláusulas jurídicas</p>
+                        <div class="benefit-card" style="text-align: center; padding: 1rem; border: 1px solid #e0e0e0; border-radius: 8px;">
+                            <i class="fas fa-shield-alt" style="font-size: 2rem; color: #2c5aa0; margin-bottom: 0.5rem;"></i>
+                            <strong style="display: block; margin-bottom: 0.3rem;">Proteção Total</strong>
+                            <p style="font-size: 0.8rem; color: #666; margin: 0;">Cláusulas jurídicas</p>
                         </div>
                     </div>
                     
-                    <div class="upgrade-options">
-                        <div class="upgrade-option featured">
-                            <div class="option-header">
-                                <h5>💎 MAIS POPULAR</h5>
-                                <div class="price">R$ 6,99</div>
-                                <div class="period">por contrato</div>
+                    <div class="upgrade-options" style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="upgrade-option featured" style="border: 2px solid #2c5aa0; border-radius: 12px; padding: 1.5rem; position: relative;">
+                            <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #2c5aa0; color: white; padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">
+                                💎 MAIS POPULAR
                             </div>
-                            <ul>
-                                <li>✅ Download imediato</li>
-                                <li>✅ Contrato editável</li>
-                                <li>✅ Formato Word + PDF</li>
-                                <li>✅ Reutilizável</li>
+                            <div class="option-header" style="text-align: center; margin-bottom: 1rem;">
+                                <div style="font-size: 1.8rem; font-weight: bold; color: #2c5aa0;">R$ 6,99</div>
+                                <div style="color: #666; font-size: 0.9rem;">por contrato</div>
+                            </div>
+                            <ul style="list-style: none; padding: 0; margin-bottom: 1rem;">
+                                <li style="padding: 0.3rem 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-check" style="color: #28a745;"></i> Download imediato</li>
+                                <li style="padding: 0.3rem 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-check" style="color: #28a745;"></i> Contrato editável</li>
+                                <li style="padding: 0.3rem 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-check" style="color: #28a745;"></i> Formato Word + PDF</li>
+                                <li style="padding: 0.3rem 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-check" style="color: #28a745;"></i> Reutilizável</li>
                             </ul>
-                            <button class="btn btn-success" onclick="openPaymentModal('avulsa'); this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%;">
+                            <button class="btn btn-success" onclick="openPaymentModal('avulsa'); this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%; padding: 0.8rem; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
                                 <i class="fas fa-bolt"></i> Comprar Agora
                             </button>
                         </div>
                         
-                        <div class="upgrade-option">
-                            <div class="option-header">
-                                <h5>🚀 PROFISSIONAL</h5>
-                                <div class="price">R$ 29,99</div>
-                                <div class="period">por mês</div>
+                        <div class="upgrade-option" style="border: 1px solid #e0e0e0; border-radius: 12px; padding: 1.5rem;">
+                            <div class="option-header" style="text-align: center; margin-bottom: 1rem;">
+                                <div style="font-size: 1.8rem; font-weight: bold; color: #2c5aa0;">R$ 29,99</div>
+                                <div style="color: #666; font-size: 0.9rem;">por mês</div>
                             </div>
-                            <ul>
-                                <li>✅ Contratos Ilimitados</li>
-                                <li>✅ Todos os modelos</li>
-                                <li>✅ Suporte prioritário</li>
-                                <li>✅ Armazenamento</li>
+                            <ul style="list-style: none; padding: 0; margin-bottom: 1rem;">
+                                <li style="padding: 0.3rem 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-check" style="color: #28a745;"></i> Contratos Ilimitados</li>
+                                <li style="padding: 0.3rem 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-check" style="color: #28a745;"></i> Todos os modelos</li>
+                                <li style="padding: 0.3rem 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-check" style="color: #28a745;"></i> Suporte prioritário</li>
+                                <li style="padding: 0.3rem 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-check" style="color: #28a745;"></i> Armazenamento</li>
                             </ul>
-                            <button class="btn" onclick="openPaymentModal('profissional'); this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%;">
+                            <button class="btn" onclick="openPaymentModal('profissional'); this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%; padding: 0.8rem; background: #2c5aa0; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
                                 <i class="fas fa-crown"></i> Assinar Plano
                             </button>
                         </div>
                     </div>
                     
-                    <div class="risk-warning">
-                        <p>⚠️ <strong>Não arrisque:</strong> Um contrato mal elaborado pode custar muito mais que R$ 6,99</p>
+                    <div class="risk-warning" style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; text-align: center;">
+                        <p style="margin: 0; color: #856404;"><strong>⚠️ Não arrisque:</strong> Um contrato mal elaborado pode custar muito mais que R$ 6,99</p>
                     </div>
                     
                     <div class="upgrade-footer">
-                        <button class="btn-login" onclick="this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%; margin-top: 1rem;">
+                        <button class="btn-login" onclick="this.closest('.modal').remove(); document.body.style.overflow='auto'" style="width: 100%; padding: 0.8rem; background: #666; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
                             <i class="fas fa-eye"></i> Continuar Visualizando Gratuitamente
                         </button>
                     </div>
@@ -2226,110 +2503,6 @@ function handleVideoError() {
     if (videoWrapper && videoFallback) {
         videoWrapper.style.display = 'none';
         videoFallback.style.display = 'block';
-    }
-}
-
-// =============================================
-// FUNÇÃO OPEN SECURE PREVIEW (VERSÃO CORRIGIDA)
-// =============================================
-
-// Visualização segura - VERSÃO FINAL CORRIGIDA
-function openSecurePreview() {
-    if (!currentUser) {
-        showNotification('🔐 Faça login para visualizar contratos');
-        showLoginModal();
-        return;
-    }
-    
-    // Validar dados antes de gerar
-    const validationErrors = validateContractData();
-    if (validationErrors.length > 0) {
-        showNotification(`❌ Corrija os seguintes campos: ${validationErrors.join(', ')}`);
-        return;
-    }
-    
-    try {
-        // Mostrar loading
-        const previewBtn = document.getElementById('previewBtn');
-        if (previewBtn) {
-            const originalText = previewBtn.querySelector('#previewText').textContent;
-            previewBtn.querySelector('#previewText').textContent = 'Abrindo visualização...';
-            previewBtn.disabled = true;
-        }
-        
-        // Coletar dados do contrato
-        const contractData = collectContractData();
-        
-        // Criar dados simplificados (sem assinaturas base64)
-        const safeContractData = {
-            contractorName: contractData.contractorName,
-            contractorDoc: contractData.contractorDoc,
-            contractorProfession: contractData.contractorProfession,
-            contractorAddress: contractData.contractorAddress,
-            contractorCivilState: contractData.contractorCivilState,
-            contractedName: contractData.contractedName,
-            contractedDoc: contractData.contractedDoc,
-            contractedProfession: contractData.contractedProfession,
-            contractedAddress: contractData.contractedAddress,
-            contractedCivilState: contractData.contractedCivilState,
-            serviceDescription: contractData.serviceDescription,
-            serviceValue: contractData.serviceValue,
-            paymentMethod: contractData.paymentMethod,
-            startDate: contractData.startDate,
-            endDate: contractData.endDate,
-            contractCity: contractData.contractCity,
-            contractorSignature: contractData.contractorSignature,
-            contractedSignature: contractData.contractedSignature,
-            generatedAt: new Date().toISOString()
-        };
-        
-        // Codificar dados para URL
-        const encodedData = btoa(encodeURIComponent(JSON.stringify(safeContractData)));
-        
-        // Salvar também no localStorage como backup
-        localStorage.setItem('tempContractData', JSON.stringify(safeContractData));
-        localStorage.setItem('tempContractTimestamp', Date.now().toString());
-        
-        // Abrir view-contract.html com os dados na URL
-        const viewUrl = `view-contract.html?data=${encodeURIComponent(encodedData)}&t=${Date.now()}`;
-        const newWindow = window.open(viewUrl, '_blank', 'width=1200,height=700,toolbar=no,location=no,status=no,menubar=no');
-        
-        if (newWindow) {
-            showNotification('✅ Visualização segura aberta em nova janela');
-            
-            // Focar na nova janela
-            setTimeout(() => {
-                if (newWindow && !newWindow.closed) {
-                    newWindow.focus();
-                }
-            }, 500);
-        } else {
-            showNotification('❌ Pop-up bloqueado! Permita pop-ups para visualizar.');
-            
-            // Alternativa: abrir na mesma janela
-            const userConfirmed = confirm('A janela pop-up foi bloqueada. Deseja abrir a visualização nesta guia?');
-            if (userConfirmed) {
-                window.location.href = viewUrl;
-            }
-        }
-        
-        // Restaurar botão
-        if (previewBtn) {
-            setTimeout(() => {
-                previewBtn.querySelector('#previewText').textContent = 'Visualizar Gratuitamente';
-                previewBtn.disabled = false;
-            }, 1000);
-        }
-        
-    } catch (error) {
-        showNotification('❌ Erro ao abrir visualização segura');
-        
-        // Restaurar botão em caso de erro
-        const previewBtn = document.getElementById('previewBtn');
-        if (previewBtn) {
-            previewBtn.querySelector('#previewText').textContent = 'Visualizar Gratuitamente';
-            previewBtn.disabled = false;
-        }
     }
 }
 
@@ -2354,10 +2527,15 @@ window.selectPayment = selectPayment;
 window.generateWordPlus = generateWordPlus;
 window.canDownloadContract = canDownloadContract;
 window.openSecurePreview = openSecurePreview;
+window.showContractModal = showContractModal;
+window.closeContractModal = closeContractModal;
+window.printContract = printContract;
+window.downloadContractPDF = downloadContractPDF;
 window.showContactModal = showContactModal;
 window.closeContactModal = closeContactModal;
 window.submitContactForm = submitContactForm;
 window.handleVideoError = handleVideoError;
+window.signOut = signOut;
 
 // Funções utilitárias
 window.formatCurrencyInput = formatCurrencyInput;
@@ -2381,6 +2559,7 @@ window.validateEmail = validateEmail;
 window.generateProfessionalContractPlus = generateProfessionalContractPlus;
 window.collectContractData = collectContractData;
 window.incrementDownloadCount = incrementDownloadCount;
+window.canPrintContract = canPrintContract;
 
 // Funções de navegação
 window.goBack = function() {
@@ -2388,5 +2567,7 @@ window.goBack = function() {
         window.history.back();
     } else {
         window.location.href = 'index.html';
-    }
-};
+    };
+}
+
+console.log('✅ script.js carregado com sucesso!');
