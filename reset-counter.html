@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Resetar Contador - ContratoFácil</title>
+    <style>
+        body { font-family: Arial; padding: 20px; text-align: center; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>🛠️ Resetar Contador Bugado</h2>
+    
+    <div id="status">Carregando...</div>
+    
+    <button onclick="resetCounter()">🔧 Resetar Contador</button>
+    <button onclick="checkCounter()">📊 Verificar Contador</button>
+    <button onclick="window.location.href='index.html'">🏠 Voltar</button>
+    
+    <script>
+        function checkCounter() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user) {
+                document.getElementById('status').innerHTML = `
+                    <h3>Status do Contador:</h3>
+                    <p>Visualizações: ${user.contractsGenerated || 0}</p>
+                    <p>Downloads: ${user.contractsDownloaded || 0}</p>
+                    <p>Plano: ${user.plan}</p>
+                    <p>Último login: ${new Date(user.lastLogin || user.joinDate).toLocaleString()}</p>
+                `;
+            } else {
+                document.getElementById('status').innerHTML = '<p>Nenhum usuário logado</p>';
+            }
+        }
+        
+        function resetCounter() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (user) {
+                user.contractsGenerated = 0;
+                user.contractsDownloaded = 0;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                document.getElementById('status').innerHTML = '<p style="color: green;">✅ Contador resetado com sucesso!</p>';
+            } else {
+                document.getElementById('status').innerHTML = '<p style="color: red;">❌ Nenhum usuário para resetar</p>';
+            }
+        }
+        
+        // Verificar ao carregar
+        checkCounter();
+    </script>
+</body>
+</html>
