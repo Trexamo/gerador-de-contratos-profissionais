@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ContratoFácil - Contratos Profissionais em 5 Minutos</title>
     <link rel="icon" href="logo.jpg" type="image/jpeg">
     <link rel="stylesheet" href="style.css">
@@ -203,9 +203,6 @@
                 <div class="hero-buttons">
                     <button class="btn btn-large" onclick="scrollToGenerator()">
                         <i class="fas fa-bolt"></i> Criar Meu Contrato Seguro
-                    </button>
-                    <button class="btn btn-large btn-outline" onclick="showLoginModal()">
-                        <i class="fas fa-eye"></i> Visualizar Gratuitamente
                     </button>
                 </div>
             </div>
@@ -443,10 +440,6 @@
                     </div>
                     
                     <div class="actions">
-                        <button class="btn" onclick="openSecurePreview()" id="previewBtn">
-                            <i class="fas fa-eye"></i> <span id="previewText">Visualizar Gratuitamente</span>
-                            <div class="spinner" style="display:none;"></div>
-                        </button>
                         <button class="btn btn-success" onclick="generateWordPlus()" id="downloadBtn">
                             <i class="fas fa-download"></i> <span id="downloadText">Baixar Contrato - R$ 6,99</span>
                             <div class="spinner" style="display:none;"></div>
