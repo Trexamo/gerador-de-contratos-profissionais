@@ -1423,3 +1423,125 @@ footer::before {
         min-width: auto;
     }
 }
+/* ===== FAQ SECTION ===== */
+.faq {
+    background: white;
+    padding: 6rem 0 4rem;
+}
+
+.faq-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq-item {
+    background: var(--light-gray);
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.faq-item:hover {
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow);
+}
+
+.faq-question {
+    padding: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    color: var(--dark);
+    transition: var(--transition);
+}
+
+.faq-question:hover {
+    background: rgba(37, 99, 235, 0.05);
+}
+
+.faq-question span {
+    font-size: 1rem;
+    flex: 1;
+    padding-right: 1rem;
+}
+
+.faq-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    transition: var(--transition);
+}
+
+.faq-toggle i {
+    color: var(--primary);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+/* Resposta escondida inicialmente */
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 1.5rem;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-top: 1px solid transparent;
+}
+
+/* Quando o item está ativo */
+.faq-item.active .faq-answer {
+    max-height: 500px;
+    padding: 0 1.5rem 1.5rem;
+    border-top-color: rgba(226, 232, 240, 0.8);
+}
+
+.faq-item.active .faq-question {
+    background: rgba(37, 99, 235, 0.1);
+}
+
+.faq-answer p {
+    margin-bottom: 0.5rem;
+    color: var(--dark-gray);
+    line-height: 1.6;
+}
+
+.faq-answer p:last-child {
+    margin-bottom: 0;
+}
+
+/* CTA section no FAQ */
+.faq-cta {
+    text-align: center;
+    margin-top: 4rem;
+    padding: 3rem;
+    background: linear-gradient(135deg, var(--light-gray) 0%, #f8fafc 100%);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid #e2e8f0;
+}
+
+.faq-cta h3 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+.faq-cta p {
+    font-size: 1.1rem;
+    color: var(--dark-gray);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
