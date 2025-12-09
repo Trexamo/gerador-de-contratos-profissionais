@@ -2156,6 +2156,65 @@ function initMobileMenu() {
         });
     }
 }
+// Função para alternar FAQ
+function toggleFAQ(element) {
+    const faqItem = element.parentElement;
+    const answer = element.nextElementSibling;
+    const toggleIcon = element.querySelector('.faq-toggle i');
+    
+    // Fechar todos os outros itens (opcional - remove se quiser múltiplos abertos)
+    const allFaqItems = document.querySelectorAll('.faq-item');
+    allFaqItems.forEach(item => {
+        if (item !== faqItem && item.classList.contains('active')) {
+            item.classList.remove('active');
+            const otherAnswer = item.querySelector('.faq-answer');
+            const otherIcon = item.querySelector('.faq-toggle i');
+            otherAnswer.style.maxHeight = null;
+            otherIcon.classList.remove('fa-chevron-down');
+            otherIcon.classList.add('fa-chevron-right');
+        }
+    });
+    
+    // Alternar classe 'active' no item atual
+    faqItem.classList.toggle('active');
+    
+    // Alternar altura da resposta
+    if (answer.style.maxHeight) {
+        answer.style.maxHeight = null;
+        // Mudar ícone para chevron-right
+        toggleIcon.classList.remove('fa-chevron-down');
+        toggleIcon.classList.add('fa-chevron-right');
+    } else {
+        answer.style.maxHeight = answer.scrollHeight + "px";
+        // Mudar ícone para chevron-down
+        toggleIcon.classList.remove('fa-chevron-right');
+        toggleIcon.classList.add('fa-chevron-down');
+    }
+}
+
+// Inicializar FAQ após carregamento da página
+document.addEventListener('DOMContentLoaded', function() {
+    // Adicionar event listeners para teclado (acessibilidade)
+    const faqQuestions = document.querySelectorAll('.faq-question');
+    faqQuestions.forEach(question => {
+        question.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleFAQ(this);
+            }
+        });
+        
+        // Adicionar role para acessibilidade
+        question.setAttribute('role', 'button');
+        question.setAttribute('tabindex', '0');
+        question.setAttribute('aria-expanded', 'false');
+        
+        question.addEventListener('click', function() {
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', !isExpanded);
+        });
+    });
+});
 
 // =============================================
 // SISTEMA DE CONTATO COM EMAILJS
