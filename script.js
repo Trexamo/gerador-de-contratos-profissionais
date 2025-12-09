@@ -2574,3 +2574,261 @@ window.goBack = function() {
 }
 
 console.log('✅ script.js carregado com sucesso!');
+// ===== FUNÇÕES PARA MODAIS DE PAGAMENTO =====
+
+// Função para abrir modal de login
+function showLoginModal() {
+    const modal = document.getElementById('loginModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// Função para fechar modal de login
+function closeLoginModal() {
+    const modal = document.getElementById('loginModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// Função para abrir modal de pagamento
+function openPaymentModal(plan) {
+    const modal = document.getElementById('paymentModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalPlanDescription = document.getElementById('modalPlanDescription');
+    const modalPrice = document.getElementById('modalPrice');
+    const pixValue = document.getElementById('pixValue');
+    const cardValue = document.getElementById('cardValue');
+    
+    let price = '';
+    let planName = '';
+    let description = '';
+    
+    // Definir informações do plano
+    switch(plan) {
+        case 'basico':
+            price = '9,99';
+            planName = 'Plano Básico';
+            description = 'Plano Básico - R$ 9,99/mês (5 contratos por mês)';
+            break;
+        case 'profissional':
+            price = '29,99';
+            planName = 'Plano Profissional';
+            description = 'Plano Profissional - R$ 29,99/mês (Downloads ilimitados)';
+            break;
+        default:
+            price = '6,99';
+            planName = 'Contrato Avulso';
+            description = 'Contrato Avulso - R$ 6,99 por contrato';
+    }
+    
+    // Atualizar informações no modal
+    modalTitle.textContent = `Assinar ${planName}`;
+    modalPlanDescription.textContent = description;
+    modalPrice.textContent = `Total: R$ ${price}`;
+    pixValue.textContent = `R$ ${price}`;
+    cardValue.textContent = `R$ ${price}`;
+    
+    // Criar links de pagamento
+    const pixLink = document.getElementById('pixLink');
+    const cardLink = document.getElementById('cardLink');
+    
+    // Gerar link Mercado Pago (exemplo - você precisa configurar seu link real)
+    const pixPaymentLink = `https://www.mercadopago.com.br/checkout/v1/payment/redirect?preference-id=${generatePreferenceId(plan)}`;
+    const cardPaymentLink = `https://www.mercadopago.com.br/checkout/v1/payment/redirect?preference-id=${generatePreferenceId(plan)}&payment-method=card`;
+    
+    pixLink.href = pixPaymentLink;
+    cardLink.href = cardPaymentLink;
+    
+    // Abrir modal
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Esconder detalhes de pagamento
+    document.getElementById('pixDetails').style.display = 'none';
+    document.getElementById('cardDetails').style.display = 'none';
+}
+
+// Função para fechar modal de pagamento
+function closePaymentModal() {
+    const modal = document.getElementById('paymentModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// Função para selecionar método de pagamento
+function selectPayment(element, method) {
+    // Remover seleção de todos
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    // Adicionar seleção ao elemento clicado
+    element.classList.add('selected');
+    
+    // Mostrar detalhes do método selecionado
+    document.getElementById('pixDetails').style.display = method === 'pix' ? 'block' : 'none';
+    document.getElementById('cardDetails').style.display = method === 'cartao' ? 'block' : 'none';
+}
+
+// Função para gerar ID de preferência (exemplo)
+function generatePreferenceId(plan) {
+    const planIds = {
+        'basico': 'PLANO-BASICO-999',
+        'profissional': 'PLANO-PRO-2999',
+        'avulso': 'CONTRATO-AVULSO-699'
+    };
+    return planIds[plan] || 'DEFAULT-PLAN';
+}
+
+// ===== FUNÇÕES DO GOOGLE SIGN-IN =====
+
+// Configurar Google Sign-In
+function initializeGoogleSignIn() {
+    if (typeof google !== 'undefined') {
+        google.accounts.id.initialize({
+            client_id: '395303260900-usl0idov344ud7qo9ptr82mnmqfidebd.apps.googleusercontent.com',
+            callback: handleGoogleSignIn,
+            auto_select: false,
+            cancel_on_tap_outside: true
+        });
+        
+        // Renderizar botão nos modais que precisam
+        const loginModal = document.getElementById('loginModal');
+        if (loginModal) {
+            google.accounts.id.renderButton(
+                document.querySelector('#g_id_onload'),
+                { theme: "filled_blue", size: "large", width: 300 }
+            );
+        }
+    }
+}
+
+// Handler para login com Google
+function handleGoogleSignIn(response) {
+    console.log('Google Sign-In response:', response);
+    
+    // Decodificar credencial JWT
+    const responsePayload = decodeJWTResponse(response.credential);
+    
+    if (responsePayload) {
+        console.log('User info:', responsePayload);
+        
+        // Salvar dados do usuário
+        localStorage.setItem('userEmail', responsePayload.email);
+        localStorage.setItem('userName', responsePayload.name);
+        localStorage.setItem('userPicture', responsePayload.picture);
+        localStorage.setItem('userToken', response.credential);
+        
+        // Mostrar mensagem de sucesso
+        showNotification('Login realizado com sucesso!', 'success');
+        
+        // Fechar modal de login
+        closeLoginModal();
+        
+        // Redirecionar para criar contrato
+        setTimeout(() => {
+            window.location.href = 'index.html#generator';
+        }, 1500);
+    }
+}
+
+// Função para decodificar JWT
+function decodeJWTResponse(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        
+        return JSON.parse(jsonPayload);
+    } catch (error) {
+        console.error('Error decoding JWT:', error);
+        return null;
+    }
+}
+
+// ===== FUNÇÃO DE NOTIFICAÇÃO =====
+
+function showNotification(message, type = 'info') {
+    // Remover notificação existente
+    const existingNotification = document.querySelector('.custom-notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    // Criar nova notificação
+    const notification = document.createElement('div');
+    notification.className = `custom-notification ${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+        <button onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    // Adicionar ao corpo
+    document.body.appendChild(notification);
+    
+    // Remover automaticamente após 5 segundos
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
+// ===== EVENT LISTENERS =====
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Fechar modais ao clicar fora
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal')) {
+            e.target.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    });
+    
+    // Fechar modais com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal.active').forEach(modal => {
+                modal.classList.remove('active');
+            });
+            document.body.style.overflow = 'auto';
+        }
+    });
+    
+    // Inicializar Google Sign-In
+    if (document.getElementById('loginModal')) {
+        // Carregar script Google se não estiver carregado
+        if (!document.querySelector('script[src*="accounts.google.com"]')) {
+            const script = document.createElement('script');
+            script.src = 'https://accounts.google.com/gsi/client';
+            script.async = true;
+            script.defer = true;
+            script.onload = initializeGoogleSignIn;
+            document.head.appendChild(script);
+        } else {
+            initializeGoogleSignIn();
+        }
+    }
+    
+    // Adicionar accordion para mobile FAQ
+    const detailsElements = document.querySelectorAll('details');
+    detailsElements.forEach(details => {
+        details.addEventListener('toggle', function() {
+            if (this.open) {
+                // Fechar outros details
+                detailsElements.forEach(otherDetails => {
+                    if (otherDetails !== this) {
+                        otherDetails.open = false;
+                    }
+                });
+            }
+        });
+    });
+});
