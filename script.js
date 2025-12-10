@@ -2832,3 +2832,105 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+// Adicione ao final do script.js, antes das exportações:
+
+// ===== CORREÇÕES MOBILE OTIMIZADAS =====
+function initMobileCorrections() {
+    console.log('📱 Inicializando correções mobile otimizadas...');
+    
+    // 1. Prevenir zoom duplo-toque
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(e) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, { passive: false });
+    
+    // 2. Layout responsivo com debounce
+    function fixMobileLayout() {
+        if (window.innerWidth <= 768) {
+            const generatorContainer = document.querySelector('.generator-container');
+            const contractPreview = document.getElementById('contractPreview');
+            
+            if (generatorContainer) {
+                generatorContainer.style.display = 'flex';
+                generatorContainer.style.flexDirection = 'column';
+            }
+            
+            if (contractPreview) {
+                contractPreview.style.width = '100%';
+                contractPreview.style.minWidth = '100%';
+                contractPreview.style.fontSize = '12px';
+            }
+        }
+    }
+    
+    // Debounce para evitar execução excessiva
+    let resizeTimeout;
+    function debouncedFixMobileLayout() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(fixMobileLayout, 250);
+    }
+    
+    // Executar uma vez no carregamento
+    setTimeout(fixMobileLayout, 100);
+    
+    // Redimensionamento com debounce
+    window.addEventListener('resize', debouncedFixMobileLayout);
+    
+    // 3. Cleanup ao sair da página
+    window.addEventListener('beforeunload', function() {
+        window.removeEventListener('resize', debouncedFixMobileLayout);
+    });
+}
+
+// Adicionar ao DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function() {
+    // ... código existente ...
+    
+    // Adicionar esta linha:
+    initMobileCorrections();
+    
+    // ... resto do código ...
+});
+
+// ===== FUNÇÃO DE VISUALIZAÇÃO SEGURA CORRIGIDA =====
+function openSecurePreview() {
+    if (!currentUser) {
+        showNotification('🔐 Faça login para visualizar contratos');
+        showLoginModal();
+        return;
+    }
+    
+    const validationErrors = validateContractData();
+    if (validationErrors.length > 0) {
+        showNotification(`❌ Corrija: ${validationErrors.join(', ')}`);
+        return;
+    }
+    
+    try {
+        // Coletar dados
+        const contractData = collectContractData();
+        
+        // Usar localStorage para passar dados
+        localStorage.setItem('tempContractData', JSON.stringify(contractData));
+        localStorage.setItem('tempContractTimestamp', Date.now().toString());
+        
+        // Abrir em nova aba
+        const newWindow = window.open('view-contract.html', '_blank', 'width=1200,height=700');
+        
+        if (!newWindow) {
+            // Pop-up bloqueado, usar mesma janela
+            window.location.href = 'view-contract.html';
+        }
+        
+    } catch (error) {
+        console.error('Erro ao abrir visualização:', error);
+        showNotification('❌ Erro ao abrir visualização');
+    }
+}
+
+// Exportar para uso global
+window.openSecurePreview = openSecurePreview;
