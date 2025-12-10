@@ -2012,3 +2012,51 @@ footer::before {
         font-size: 0.9rem;
     }
 }
+/* ===== PREVENIR FLICKERING E REDESENHO EXCESSIVO ===== */
+.generator-container,
+.contract-preview,
+.signature-options {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000;
+    will-change: transform;
+}
+
+/* ===== EVITAR ANIMAÇÕES EXCESSIVAS EM MOBILE ===== */
+@media (max-width: 768px) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    .generator-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+    
+    .contract-preview {
+        -webkit-overflow-scrolling: touch;
+        overflow-x: auto;
+        transform: none !important;
+    }
+}
+
+/* ===== CORREÇÃO PARA ZOOM EM INPUTS MOBILE ===== */
+@media screen and (max-width: 768px) {
+    input, select, textarea {
+        font-size: 16px !important;
+        max-height: none !important;
+    }
+    
+    /* Prevenir zoom automático no iOS */
+    @supports (-webkit-touch-callout: none) {
+        input[type="text"],
+        input[type="date"],
+        input[type="email"],
+        select,
+        textarea {
+            font-size: 16px !important;
+        }
+    }
+}
