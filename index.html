@@ -28,8 +28,6 @@
     <script>
 // Correção de emergência para mobile
 (function() {
- 
-    
     // 1. Corrigir o bug do zoom out
     document.addEventListener('touchstart', function(e) {
         if (e.touches.length > 1) {
@@ -281,6 +279,71 @@
                         </div>
                     </div>
 
+                    <!-- DATA DO CONTRATO -->
+                    <div class="form-group">
+                        <label for="contractDate">Data do Contrato *</label>
+                        <input type="date" id="contractDate" aria-required="true">
+                        <small style="color: #666; font-size: 0.8rem; margin-top: 0.3rem; display: block;">
+                            Data atual: <span id="currentDateDisplay"></span> 
+                            <button type="button" onclick="setTodayDate()" style="margin-left: 0.5rem; padding: 0.2rem 0.5rem; font-size: 0.7rem;">
+                                Usar data atual
+                            </button>
+                        </small>
+                    </div>
+
+                    <!-- DATA DE INÍCIO -->
+                    <div class="form-group">
+                        <label for="startDate">Data de Início do Serviço *</label>
+                        <input type="date" id="startDate" aria-required="true">
+                    </div>
+
+                    <!-- DATA DE TÉRMINO -->
+                    <div class="form-group">
+                        <label for="endDate">Data de Término do Serviço *</label>
+                        <input type="date" id="endDate" aria-required="true">
+                    </div>
+
+                    <!-- CIDADE E ESTADO -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contractCity">Cidade do Contrato *</label>
+                            <input type="text" id="contractCity" placeholder="Ex: São Paulo" aria-required="true">
+                        </div>
+                        <div class="form-group">
+                            <label for="contractState">Estado (UF) *</label>
+                            <select id="contractState" aria-required="true">
+                                <option value="">Selecione</option>
+                                <option value="AC">AC</option>
+                                <option value="AL">AL</option>
+                                <option value="AP">AP</option>
+                                <option value="AM">AM</option>
+                                <option value="BA">BA</option>
+                                <option value="CE">CE</option>
+                                <option value="DF">DF</option>
+                                <option value="ES">ES</option>
+                                <option value="GO">GO</option>
+                                <option value="MA">MA</option>
+                                <option value="MT">MT</option>
+                                <option value="MS">MS</option>
+                                <option value="MG">MG</option>
+                                <option value="PA">PA</option>
+                                <option value="PB">PB</option>
+                                <option value="PR">PR</option>
+                                <option value="PE">PE</option>
+                                <option value="PI">PI</option>
+                                <option value="RJ">RJ</option>
+                                <option value="RN">RN</option>
+                                <option value="RS">RS</option>
+                                <option value="RO">RO</option>
+                                <option value="RR">RR</option>
+                                <option value="SC">SC</option>
+                                <option value="SP">SP</option>
+                                <option value="SE">SE</option>
+                                <option value="TO">TO</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="contractorAddress">Endereço do Contratante</label>
                         <input type="text" id="contractorAddress" placeholder="Endereço completo">
@@ -355,112 +418,111 @@
                         </div>
                     </div>
 
-<!-- Sistema de Assinatura - Contratado -->
-<div class="signature-options">
-    <h4>Assinatura do Contratado</h4>
-    
-    <div class="signature-option" onclick="selectSignatureOption('contracted', 'upload', event)">
-        <i class="fas fa-upload"></i>
-        <strong>Anexar Assinatura</strong>
-        <p>Faça upload de uma imagem da sua assinatura (JPG, PNG)</p>
-        <input type="file" id="contractedSignatureUpload" accept="image/*" style="display: none;" 
-               onchange="handleSignatureUpload(event, 'contracted')">
-    </div>
-    
-    <div class="signature-option" onclick="selectSignatureOption('contracted', 'draw', event)">
-        <i class="fas fa-paint-brush"></i>
-        <strong>Desenhar Assinatura</strong>
-        <p>Use o dedo para desenhar sua assinatura</p>
-        <div class="mobile-signature-hint">Toque e arraste para desenhar</div>
-        <!-- CORREÇÃO: Canvas com tamanho responsivo -->
-        <div class="canvas-container">
-            <canvas id="contractedSignatureDraw" width="400" height="150" 
-                    style="border: 1px solid #ccc; display: none; background: white; touch-action: none;">
-                Seu navegador não suporta canvas. Use a opção de upload.
-            </canvas>
-        </div>
-    </div>
-    
-    <div class="signature-preview" id="contractedSignaturePreview">
-        <p style="color: #666; text-align: center;">Assinatura do Contratado aparecerá aqui</p>
-    </div>
-    
-    <div class="signature-actions" id="contractedSignatureConfirmation" style="display: none;">
-        <button type="button" class="btn btn-sm" onclick="clearSignature('contracted')">
-            <i class="fas fa-redo"></i> Refazer
-        </button>
-        <button type="button" class="btn btn-sm btn-success" onclick="confirmSignature('contracted')">
-            <i class="fas fa-check"></i> Confirmar
-        </button>
-    </div>
-</div>
+                    <!-- Sistema de Assinatura - Contratado -->
+                    <div class="signature-options">
+                        <h4>Assinatura do Contratado</h4>
+                        
+                        <div class="signature-option" onclick="selectSignatureOption('contracted', 'upload', event)">
+                            <i class="fas fa-upload"></i>
+                            <strong>Anexar Assinatura</strong>
+                            <p>Faça upload de uma imagem da sua assinatura (JPG, PNG)</p>
+                            <input type="file" id="contractedSignatureUpload" accept="image/*" style="display: none;" 
+                                   onchange="handleSignatureUpload(event, 'contracted')">
+                        </div>
+                        
+                        <div class="signature-option" onclick="selectSignatureOption('contracted', 'draw', event)">
+                            <i class="fas fa-paint-brush"></i>
+                            <strong>Desenhar Assinatura</strong>
+                            <p>Use o dedo para desenhar sua assinatura</p>
+                            <div class="mobile-signature-hint">Toque e arraste para desenhar</div>
+                            <!-- CORREÇÃO: Canvas com tamanho responsivo -->
+                            <div class="canvas-container">
+                                <canvas id="contractedSignatureDraw" width="400" height="150" 
+                                        style="border: 1px solid #ccc; display: none; background: white; touch-action: none;">
+                                    Seu navegador não suporta canvas. Use a opção de upload.
+                                </canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="signature-preview" id="contractedSignaturePreview">
+                            <p style="color: #666; text-align: center;">Assinatura do Contratado aparecerá aqui</p>
+                        </div>
+                        
+                        <div class="signature-actions" id="contractedSignatureConfirmation" style="display: none;">
+                            <button type="button" class="btn btn-sm" onclick="clearSignature('contracted')">
+                                <i class="fas fa-redo"></i> Refazer
+                            </button>
+                            <button type="button" class="btn btn-sm btn-success" onclick="confirmSignature('contracted')">
+                                <i class="fas fa-check"></i> Confirmar
+                            </button>
+                        </div>
+                    </div>
 
-<!-- Sistema de Assinatura - Contratante -->
-<div class="signature-options">
-    <h4>Assinatura do Contratante</h4>
-    
-    <div class="signature-option" onclick="selectSignatureOption('contractor', 'upload', event)">
-        <i class="fas fa-upload"></i>
-        <strong>Anexar Assinatura</strong>
-        <p>Faça upload de uma imagem da sua assinatura (JPG, PNG)</p>
-        <input type="file" id="contractorSignatureUpload" accept="image/*" style="display: none;"
-               onchange="handleSignatureUpload(event, 'contractor')">
-    </div>
-    
-    <div class="signature-option" onclick="selectSignatureOption('contractor', 'draw', event)">
-        <i class="fas fa-paint-brush"></i>
-        <strong>Desenhar Assinatura</strong>
-        <p>Use o dedo para desenhar sua assinatura</p>
-        <div class="mobile-signature-hint">Toque e arraste para desenhar</div>
-        <!-- CORREÇÃO: Canvas com tamanho responsivo -->
-        <div class="canvas-container">
-            <canvas id="contractorSignatureDraw" width="400" height="150" 
-                    style="border: 1px solid #ccc; display: none; background: white; touch-action: none;">
-                Seu navegador não suporta canvas. Use a opção de upload.
-            </canvas>
-        </div>
-    </div>
-    
-    <div class="signature-preview" id="contractorSignaturePreview">
-        <p style="color: #666; text-align: center;">Assinatura do Contratante aparecerá aqui</p>
-    </div>
-    
-    <div class="signature-actions" id="contractorSignatureConfirmation" style="display: none;">
-        <button type="button" class="btn btn-sm" onclick="clearSignature('contractor')">
-            <i class="fas fa-redo"></i> Refazer
-        </button>
-        <button type="button" class="btn btn-sm btn-success" onclick="confirmSignature('contractor')">
-            <i class="fas fa-check"></i> Confirmar
-        </button>
-    </div>
-</div>
+                    <!-- Sistema de Assinatura - Contratante -->
+                    <div class="signature-options">
+                        <h4>Assinatura do Contratante</h4>
+                        
+                        <div class="signature-option" onclick="selectSignatureOption('contractor', 'upload', event)">
+                            <i class="fas fa-upload"></i>
+                            <strong>Anexar Assinatura</strong>
+                            <p>Faça upload de uma imagem da sua assinatura (JPG, PNG)</p>
+                            <input type="file" id="contractorSignatureUpload" accept="image/*" style="display: none;"
+                                   onchange="handleSignatureUpload(event, 'contractor')">
+                        </div>
+                        
+                        <div class="signature-option" onclick="selectSignatureOption('contractor', 'draw', event)">
+                            <i class="fas fa-paint-brush"></i>
+                            <strong>Desenhar Assinatura</strong>
+                            <p>Use o dedo para desenhar sua assinatura</p>
+                            <div class="mobile-signature-hint">Toque e arraste para desenhar</div>
+                            <!-- CORREÇÃO: Canvas com tamanho responsivo -->
+                            <div class="canvas-container">
+                                <canvas id="contractorSignatureDraw" width="400" height="150" 
+                                        style="border: 1px solid #ccc; display: none; background: white; touch-action: none;">
+                                    Seu navegador não suporta canvas. Use a opção de upload.
+                                </canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="signature-preview" id="contractorSignaturePreview">
+                            <p style="color: #666; text-align: center;">Assinatura do Contratante aparecerá aqui</p>
+                        </div>
+                        
+                        <div class="signature-actions" id="contractorSignatureConfirmation" style="display: none;">
+                            <button type="button" class="btn btn-sm" onclick="clearSignature('contractor')">
+                                <i class="fas fa-redo"></i> Refazer
+                            </button>
+                            <button type="button" class="btn btn-sm btn-success" onclick="confirmSignature('contractor')">
+                                <i class="fas fa-check"></i> Confirmar
+                            </button>
+                        </div>
+                    </div>
 
-<!-- ===== ÁREA DE AÇÕES ===== -->
-<div class="actions">
-    <button class="btn btn-accent" onclick="updatePreview()">
-        <i class="fas fa-sync-alt"></i> Atualizar Pré-visualização
-    </button>
-    
-    <!-- Botão de Visualização Gratuita -->
-    <button class="btn" onclick="openSecurePreview()" id="previewBtn">
-        <i class="fas fa-eye"></i> 
-        <span id="previewText">Visualizar Gratuitamente</span>
-    </button>
-    
-    <!-- Botão de Download Pago -->
-    <button class="btn btn-success" onclick="generateWordPlus()" id="downloadBtn">
-        <i class="fas fa-download"></i> 
-        <span id="downloadText">Baixar Contrato - R$ 6,99</span>
-        <span class="spinner" style="display: none; margin-left: 5px;">
-            <i class="fas fa-spinner fa-spin"></i>
-        </span>
-    </button>
-</div>
+                    <!-- ===== ÁREA DE AÇÕES ===== -->
+                    <div class="actions">
+                        <button class="btn btn-accent" onclick="updatePreview()">
+                            <i class="fas fa-sync-alt"></i> Atualizar Pré-visualização
+                        </button>
+                        
+                        <!-- Botão de Visualização Gratuita -->
+                        <button class="btn" onclick="openSecurePreview()" id="previewBtn">
+                            <i class="fas fa-eye"></i> 
+                            <span id="previewText">Visualizar Gratuitamente</span>
+                        </button>
+                        
+                        <!-- Botão de Download Pago -->
+                        <button class="btn btn-success" onclick="generateWordPlus()" id="downloadBtn">
+                            <i class="fas fa-download"></i> 
+                            <span id="downloadText">Baixar Contrato - R$ 6,99</span>
+                            <span class="spinner" style="display: none; margin-left: 5px;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
+                        </button>
+                    </div>
 
-<div class="preview-notice" style="margin-top: 1rem; text-align: center; font-size: 0.9rem; color: #666;">
-    <i class="fas fa-info-circle"></i> Visualize gratuitamente, pague apenas para baixar
-</div>
-                
+                    <div class="preview-notice" style="margin-top: 1rem; text-align: center; font-size: 0.9rem; color: #666;">
+                        <i class="fas fa-info-circle"></i> Visualize gratuitamente, pague apenas para baixar
+                    </div>
                 </div>
                 
                 <!-- Preview Section -->
