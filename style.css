@@ -2033,3 +2033,37 @@ footer::before {
         padding: 0.8rem 0.5rem;
     }
 }
+/* =============================================
+   CORREÇÃO PARA BUG DAS BORDAS BRANCAS
+   ============================================= */
+
+/* 1. RESET BÁSICO */
+html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+}
+
+/* 2. CORREÇÃO DO BODY */
+body {
+    position: relative;
+    background: #ffffff;
+}
+
+/* 3. CORREÇÃO DOS CONTAINERS */
+.container {
+    width: 100% !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+}
+
+/* 4. CORREÇÃO DAS SEÇÕES PRINCIPAIS */
+.hero, .video-section, .generator {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
