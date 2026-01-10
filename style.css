@@ -544,10 +544,50 @@ header {
     font-size: 0.85rem;
 }
 
+/* ===== ÁREA DE AÇÕES ===== */
 .actions {
     display: flex;
     gap: 1rem;
-    margin-top: 2rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.actions .btn {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Botão de download com destaque */
+.btn-success {
+    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, var(--success-dark) 0%, #047857 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Botão de preview */
+.btn-accent {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+}
+
+.btn-accent:hover {
+    background: linear-gradient(135deg, var(--accent-dark) 0%, #0e7490 100%);
+}
+
+/* Preview actions */
+.preview-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
 }
 
 /* ===== PREVIEW SECTION ATUALIZADA ===== */
@@ -579,7 +619,7 @@ header {
     border-radius: 10px;
     padding: 1rem;
     text-align: center;
-    margin-top: 1rem;
+    margin: 1rem 0;
     font-weight: 600;
     color: var(--primary-dark);
     font-size: 0.9rem;
@@ -841,6 +881,129 @@ header {
     margin-top: 1.5rem;
 }
 
+/* ===== FAQ SECTION ===== */
+.faq {
+    background: white;
+    padding: 6rem 0 4rem;
+}
+
+.faq-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.faq-item {
+    background: var(--light-gray);
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.faq-item:hover {
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow);
+}
+
+.faq-question {
+    padding: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    color: var(--dark);
+    transition: var(--transition);
+}
+
+.faq-question:hover {
+    background: rgba(37, 99, 235, 0.05);
+}
+
+.faq-question span {
+    font-size: 1rem;
+    flex: 1;
+    padding-right: 1rem;
+}
+
+.faq-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    transition: var(--transition);
+}
+
+.faq-toggle i {
+    color: var(--primary);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+/* Resposta escondida inicialmente */
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 1.5rem;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-top: 1px solid transparent;
+}
+
+/* Quando o item está ativo */
+.faq-item.active .faq-answer {
+    max-height: 500px;
+    padding: 0 1.5rem 1.5rem;
+    border-top-color: rgba(226, 232, 240, 0.8);
+}
+
+.faq-item.active .faq-question {
+    background: rgba(37, 99, 235, 0.1);
+}
+
+.faq-answer p {
+    margin-bottom: 0.5rem;
+    color: var(--dark-gray);
+    line-height: 1.6;
+}
+
+.faq-answer p:last-child {
+    margin-bottom: 0;
+}
+
+/* CTA section no FAQ */
+.faq-cta {
+    text-align: center;
+    margin-top: 4rem;
+    padding: 3rem;
+    background: linear-gradient(135deg, var(--light-gray) 0%, #f8fafc 100%);
+    border-radius: var(--border-radius-lg);
+    border: 1px solid #e2e8f0;
+}
+
+.faq-cta h3 {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+.faq-cta p {
+    font-size: 1.1rem;
+    color: var(--dark-gray);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
 /* ===== FOOTER ATUALIZADO ===== */
 footer {
     background: linear-gradient(135deg, var(--dark) 0%, #0f172a 100%);
@@ -1036,6 +1199,25 @@ footer::before {
         padding: 1.5rem;
         overflow-x: auto;
     }
+    
+    /* Preview actions mobile */
+    .preview-actions {
+        flex-direction: column;
+    }
+    
+    .preview-actions .btn {
+        width: 100%;
+    }
+    
+    /* Actions mobile */
+    .actions {
+        flex-direction: column;
+    }
+    
+    .actions .btn {
+        width: 100%;
+        min-width: auto;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1194,6 +1376,7 @@ footer::before {
         padding: 0 !important;
     }
 }
+
 /* ===== CORREÇÕES PARA MOBILE CELULAR ===== */
 @media (max-width: 768px) {
     /* CORREÇÃO: Melhorar visualização do contrato no mobile */
@@ -1354,270 +1537,7 @@ footer::before {
         font-style: italic;
     }
 }
-/* ===== ÁREA DE AÇÕES ===== */
-.actions {
-    display: flex;
-    gap: 1rem;
-    margin: 2rem 0;
-    flex-wrap: wrap;
-}
 
-.actions .btn {
-    flex: 1;
-    min-width: 200px;
-}
-
-/* Botão de download com destaque */
-.btn-success {
-    background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
-    font-weight: bold;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-}
-
-.btn-success:hover {
-    background: linear-gradient(135deg, var(--success-dark) 0%, #047857 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-}
-
-/* Botão de preview */
-.btn-accent {
-    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
-}
-
-.btn-accent:hover {
-    background: linear-gradient(135deg, var(--accent-dark) 0%, #0e7490 100%);
-}
-
-/* Preview actions */
-.preview-actions {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    background: #f8fafc;
-    padding: 1rem;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-}
-
-.preview-notice {
-    background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
-    border: 1px solid var(--primary-light);
-    border-radius: 10px;
-    padding: 1rem;
-    text-align: center;
-    margin: 1rem 0;
-    font-weight: 600;
-    color: var(--primary-dark);
-    font-size: 0.9rem;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .actions, .preview-actions {
-        flex-direction: column;
-    }
-    
-    .actions .btn, .preview-actions .btn {
-        width: 100%;
-        min-width: auto;
-    }
-}
-/* ===== FAQ SECTION ===== */
-.faq {
-    background: white;
-    padding: 6rem 0 4rem;
-}
-
-.faq-container {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.faq-item {
-    background: var(--light-gray);
-    border-radius: var(--border-radius);
-    margin-bottom: 1rem;
-    border: 1px solid #e2e8f0;
-    overflow: hidden;
-    transition: var(--transition);
-}
-
-.faq-item:hover {
-    border-color: var(--primary-light);
-    box-shadow: var(--shadow);
-}
-
-.faq-question {
-    padding: 1.5rem;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: 600;
-    color: var(--dark);
-    transition: var(--transition);
-}
-
-.faq-question:hover {
-    background: rgba(37, 99, 235, 0.05);
-}
-
-.faq-question span {
-    font-size: 1rem;
-    flex: 1;
-    padding-right: 1rem;
-}
-
-.faq-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    transition: var(--transition);
-}
-
-.faq-toggle i {
-    color: var(--primary);
-    font-size: 1rem;
-    transition: var(--transition);
-}
-
-/* Resposta escondida inicialmente */
-.faq-answer {
-    max-height: 0;
-    overflow: hidden;
-    padding: 0 1.5rem;
-    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-top: 1px solid transparent;
-}
-
-/* Quando o item está ativo */
-.faq-item.active .faq-answer {
-    max-height: 500px;
-    padding: 0 1.5rem 1.5rem;
-    border-top-color: rgba(226, 232, 240, 0.8);
-}
-
-.faq-item.active .faq-question {
-    background: rgba(37, 99, 235, 0.1);
-}
-
-.faq-answer p {
-    margin-bottom: 0.5rem;
-    color: var(--dark-gray);
-    line-height: 1.6;
-}
-
-.faq-answer p:last-child {
-    margin-bottom: 0;
-}
-
-/* CTA section no FAQ */
-.faq-cta {
-    text-align: center;
-    margin-top: 4rem;
-    padding: 3rem;
-    background: linear-gradient(135deg, var(--light-gray) 0%, #f8fafc 100%);
-    border-radius: var(--border-radius-lg);
-    border: 1px solid #e2e8f0;
-}
-
-.faq-cta h3 {
-    font-size: 1.75rem;
-    margin-bottom: 1rem;
-    color: var(--primary);
-}
-
-.faq-cta p {
-    font-size: 1.1rem;
-    color: var(--dark-gray);
-    margin-bottom: 2rem;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.cta-buttons {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-/* ===== MODAL PAYMENT SPECIFIC ===== */
-#paymentModal .modal-content {
-    max-width: 500px;
-}
-
-.payment-options {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    margin: 1.5rem 0;
-}
-
-.payment-option {
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.payment-option:hover {
-    border-color: var(--primary);
-    background: rgba(37, 99, 235, 0.05);
-}
-
-.payment-option.selected {
-    border-color: var(--primary);
-    background: rgba(37, 99, 235, 0.1);
-}
-
-.payment-icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    color: var(--primary);
-}
-
-/* Login Modal */
-.login-modal-content {
-    text-align: center;
-    padding: 1rem;
-}
-
-.login-modal-content h4 {
-    margin-bottom: 0.5rem;
-    color: var(--dark);
-}
-
-.login-modal-content p {
-    color: var(--dark-gray);
-    margin-bottom: 1.5rem;
-}
-
-.login-terms {
-    font-size: 0.85rem;
-    color: #666;
-    margin-top: 1.5rem;
-    line-height: 1.4;
-}
-
-.login-terms a {
-    color: var(--primary);
-    text-decoration: none;
-}
-
-.login-terms a:hover {
-    text-decoration: underline;
-}
-
-/* Botão do Google */
-.g_id_signin {
-    margin: 1rem 0;
-}
 /* ===== PRICING SECTION ===== */
 .pricing {
     padding: 5rem 0;
@@ -1872,7 +1792,167 @@ footer::before {
     font-size: 1.5rem;
 }
 
-/* ===== RESPONSIVIDADE ===== */
+/* ===== PREVENIR FLICKERING E REDESENHO EXCESSIVO ===== */
+.generator-container,
+.contract-preview,
+.signature-options {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000;
+    will-change: transform;
+}
+
+/* ===== EVITAR ANIMAÇÕES EXCESSIVAS EM MOBILE ===== */
+@media (max-width: 768px) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+    
+    .generator-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+    
+    .contract-preview {
+        -webkit-overflow-scrolling: touch;
+        overflow-x: auto;
+        transform: none !important;
+    }
+}
+
+/* ===== CORREÇÃO PARA ZOOM EM INPUTS MOBILE ===== */
+@media screen and (max-width: 768px) {
+    input, select, textarea {
+        font-size: 16px !important;
+        max-height: none !important;
+    }
+    
+    /* Prevenir zoom automático no iOS */
+    @supports (-webkit-touch-callout: none) {
+        input[type="text"],
+        input[type="date"],
+        input[type="email"],
+        select,
+        textarea {
+            font-size: 16px !important;
+        }
+    }
+}
+
+/* ===== ESTILOS PARA CAMPOS DE DATA ===== */
+.form-group small {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.form-group button[type="button"] {
+    background: var(--primary-light);
+    color: white;
+    border: none;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.form-group button[type="button"]:hover {
+    background: var(--primary-dark);
+}
+
+/* ===== MELHORIAS PARA MOBILE ===== */
+@media (max-width: 768px) {
+    .form-group input[type="date"] {
+        font-size: 16px !important;
+        padding: 12px !important;
+    }
+    
+    #currentDateDisplay {
+        display: block;
+        margin-top: 0.2rem;
+        font-weight: 600;
+    }
+}
+
+/* Modal Payment Specific */
+#paymentModal .modal-content {
+    max-width: 500px;
+}
+
+.payment-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.payment-option {
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.payment-option:hover {
+    border-color: var(--primary);
+    background: rgba(37, 99, 235, 0.05);
+}
+
+.payment-option.selected {
+    border-color: var(--primary);
+    background: rgba(37, 99, 235, 0.1);
+}
+
+.payment-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+}
+
+/* Login Modal */
+.login-modal-content {
+    text-align: center;
+    padding: 1rem;
+}
+
+.login-modal-content h4 {
+    margin-bottom: 0.5rem;
+    color: var(--dark);
+}
+
+.login-modal-content p {
+    color: var(--dark-gray);
+    margin-bottom: 1.5rem;
+}
+
+.login-terms {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 1.5rem;
+    line-height: 1.4;
+}
+
+.login-terms a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.login-terms a:hover {
+    text-decoration: underline;
+}
+
+/* Botão do Google */
+.g_id_signin {
+    margin: 1rem 0;
+}
+
+/* Responsividade para pricing */
 @media (max-width: 1024px) {
     .pricing-grid-compact {
         grid-template-columns: repeat(2, 1fr);
@@ -1951,112 +2031,5 @@ footer::before {
     .comparison-table th,
     .comparison-table td {
         padding: 0.8rem 0.5rem;
-    }
-    
-    /* Mobile accordion */
-    details {
-        border: 1px solid #e2e8f0;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        background: white;
-    }
-    
-    summary {
-        font-weight: 600;
-        cursor: pointer;
-        list-style: none;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    summary::after {
-        content: '➕';
-        font-size: 1rem;
-        transition: transform 0.3s;
-    }
-    
-    details[open] summary::after {
-        content: '➖';
-    }
-    
-    details p {
-        margin-top: 1rem;
-        color: var(--dark-gray);
-        line-height: 1.6;
-    }
-}
-
-@media (max-width: 480px) {
-    .pricing-card-compact {
-        padding: 1.2rem;
-    }
-    
-    .pricing-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.2rem;
-    }
-    
-    .price {
-        font-size: 1.6rem;
-    }
-    
-    .pricing-features li {
-        font-size: 0.85rem;
-    }
-    
-    .btn {
-        padding: 0.8rem;
-        font-size: 0.9rem;
-    }
-}
-/* ===== PREVENIR FLICKERING E REDESENHO EXCESSIVO ===== */
-.generator-container,
-.contract-preview,
-.signature-options {
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    perspective: 1000;
-    will-change: transform;
-}
-
-/* ===== EVITAR ANIMAÇÕES EXCESSIVAS EM MOBILE ===== */
-@media (max-width: 768px) {
-    * {
-        animation: none !important;
-        transition: none !important;
-    }
-    
-    .generator-container {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 1rem !important;
-    }
-    
-    .contract-preview {
-        -webkit-overflow-scrolling: touch;
-        overflow-x: auto;
-        transform: none !important;
-    }
-}
-
-/* ===== CORREÇÃO PARA ZOOM EM INPUTS MOBILE ===== */
-@media screen and (max-width: 768px) {
-    input, select, textarea {
-        font-size: 16px !important;
-        max-height: none !important;
-    }
-    
-    /* Prevenir zoom automático no iOS */
-    @supports (-webkit-touch-callout: none) {
-        input[type="text"],
-        input[type="date"],
-        input[type="email"],
-        select,
-        textarea {
-            font-size: 16px !important;
-        }
     }
 }
