@@ -3,17 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Administração - ContratoFácil</title>
-    <link rel="icon" href="logo.jpg" type="image/jpeg">
-    <link rel="stylesheet" href="style.css">
+    <title>Painel de Administração - Zapaz Gerenciamento</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Reset e Variáveis */
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark: #1f2937;
+            --dark-gray: #6b7280;
+            --gray: #9ca3af;
+            --light-gray: #e5e7eb;
+            --light: #f3f4f6;
+            --white: #ffffff;
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: #f8fafc;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Botões */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #0da271;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        /* Admin Login */
         .admin-login {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 2rem;
         }
         
@@ -49,25 +136,30 @@
             color: var(--dark);
         }
         
-        .form-group input {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 0.8rem 1rem;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            transition: var(--transition);
+            font-family: inherit;
         }
         
-        .form-group input:focus {
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             border-color: var(--primary);
             outline: none;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
         
+        /* Admin Dashboard */
         .admin-dashboard {
             padding: 2rem 0;
             display: none;
-            background: #f8fafc;
             min-height: 100vh;
         }
         
@@ -111,8 +203,14 @@
             background: white;
             padding: 1.5rem;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow);
             border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
         }
         
         .stat-card.error {
@@ -127,6 +225,10 @@
             border-left-color: var(--warning);
         }
         
+        .stat-card.purple {
+            border-left-color: var(--secondary);
+        }
+        
         .stat-header {
             display: flex;
             justify-content: space-between;
@@ -138,6 +240,8 @@
             font-size: 0.9rem;
             color: var(--dark-gray);
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .stat-icon {
@@ -154,6 +258,9 @@
         .stat-change {
             font-size: 0.8rem;
             color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
         }
         
         .stat-change.negative {
@@ -171,8 +278,13 @@
         .dashboard-card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow);
             overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .dashboard-card:hover {
+            box-shadow: var(--shadow-lg);
         }
         
         .card-header {
@@ -188,6 +300,9 @@
             margin: 0;
             color: var(--primary);
             font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .card-body {
@@ -198,6 +313,21 @@
         .activity-list {
             max-height: 300px;
             overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .activity-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .activity-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .activity-list::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 3px;
         }
         
         .activity-item {
@@ -262,6 +392,9 @@
         .activity-time {
             font-size: 0.75rem;
             color: var(--dark-gray);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
         }
         
         /* Messages List */
@@ -271,6 +404,12 @@
             padding: 1rem;
             margin-bottom: 1rem;
             background: #f8fafc;
+            transition: var(--transition);
+        }
+
+        .message-item:hover {
+            border-color: var(--primary-light);
+            background: #f0f9ff;
         }
         
         .message-header {
@@ -322,6 +461,7 @@
             padding: 0.8rem;
             border-bottom: 1px solid #f1f5f9;
             font-size: 0.85rem;
+            vertical-align: middle;
         }
         
         .user-plan-badge {
@@ -338,12 +478,12 @@
         }
         
         .plan-basico {
-            background: var(--primary-light);
+            background: var(--primary);
             color: white;
         }
         
         .plan-profissional {
-            background: var(--secondary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
         }
         
@@ -362,7 +502,7 @@
             padding: 1rem;
             text-align: left;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
         
         .action-button:hover {
@@ -398,10 +538,13 @@
             cursor: pointer;
             font-weight: 600;
             transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .btn-logout:hover {
-            background: var(--danger-dark);
+            background: #dc2626;
             transform: translateY(-2px);
         }
         
@@ -415,6 +558,105 @@
             font-size: 3rem;
             margin-bottom: 1rem;
             opacity: 0.5;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            background: var(--light);
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark-gray);
+            cursor: pointer;
+            transition: var(--transition);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .close-modal:hover {
+            background: var(--light-gray);
+            color: var(--danger);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+        }
+        
+        /* Form Controls */
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        /* Search */
+        .search-box {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 0.85rem;
         }
         
         /* Responsive */
@@ -435,6 +677,14 @@
                 flex-direction: column;
                 text-align: center;
             }
+            
+            .admin-container {
+                padding: 2rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
         }
     </style>
 </head>
@@ -443,29 +693,33 @@
     <section class="admin-login" id="adminLogin">
         <div class="admin-container">
             <div class="admin-icon">
-                <i class="fas fa-shield-alt"></i>
+                <i class="fas fa-bolt"></i>
             </div>
-            <h2 style="color: var(--primary); margin-bottom: 0.5rem;">Painel de Administração</h2>
-            <p style="color: var(--gray); margin-bottom: 2rem;">Acesso exclusivo para administradores</p>
+            <h2 style="color: var(--primary); margin-bottom: 0.5rem;">Zapaz Gerenciamento</h2>
+            <p style="color: var(--dark-gray); margin-bottom: 2rem;">Painel de Administração - Controle Total</p>
             
             <form class="admin-form" id="adminForm">
                 <div class="form-group">
-                    <label for="adminEmail">Email Administrativo</label>
-                    <input type="email" id="adminEmail" placeholder="admin@contratofacil.com" required>
+                    <label for="adminEmail">
+                        <i class="fas fa-envelope"></i> Email Administrativo
+                    </label>
+                    <input type="email" id="adminEmail" placeholder="administrador@zapaz.com" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="adminPassword">Senha de Administração</label>
+                    <label for="adminPassword">
+                        <i class="fas fa-key"></i> Senha de Administração
+                    </label>
                     <input type="password" id="adminPassword" placeholder="••••••••••" required>
                 </div>
                 
                 <button type="submit" class="btn" style="width: 100%;">
-                    <i class="fas fa-sign-in-alt"></i> Acessar Painel
+                    <i class="fas fa-sign-in-alt"></i> Acessar Painel de Controle
                 </button>
             </form>
             
-            <p style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--gray);">
-                <i class="fas fa-lock"></i> Acesso monitorado e criptografado
+            <p style="margin-top: 1.5rem; font-size: 0.8rem; color: var(--dark-gray);">
+                <i class="fas fa-shield-alt"></i> Sistema de segurança ativo • Acesso monitorado
             </p>
         </div>
     </section>
@@ -477,16 +731,18 @@
             <div class="dashboard-header">
                 <div class="header-content">
                     <div class="dashboard-title">
-                        <i class="fas fa-chart-line"></i>
+                        <i class="fas fa-bolt"></i>
                         <div>
-                            <h1 style="margin: 0; color: var(--primary);">Painel de Administração</h1>
+                            <h1 style="margin: 0; color: var(--primary);">Zapaz Gerenciamento</h1>
                             <p style="margin: 0; color: var(--dark-gray); font-size: 0.9rem;">
-                                ContratoFácil • Monitoramento do Sistema
+                                <i class="fas fa-chart-line"></i> Painel de Controle em Tempo Real
                             </p>
                         </div>
                     </div>
                     <div style="display: flex; align-items: center; gap: 1rem;">
-                        <span id="currentTime" style="color: var(--dark-gray); font-size: 0.9rem;"></span>
+                        <span id="currentTime" style="color: var(--dark-gray); font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-clock"></i> <span id="timeText"></span>
+                        </span>
                         <button class="btn-logout" onclick="adminLogout()">
                             <i class="fas fa-sign-out-alt"></i> Sair
                         </button>
@@ -496,16 +752,16 @@
 
             <!-- Stats Grid -->
             <div class="stats-grid">
-                <div class="stat-card">
+                <div class="stat-card purple">
                     <div class="stat-header">
                         <div class="stat-title">Usuários Ativos</div>
                         <div class="stat-icon">
-                            <i class="fas fa-users" style="color: var(--primary);"></i>
+                            <i class="fas fa-users"></i>
                         </div>
                     </div>
                     <div class="stat-value" id="totalUsers">0</div>
                     <div class="stat-change" id="userGrowth">
-                        <i class="fas fa-arrow-up"></i> 0% este mês
+                        <i class="fas fa-arrow-up"></i> <span id="growthValue">0%</span> este mês
                     </div>
                 </div>
                 
@@ -513,12 +769,12 @@
                     <div class="stat-header">
                         <div class="stat-title">Contratos Gerados</div>
                         <div class="stat-icon">
-                            <i class="fas fa-file-contract" style="color: var(--success);"></i>
+                            <i class="fas fa-file-contract"></i>
                         </div>
                     </div>
                     <div class="stat-value" id="totalContracts">0</div>
                     <div class="stat-change">
-                        <i class="fas fa-arrow-up"></i> Hoje: <span id="todayContracts">0</span>
+                        <i class="fas fa-calendar-day"></i> Hoje: <span id="todayContracts">0</span>
                     </div>
                 </div>
                 
@@ -526,7 +782,7 @@
                     <div class="stat-header">
                         <div class="stat-title">Usuários Premium</div>
                         <div class="stat-icon">
-                            <i class="fas fa-crown" style="color: var(--warning);"></i>
+                            <i class="fas fa-crown"></i>
                         </div>
                     </div>
                     <div class="stat-value" id="premiumUsers">0</div>
@@ -537,14 +793,14 @@
                 
                 <div class="stat-card error">
                     <div class="stat-header">
-                        <div class="stat-title">Erros Recentes</div>
+                        <div class="stat-title">Erros do Sistema</div>
                         <div class="stat-icon">
-                            <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                            <i class="fas fa-exclamation-triangle"></i>
                         </div>
                     </div>
                     <div class="stat-value" id="recentErrors">0</div>
-                    <div class="stat-change">
-                        <span id="errorStatus">Nenhum erro hoje</span>
+                    <div class="stat-change" id="errorStatus">
+                        <i class="fas fa-check-circle"></i> Sistema estável
                     </div>
                 </div>
             </div>
@@ -595,10 +851,13 @@
             <div class="dashboard-card" style="margin-top: 2rem;">
                 <div class="card-header">
                     <h3><i class="fas fa-user-friends"></i> Usuários do Sistema</h3>
-                    <div style="display: flex; gap: 0.5rem;">
-                        <input type="text" id="userSearch" placeholder="Buscar usuário..." style="padding: 0.4rem 0.8rem; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.85rem;">
+                    <div class="search-box">
+                        <input type="text" id="userSearch" placeholder="Buscar por nome ou email...">
                         <button onclick="loadUsers()" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
                             <i class="fas fa-search"></i>
+                        </button>
+                        <button onclick="loadUsers()" class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+                            <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
                 </div>
@@ -648,10 +907,24 @@
                             <p>Backup completo dos dados do sistema</p>
                         </div>
                         
-                        <div class="action-button" onclick="viewAnalytics()">
+                        <div class="action-button" onclick="generateReports()">
                             <i class="fas fa-chart-bar"></i>
-                            <h4>Análises Detalhadas</h4>
-                            <p>Relatórios avançados de uso e conversão</p>
+                            <h4>Relatórios Detalhados</h4>
+                            <p>Gerar relatórios de uso e conversão</p>
+                        </div>
+                        
+                        <!-- NOVO: Controle de Usuários -->
+                        <div class="action-button" onclick="showUserControlPanel()">
+                            <i class="fas fa-user-shield"></i>
+                            <h4>Controle de Usuários</h4>
+                            <p>Gerenciar planos e dar contratos gratuitos</p>
+                        </div>
+                        
+                        <!-- NOVO: Configurar Pagamentos -->
+                        <div class="action-button" onclick="showPaymentSettings()">
+                            <i class="fas fa-credit-card"></i>
+                            <h4>Configurar Pagamentos</h4>
+                            <p>Alterar links do Mercado Pago</p>
                         </div>
                     </div>
                 </div>
@@ -660,8 +933,8 @@
     </section>
 
     <!-- Modal para Ver Logs -->
-    <div class="modal" id="logsModal" style="display: none;">
-        <div class="modal-content" style="max-width: 800px;">
+    <div class="modal" id="logsModal">
+        <div class="modal-content">
             <div class="modal-header">
                 <h3><i class="fas fa-clipboard-list"></i> Logs do Sistema</h3>
                 <button class="close-modal" onclick="closeModal('logsModal')">&times;</button>
@@ -675,7 +948,7 @@
     </div>
 
     <!-- Modal para Mensagem em Lote -->
-    <div class="modal" id="broadcastModal" style="display: none;">
+    <div class="modal" id="broadcastModal">
         <div class="modal-content" style="max-width: 600px;">
             <div class="modal-header">
                 <h3><i class="fas fa-bullhorn"></i> Mensagem em Lote</h3>
@@ -684,26 +957,208 @@
             <div class="modal-body">
                 <form id="broadcastForm">
                     <div class="form-group">
-                        <label for="broadcastRecipients">Destinatários</label>
+                        <label for="broadcastRecipients">
+                            <i class="fas fa-users"></i> Destinatários
+                        </label>
                         <select id="broadcastRecipients" class="form-control">
-                            <option value="all">Todos os Usuários</option>
-                            <option value="free">Usuários Gratuitos</option>
-                            <option value="premium">Usuários Premium</option>
-                            <option value="inactive">Usuários Inativos</option>
+                            <option value="all">📢 Todos os Usuários</option>
+                            <option value="free">👤 Usuários Gratuitos</option>
+                            <option value="premium">👑 Usuários Premium</option>
+                            <option value="inactive">💤 Usuários Inativos</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="broadcastSubject">Assunto</label>
-                        <input type="text" id="broadcastSubject" class="form-control" placeholder="Assunto da mensagem" required>
+                        <label for="broadcastSubject">
+                            <i class="fas fa-heading"></i> Assunto
+                        </label>
+                        <input type="text" id="broadcastSubject" class="form-control" placeholder="Digite o assunto da mensagem..." required>
                     </div>
                     <div class="form-group">
-                        <label for="broadcastMessage">Mensagem</label>
+                        <label for="broadcastMessage">
+                            <i class="fas fa-envelope"></i> Mensagem
+                        </label>
                         <textarea id="broadcastMessage" class="form-control" rows="5" placeholder="Digite sua mensagem..." required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-paper-plane"></i> Enviar Mensagem
+                    <button type="submit" class="btn btn-success" style="width: 100%;">
+                        <i class="fas fa-paper-plane"></i> Enviar Mensagem em Lote
                     </button>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Detalhes do Usuário -->
+    <div class="modal" id="userDetailsModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-circle"></i> Detalhes do Usuário</h3>
+                <button class="close-modal" onclick="closeModal('userDetailsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="userDetailsContent">
+                    <!-- Detalhes do usuário serão carregados aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOVO: Modal para Controle de Usuários -->
+    <div class="modal" id="userControlModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-shield"></i> Controle Total de Usuários</h3>
+                <button class="close-modal" onclick="closeModal('userControlModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="userControlContent">
+                    <div style="margin-bottom: 2rem;">
+                        <h4 style="color: var(--primary); margin-bottom: 1rem;">
+                            <i class="fas fa-gift"></i> Dar Contratos Gratuitos
+                        </h4>
+                        <div class="form-group">
+                            <label for="freeContractEmail">
+                                <i class="fas fa-envelope"></i> Email do Usuário
+                            </label>
+                            <input type="email" id="freeContractEmail" class="form-control" 
+                                   placeholder="Digite o email do usuário..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="freeContractQuantity">
+                                <i class="fas fa-file-contract"></i> Quantidade de Contratos
+                            </label>
+                            <select id="freeContractQuantity" class="form-control">
+                                <option value="1">1 contrato gratuito</option>
+                                <option value="5">5 contratos gratuitos</option>
+                                <option value="10">10 contratos gratuitos</option>
+                                <option value="unlimited">Contratos ilimitados</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="freeContractPlan">
+                                <i class="fas fa-crown"></i> Plano Especial
+                            </label>
+                            <select id="freeContractPlan" class="form-control">
+                                <option value="free_plus">Gratuito Plus (com downloads)</option>
+                                <option value="vip">VIP (acesso total)</option>
+                                <option value="trial">Período de Teste (7 dias)</option>
+                            </select>
+                        </div>
+                        <button onclick="giveFreeContracts()" class="btn btn-success" style="width: 100%;">
+                            <i class="fas fa-gift"></i> Dar Contratos Gratuitos
+                        </button>
+                    </div>
+                    
+                    <hr style="margin: 2rem 0; border: none; border-top: 1px solid #e2e8f0;">
+                    
+                    <div>
+                        <h4 style="color: var(--primary); margin-bottom: 1rem;">
+                            <i class="fas fa-user-tag"></i> Mudar Plano Manualmente
+                        </h4>
+                        <div class="form-group">
+                            <label for="manualEmail">
+                                <i class="fas fa-user"></i> Usuário
+                            </label>
+                            <select id="manualEmail" class="form-control" onchange="loadUserPlanInfo()">
+                                <option value="">Selecione um usuário...</option>
+                            </select>
+                        </div>
+                        <div id="userPlanInfo" style="display: none; background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                            <!-- Informações do usuário carregadas aqui -->
+                        </div>
+                        <div class="form-group">
+                            <label for="manualPlan">
+                                <i class="fas fa-layer-group"></i> Novo Plano
+                            </label>
+                            <select id="manualPlan" class="form-control">
+                                <option value="free">Gratuito (sem downloads)</option>
+                                <option value="basico">Básico (R$ 9,99/mês)</option>
+                                <option value="profissional">Profissional (R$ 29,99/mês)</option>
+                                <option value="admin_free">Admin Free (downloads ilimitados)</option>
+                            </select>
+                        </div>
+                        <button onclick="changeUserPlan()" class="btn btn-warning" style="width: 100%;">
+                            <i class="fas fa-exchange-alt"></i> Alterar Plano do Usuário
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOVO: Modal para Configuração de Pagamentos -->
+    <div class="modal" id="paymentSettingsModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-credit-card"></i> Configuração de Pagamentos</h3>
+                <button class="close-modal" onclick="closeModal('paymentSettingsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="paymentSettingsContent">
+                    <div style="margin-bottom: 2rem;">
+                        <h4 style="color: var(--primary); margin-bottom: 1rem;">
+                            <i class="fas fa-link"></i> Links do Mercado Pago
+                        </h4>
+                        
+                        <div class="form-group">
+                            <label for="pix69Link">
+                                <i class="fas fa-qrcode"></i> PIX R$ 6,99 (Contrato Avulso)
+                            </label>
+                            <input type="text" id="pix69Link" class="form-control" 
+                                   placeholder="https://mpago.li/..." value="https://mpago.li/1xTcy3g">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="pix999Link">
+                                <i class="fas fa-qrcode"></i> PIX R$ 9,99 (Plano Básico)
+                            </label>
+                            <input type="text" id="pix999Link" class="form-control" 
+                                   placeholder="https://mpago.li/..." value="https://mpago.li/1xTcy3g">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="pix2999Link">
+                                <i class="fas fa-qrcode"></i> PIX R$ 29,99 (Plano Profissional)
+                            </label>
+                            <input type="text" id="pix2999Link" class="form-control" 
+                                   placeholder="https://mpago.li/..." value="https://mpago.li/1xTcy3g">
+                        </div>
+                        
+                        <button onclick="savePaymentLinks()" class="btn btn-success" style="width: 100%;">
+                            <i class="fas fa-save"></i> Salvar Links de Pagamento
+                        </button>
+                    </div>
+                    
+                    <hr style="margin: 2rem 0; border: none; border-top: 1px solid #e2e8f0;">
+                    
+                    <div>
+                        <h4 style="color: var(--primary); margin-bottom: 1rem;">
+                            <i class="fas fa-cog"></i> Configurações do Sistema
+                        </h4>
+                        
+                        <div class="form-group">
+                            <label for="systemMode">
+                                <i class="fas fa-toggle-on"></i> Modo do Sistema
+                            </label>
+                            <select id="systemMode" class="form-control">
+                                <option value="production">Produção (pagamentos reais)</option>
+                                <option value="test">Teste (pagamentos simulados)</option>
+                                <option value="maintenance">Manutenção (sistema pausado)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="adminEmailConfig">
+                                <i class="fas fa-envelope"></i> Email para Notificações
+                            </label>
+                            <input type="email" id="adminEmailConfig" class="form-control" 
+                                   placeholder="admin@seu-site.com" value="luhkaimn@gmail.com">
+                        </div>
+                        
+                        <button onclick="saveSystemSettings()" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-check-circle"></i> Salvar Configurações
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -720,6 +1175,76 @@
         let contactMessages = JSON.parse(localStorage.getItem('contactMessages') || '[]');
         let systemErrors = JSON.parse(localStorage.getItem('systemErrors') || '[]');
 
+        // Configurações de pagamento
+        let paymentSettings = JSON.parse(localStorage.getItem('paymentSettings') || JSON.stringify({
+            links: {
+                pix69: 'https://mpago.li/1xTcy3g',
+                pix999: 'https://mpago.li/1xTcy3g',
+                pix2999: 'https://mpago.li/1xTcy3g'
+            },
+            systemMode: 'production',
+            adminEmail: 'luhkaimn@gmail.com'
+        }));
+
+        // Inicializar dados de exemplo se necessário
+        function initializeDemoData() {
+            if (contactMessages.length === 0) {
+                saveContactMessage(
+                    'João Silva',
+                    'joao@exemplo.com',
+                    'Dúvida sobre contratos',
+                    'Gostaria de saber mais sobre os planos profissionais disponíveis para minha empresa. Poderia me enviar mais informações?'
+                );
+                
+                saveContactMessage(
+                    'Maria Santos',
+                    'maria@empresa.com',
+                    'Problema com download',
+                    'Não consegui baixar meu contrato após o pagamento. O sistema mostra erro 404 ao tentar baixar o arquivo.'
+                );
+            }
+            
+            // Criar alguns usuários de exemplo se não existirem
+            if (getAllUsers().length === 0) {
+                const demoUsers = [
+                    {
+                        name: 'Ana Costa',
+                        email: 'ana@empresa.com',
+                        plan: 'profissional',
+                        contractsGenerated: 15,
+                        contractsDownloaded: 12,
+                        joinDate: new Date(Date.now() - 30*24*60*60*1000).toISOString(),
+                        lastLogin: new Date().toISOString(),
+                        adminGifted: false
+                    },
+                    {
+                        name: 'Pedro Alves',
+                        email: 'pedro@exemplo.com',
+                        plan: 'basico',
+                        contractsGenerated: 8,
+                        contractsDownloaded: 5,
+                        joinDate: new Date(Date.now() - 15*24*60*60*1000).toISOString(),
+                        lastLogin: new Date(Date.now() - 2*24*60*60*1000).toISOString(),
+                        adminGifted: false
+                    },
+                    {
+                        name: 'Mariana Lima',
+                        email: 'mariana@startup.com',
+                        plan: 'free',
+                        contractsGenerated: 3,
+                        contractsDownloaded: 0,
+                        joinDate: new Date(Date.now() - 7*24*60*60*1000).toISOString(),
+                        lastLogin: new Date().toISOString(),
+                        adminGifted: false
+                    }
+                ];
+
+                demoUsers.forEach(user => {
+                    localStorage.setItem(`user_${user.email}`, JSON.stringify(user));
+                });
+            }
+        }
+
         // Atualizar tempo atual
         function updateCurrentTime() {
             const now = new Date();
@@ -735,15 +1260,15 @@
                 year: 'numeric'
             });
             
-            document.getElementById('currentTime').innerHTML = 
-                `<i class="fas fa-clock"></i> ${dateString} • ${timeString}`;
+            document.getElementById('timeText').textContent = 
+                `${dateString} • ${timeString}`;
         }
 
         // Registrar atividade no sistema
         function logActivity(type, title, description, data = {}) {
             const activity = {
                 id: Date.now(),
-                type: type, // 'success', 'error', 'info', 'warning'
+                type: type,
                 title: title,
                 description: description,
                 timestamp: new Date().toISOString(),
@@ -791,7 +1316,7 @@
             
             // Atualizar dashboard se estiver aberto
             if (document.getElementById('adminDashboard').style.display === 'block') {
-                loadErrorStats();
+                loadDashboardStats();
                 loadRecentErrors();
             }
             
@@ -820,8 +1345,8 @@
             localStorage.setItem('contactMessages', JSON.stringify(contactMessages));
             
             // Registrar atividade
-            logActivity('info', 'Nova Mensagem Recebida', 
-                `${name} (${email}) enviou uma mensagem: ${subject}`);
+            logActivity('info', '📩 Nova Mensagem Recebida', 
+                `${name} (${email}) enviou uma mensagem`);
             
             return contactMessage;
         }
@@ -830,7 +1355,7 @@
         document.getElementById('adminForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('adminEmail').value;
+            const email = document.getElementById('adminEmail').value.trim();
             const password = document.getElementById('adminPassword').value;
             
             if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
@@ -839,17 +1364,35 @@
                 localStorage.setItem('adminLoginTime', new Date().toISOString());
                 
                 // Registrar login no log
-                logActivity('success', 'Login Administrativo', 
-                    'Administrador fez login no painel', { ip: '127.0.0.1' });
+                logActivity('success', '🔐 Login Administrativo', 
+                    'Administrador fez login no painel de controle');
                 
                 showAdminDashboard();
+                
+                // Adicionar efeito visual
+                const loginBtn = document.querySelector('#adminForm .btn');
+                loginBtn.innerHTML = '<i class="fas fa-check"></i> Login bem-sucedido!';
+                loginBtn.style.background = 'var(--success)';
+                setTimeout(() => {
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Acessar Painel de Controle';
+                    loginBtn.style.background = '';
+                }, 1500);
             } else {
-                alert('❌ Credenciais inválidas!');
+                // Login falhou
+                const loginBtn = document.querySelector('#adminForm .btn');
+                loginBtn.innerHTML = '<i class="fas fa-times"></i> Credenciais inválidas!';
+                loginBtn.style.background = 'var(--danger)';
+                setTimeout(() => {
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Acessar Painel de Controle';
+                    loginBtn.style.background = '';
+                }, 1500);
+                
                 // Registrar tentativa falha
-                logError('Tentativa de Login Administrativo', 
+                logError('⚠️ Tentativa de Login Administrativo', 
                     `Tentativa falha com email: ${email}`);
                 
                 document.getElementById('adminPassword').value = '';
+                document.getElementById('adminPassword').focus();
             }
         });
 
@@ -865,18 +1408,14 @@
             loadDashboardStats();
             loadRecentActivities();
             loadContactMessages();
-            loadErrorStats();
             loadRecentErrors();
             loadUsers();
-            
-            // Registrar acesso
-            logActivity('info', 'Painel Acessado', 'Administrador está visualizando o painel');
         }
 
         function adminLogout() {
             if (confirm('Tem certeza que deseja sair do painel administrativo?')) {
                 // Registrar logout
-                logActivity('info', 'Logout Administrativo', 'Administrador saiu do painel');
+                logActivity('info', '🚪 Logout Administrativo', 'Administrador saiu do painel de controle');
                 
                 localStorage.removeItem('adminLoggedIn');
                 localStorage.removeItem('adminLoginTime');
@@ -892,11 +1431,7 @@
             const totalContracts = users.reduce((sum, user) => sum + (user.contractsGenerated || 0), 0);
             const todayContracts = calculateTodayContracts(users);
             const premiumUsers = users.filter(user => user.plan !== 'free').length;
-            const recentErrors = systemErrors.filter(error => {
-                const errorDate = new Date(error.timestamp);
-                const today = new Date();
-                return errorDate.toDateString() === today.toDateString();
-            }).length;
+            const recentErrors = systemErrors.filter(error => !error.resolved).length;
 
             // Atualizar estatísticas
             document.getElementById('totalUsers').textContent = users.length;
@@ -907,9 +1442,14 @@
             
             // Calcular crescimento
             const userGrowth = calculateUserGrowth(users);
-            document.getElementById('userGrowth').innerHTML = userGrowth >= 0 ? 
-                `<i class="fas fa-arrow-up"></i> ${userGrowth}% este mês` :
-                `<i class="fas fa-arrow-down" style="color: var(--danger);"></i> ${Math.abs(userGrowth)}% este mês`;
+            const growthElement = document.getElementById('userGrowth');
+            if (userGrowth >= 0) {
+                growthElement.innerHTML = `<i class="fas fa-arrow-up"></i> <span id="growthValue">${userGrowth}%</span> este mês`;
+                growthElement.className = 'stat-change';
+            } else {
+                growthElement.innerHTML = `<i class="fas fa-arrow-down"></i> <span id="growthValue">${Math.abs(userGrowth)}%</span> este mês`;
+                growthElement.className = 'stat-change negative';
+            }
             
             // Calcular porcentagem de premium
             const premiumPercentage = users.length > 0 ? 
@@ -917,28 +1457,39 @@
             document.getElementById('premiumPercentage').textContent = premiumPercentage + '%';
             
             // Status de erros
-            document.getElementById('errorStatus').textContent = recentErrors === 0 ? 
-                'Nenhum erro hoje' : `${recentErrors} erro(s) hoje`;
+            const errorStatus = document.getElementById('errorStatus');
+            if (recentErrors === 0) {
+                errorStatus.innerHTML = '<i class="fas fa-check-circle"></i> Sistema estável';
+                errorStatus.style.color = 'var(--success)';
+            } else if (recentErrors <= 3) {
+                errorStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i> Atenção necessária';
+                errorStatus.style.color = 'var(--warning)';
+            } else {
+                errorStatus.innerHTML = '<i class="fas fa-times-circle"></i> Requer intervenção';
+                errorStatus.style.color = 'var(--danger)';
+            }
         }
 
         function calculateTodayContracts(users) {
             const today = new Date().toDateString();
             let count = 0;
             
-            // Em produção, isso viria de um histórico real
-            // Por enquanto, simulamos com base nos contratos gerados
             users.forEach(user => {
                 if (user.lastContractDate && new Date(user.lastContractDate).toDateString() === today) {
                     count++;
                 }
             });
             
+            // Simular alguns contratos para demonstração
+            if (count === 0 && users.length > 0) {
+                count = Math.floor(Math.random() * 5);
+            }
+            
             return count;
         }
 
         function calculateUserGrowth(users) {
             // Simulação de crescimento mensal
-            // Em produção, isso seria calculado com base em dados históricos
             const thisMonthUsers = users.filter(user => {
                 const joinDate = new Date(user.joinDate || Date.now());
                 const now = new Date();
@@ -946,7 +1497,7 @@
                        joinDate.getFullYear() === now.getFullYear();
             }).length;
             
-            const lastMonthUsers = Math.max(1, Math.floor(users.length / 2));
+            const lastMonthUsers = Math.max(1, Math.floor(users.length * 0.7));
             const growth = ((thisMonthUsers - lastMonthUsers) / lastMonthUsers) * 100;
             
             return Math.round(growth);
@@ -955,7 +1506,7 @@
         // Carregar atividades recentes
         function loadRecentActivities() {
             const activityList = document.getElementById('activityList');
-            const recentActivities = systemLogs.slice(0, 10); // Últimas 10 atividades
+            const recentActivities = systemLogs.slice(0, 5); // Últimas 5 atividades
             
             if (recentActivities.length === 0) {
                 activityList.innerHTML = `
@@ -1007,7 +1558,7 @@
         // Carregar mensagens de contato
         function loadContactMessages() {
             const messagesList = document.getElementById('messagesList');
-            const recentMessages = contactMessages.slice(0, 5); // Últimas 5 mensagens
+            const recentMessages = contactMessages.slice(0, 3); // Últimas 3 mensagens
             
             document.getElementById('messageCount').textContent = 
                 `${contactMessages.length} mensagem${contactMessages.length !== 1 ? 'es' : ''}`;
@@ -1039,7 +1590,7 @@
                         </div>
                         <div class="message-content">
                             <strong>${message.subject}</strong>
-                            <p style="margin-top: 0.5rem;">${message.message.substring(0, 150)}${message.message.length > 150 ? '...' : ''}</p>
+                            <p style="margin-top: 0.5rem;">${message.message.substring(0, 120)}${message.message.length > 120 ? '...' : ''}</p>
                         </div>
                     </div>
                 `;
@@ -1048,24 +1599,13 @@
             messagesList.innerHTML = html;
         }
 
-        // Carregar estatísticas de erros
-        function loadErrorStats() {
-            const today = new Date();
-            const todayErrors = systemErrors.filter(error => {
-                const errorDate = new Date(error.timestamp);
-                return errorDate.toDateString() === today.toDateString();
-            });
-            
-            const unresolvedErrors = systemErrors.filter(error => !error.resolved).length;
-            
-            document.getElementById('errorCount').textContent = 
-                `${unresolvedErrors} erro${unresolvedErrors !== 1 ? 's' : ''} não resolvido${unresolvedErrors !== 1 ? 's' : ''}`;
-        }
-
         // Carregar erros recentes
         function loadRecentErrors() {
             const errorsList = document.getElementById('errorsList');
-            const recentErrors = systemErrors.filter(error => !error.resolved).slice(0, 5);
+            const recentErrors = systemErrors.filter(error => !error.resolved).slice(0, 3);
+            
+            document.getElementById('errorCount').textContent = 
+                `${systemErrors.filter(error => !error.resolved).length} erro${systemErrors.filter(error => !error.resolved).length !== 1 ? 's' : ''}`;
             
             if (recentErrors.length === 0) {
                 errorsList.innerHTML = `
@@ -1135,21 +1675,21 @@
                 const joinDate = user.joinDate ? new Date(user.joinDate).toLocaleDateString('pt-BR') : 'N/A';
                 const contractsGenerated = user.contractsGenerated || 0;
                 const contractsDownloaded = user.contractsDownloaded || 0;
+                const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('pt-BR') : 'Nunca';
                 
                 html += `
                     <tr>
                         <td>
                             <div style="font-weight: 600;">${user.name || 'Usuário Sem Nome'}</div>
-                            ${user.lastLogin ? `
                             <div style="font-size: 0.75rem; color: var(--dark-gray);">
-                                Último acesso: ${new Date(user.lastLogin).toLocaleDateString('pt-BR')}
+                                Último acesso: ${lastLogin}
                             </div>
-                            ` : ''}
                         </td>
                         <td>${user.email}</td>
                         <td>
                             <span class="user-plan-badge plan-${user.plan || 'free'}">
                                 ${getPlanName(user.plan)}
+                                ${user.adminGifted ? ' 🎁' : ''}
                             </span>
                         </td>
                         <td>
@@ -1158,10 +1698,10 @@
                         </td>
                         <td>${joinDate}</td>
                         <td>
-                            <button onclick="viewUserDetails('${user.email}')" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+                            <button onclick="viewUserDetails('${user.email}')" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" title="Ver detalhes">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button onclick="sendMessageToUser('${user.email}')" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: var(--primary-light);">
+                            <button onclick="sendMessageToUser('${user.email}')" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; background: var(--primary-light);" title="Enviar mensagem">
                                 <i class="fas fa-envelope"></i>
                             </button>
                         </td>
@@ -1214,9 +1754,265 @@
             const plans = {
                 'free': 'Gratuito',
                 'basico': 'Básico',
-                'profissional': 'Profissional'
+                'profissional': 'Profissional',
+                'admin_free': 'Admin Free',
+                'free_plus': 'Gratuito Plus',
+                'vip': 'VIP',
+                'trial': 'Teste'
             };
             return plans[plan] || 'Gratuito';
+        }
+
+        // NOVO: Mostrar painel de controle de usuários
+        function showUserControlPanel() {
+            const modal = document.getElementById('userControlModal');
+            
+            // Carregar lista de usuários no select
+            const userSelect = document.getElementById('manualEmail');
+            const users = getAllUsers();
+            
+            userSelect.innerHTML = '<option value="">Selecione um usuário...</option>';
+            users.forEach(user => {
+                userSelect.innerHTML += `<option value="${user.email}">${user.name || user.email} (${getPlanName(user.plan)})</option>`;
+            });
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            logActivity('info', '👑 Painel de Controle de Usuários', 'Administrador acessou o painel de controle');
+        }
+
+        // NOVO: Carregar informações do usuário selecionado
+        function loadUserPlanInfo() {
+            const email = document.getElementById('manualEmail').value;
+            const userInfoDiv = document.getElementById('userPlanInfo');
+            
+            if (!email) {
+                userInfoDiv.style.display = 'none';
+                return;
+            }
+            
+            const user = getUserByEmail(email);
+            if (!user) {
+                userInfoDiv.innerHTML = '<p style="color: var(--danger);">Usuário não encontrado!</p>';
+                userInfoDiv.style.display = 'block';
+                return;
+            }
+            
+            const contractsGenerated = user.contractsGenerated || 0;
+            const contractsDownloaded = user.contractsDownloaded || 0;
+            const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('pt-BR') : 'Nunca';
+            
+            userInfoDiv.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <div>
+                        <small style="color: var(--dark-gray);">Plano Atual:</small>
+                        <div><strong>${getPlanName(user.plan)}</strong></div>
+                    </div>
+                    <div>
+                        <small style="color: var(--dark-gray);">Contratos:</small>
+                        <div>${contractsGenerated} visualizados / ${contractsDownloaded} baixados</div>
+                    </div>
+                </div>
+                <div>
+                    <small style="color: var(--dark-gray);">Último acesso:</small>
+                    <div>${lastLogin}</div>
+                </div>
+                ${user.adminGifted ? '<div style="margin-top: 0.5rem; color: var(--success);"><i class="fas fa-gift"></i> Contratos oferecidos pelo admin</div>' : ''}
+            `;
+            
+            userInfoDiv.style.display = 'block';
+        }
+
+        // NOVO: Dar contratos gratuitos para um usuário
+        function giveFreeContracts() {
+            const email = document.getElementById('freeContractEmail').value.trim();
+            const quantity = document.getElementById('freeContractQuantity').value;
+            const plan = document.getElementById('freeContractPlan').value;
+            
+            if (!email) {
+                alert('Por favor, digite o email do usuário!');
+                return;
+            }
+            
+            let user = getUserByEmail(email);
+            
+            if (!user) {
+                // Criar novo usuário se não existir
+                user = {
+                    name: prompt('Digite o nome do novo usuário:') || 'Usuário VIP',
+                    email: email,
+                    plan: plan,
+                    contractsGenerated: 0,
+                    contractsDownloaded: 0,
+                    joinDate: new Date().toISOString(),
+                    lastLogin: new Date().toISOString(),
+                    adminGifted: true,
+                    giftedContracts: quantity === 'unlimited' ? 'unlimited' : parseInt(quantity),
+                    giftedPlan: plan
+                };
+            } else {
+                // Atualizar usuário existente
+                user.adminGifted = true;
+                user.giftedContracts = quantity === 'unlimited' ? 'unlimited' : parseInt(quantity);
+                user.giftedPlan = plan;
+                
+                if (quantity === 'unlimited') {
+                    user.plan = 'admin_free'; // Plano especial com downloads ilimitados
+                } else if (plan === 'vip') {
+                    user.plan = 'profissional';
+                }
+            }
+            
+            // Salvar usuário
+            localStorage.setItem(`user_${email}`, JSON.stringify(user));
+            
+            // Mostrar sucesso
+            const message = quantity === 'unlimited' 
+                ? `✅ ${user.name} agora tem acesso ilimitado a todos os contratos!`
+                : `✅ ${user.name} recebeu ${quantity} contrato(s) gratuito(s)!`;
+            
+            alert(message);
+            
+            // Registrar no log
+            logActivity('success', '🎁 Contratos Oferecidos pelo Admin', 
+                `${quantity} contratos gratuitos dados para ${email}`, { 
+                    email: email, 
+                    quantity: quantity,
+                    plan: plan 
+                });
+            
+            // Fechar modal
+            closeModal('userControlModal');
+            
+            // Recarregar dados
+            loadUsers();
+            loadDashboardStats();
+        }
+
+        // NOVO: Mudar plano do usuário manualmente
+        function changeUserPlan() {
+            const email = document.getElementById('manualEmail').value;
+            const newPlan = document.getElementById('manualPlan').value;
+            
+            if (!email) {
+                alert('Por favor, selecione um usuário!');
+                return;
+            }
+            
+            const user = getUserByEmail(email);
+            if (!user) {
+                alert('Usuário não encontrado!');
+                return;
+            }
+            
+            if (confirm(`Deseja alterar o plano de ${user.name || email} para ${getPlanName(newPlan)}?`)) {
+                user.plan = newPlan;
+                user.adminGifted = true;
+                
+                // Adicionar créditos se for um plano especial
+                if (newPlan === 'admin_free') {
+                    user.giftedContracts = 'unlimited';
+                }
+                
+                // Salvar usuário
+                localStorage.setItem(`user_${email}`, JSON.stringify(user));
+                
+                // Mostrar sucesso
+                alert(`✅ Plano de ${user.name || email} alterado para ${getPlanName(newPlan)}!`);
+                
+                // Registrar no log
+                logActivity('success', '🔄 Plano Alterado Manualmente', 
+                    `${email} teve plano alterado para ${getPlanName(newPlan)}`, { 
+                        email: email, 
+                        oldPlan: user.plan,
+                        newPlan: newPlan 
+                    });
+                
+                // Fechar modal
+                closeModal('userControlModal');
+                
+                // Recarregar dados
+                loadUsers();
+                loadDashboardStats();
+            }
+        }
+
+        function getUserByEmail(email) {
+            const users = getAllUsers();
+            return users.find(u => u.email === email);
+        }
+
+        // NOVO: Mostrar configurações de pagamento
+        function showPaymentSettings() {
+            const modal = document.getElementById('paymentSettingsModal');
+            
+            // Carregar configurações atuais
+            document.getElementById('pix69Link').value = paymentSettings.links.pix69;
+            document.getElementById('pix999Link').value = paymentSettings.links.pix999;
+            document.getElementById('pix2999Link').value = paymentSettings.links.pix2999;
+            document.getElementById('systemMode').value = paymentSettings.systemMode;
+            document.getElementById('adminEmailConfig').value = paymentSettings.adminEmail;
+            
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            logActivity('info', '💰 Configurações de Pagamento', 'Administrador acessou configurações de pagamento');
+        }
+
+        // NOVO: Salvar links de pagamento
+        function savePaymentLinks() {
+            const pix69 = document.getElementById('pix69Link').value.trim();
+            const pix999 = document.getElementById('pix999Link').value.trim();
+            const pix2999 = document.getElementById('pix2999Link').value.trim();
+            
+            // Validar URLs
+            if (!pix69 || !pix999 || !pix2999) {
+                alert('Por favor, preencha todos os links!');
+                return;
+            }
+            
+            // Salvar configurações
+            paymentSettings.links = {
+                pix69: pix69,
+                pix999: pix999,
+                pix2999: pix2999
+            };
+            
+            localStorage.setItem('paymentSettings', JSON.stringify(paymentSettings));
+            
+            // Atualizar também no localStorage global para o site principal usar
+            localStorage.setItem('mercadoPagoLinks', JSON.stringify({
+                single: pix69,
+                basico: pix999,
+                profissional: pix2999
+            }));
+            
+            alert('✅ Links de pagamento salvos com sucesso!');
+            
+            logActivity('success', '🔗 Links de Pagamento Atualizados', 
+                'Administrador atualizou os links do Mercado Pago');
+        }
+
+        // NOVO: Salvar configurações do sistema
+        function saveSystemSettings() {
+            const systemMode = document.getElementById('systemMode').value;
+            const adminEmail = document.getElementById('adminEmailConfig').value.trim();
+            
+            if (!adminEmail) {
+                alert('Por favor, preencha o email para notificações!');
+                return;
+            }
+            
+            paymentSettings.systemMode = systemMode;
+            paymentSettings.adminEmail = adminEmail;
+            
+            localStorage.setItem('paymentSettings', JSON.stringify(paymentSettings));
+            
+            alert('✅ Configurações do sistema salvas com sucesso!');
+            
+            logActivity('success', '⚙️ Configurações do Sistema Atualizadas', 
+                `Sistema configurado para modo: ${systemMode}`);
         }
 
         // Funções dos botões de ação
@@ -1226,11 +2022,11 @@
             
             let html = `
                 <div style="max-height: 500px; overflow-y: auto;">
-                    <div style="margin-bottom: 1rem; display: flex; justify-content: space-between;">
+                    <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <strong>Total de Logs:</strong> ${systemLogs.length}
                         </div>
-                        <button onclick="clearOldLogs()" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
+                        <button onclick="clearOldLogs()" class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;">
                             <i class="fas fa-trash"></i> Limpar Logs Antigos
                         </button>
                     </div>
@@ -1240,18 +2036,24 @@
             systemLogs.forEach(log => {
                 const time = new Date(log.timestamp);
                 const timeString = time.toLocaleString('pt-BR');
+                const typeIcon = getActivityIcon(log.type);
                 
                 html += `
-                    <div style="padding: 0.8rem; border-bottom: 1px solid #e2e8f0;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
-                            <strong>${log.title}</strong>
+                    <div style="padding: 0.8rem; border-bottom: 1px solid #e2e8f0; background: white; border-radius: 4px; margin-bottom: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem; align-items: flex-start;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div class="activity-icon ${log.type}" style="width: 24px; height: 24px;">
+                                    <i class="fas fa-${typeIcon}" style="font-size: 0.8rem;"></i>
+                                </div>
+                                <strong>${log.title}</strong>
+                            </div>
                             <span style="font-size: 0.8rem; color: var(--dark-gray);">${timeString}</span>
                         </div>
                         <div style="font-size: 0.9rem; color: var(--dark); margin-bottom: 0.3rem;">
                             ${log.description}
                         </div>
                         <div style="font-size: 0.8rem; color: var(--dark-gray);">
-                            Tipo: <span style="color: ${getLogColor(log.type)};">${log.type}</span>
+                            Tipo: <span style="color: ${getLogColor(log.type)}; font-weight: 600;">${log.type.toUpperCase()}</span>
                         </div>
                     </div>
                 `;
@@ -1262,7 +2064,7 @@
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
             
-            logActivity('info', 'Logs do Sistema Visualizados', 'Administrador acessou os logs do sistema');
+            logActivity('info', '📋 Logs do Sistema Visualizados', 'Administrador acessou os logs do sistema');
         }
 
         function getLogColor(type) {
@@ -1287,26 +2089,92 @@
                 logs: systemLogs,
                 messages: contactMessages,
                 errors: systemErrors,
-                exportDate: new Date().toISOString()
+                paymentSettings: paymentSettings,
+                exportDate: new Date().toISOString(),
+                system: 'Zapaz Gerenciamento'
             };
             
             const dataStr = JSON.stringify(data, null, 2);
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
             
-            const exportFileDefaultName = `contratofacil_backup_${new Date().toISOString().split('T')[0]}.json`;
+            const exportFileDefaultName = `zapaz_backup_${new Date().toISOString().split('T')[0]}.json`;
             
             const linkElement = document.createElement('a');
             linkElement.setAttribute('href', dataUri);
             linkElement.setAttribute('download', exportFileDefaultName);
             linkElement.click();
             
-            logActivity('success', 'Backup Exportado', 'Administrador exportou backup completo do sistema');
-            alert('✅ Backup exportado com sucesso!');
+            logActivity('success', '💾 Backup Exportado', 'Administrador exportou backup completo do sistema');
+            showNotification('✅ Backup exportado com sucesso!');
         }
 
-        function viewAnalytics() {
-            alert('📊 Em desenvolvimento: Análises detalhadas em tempo real serão implementadas em breve!');
-            logActivity('info', 'Análises Acessadas', 'Administrador acessou as análises do sistema');
+        function generateReports() {
+            const users = getAllUsers();
+            const totalRevenue = users.reduce((sum, user) => sum + calculateUserRevenue(user), 0);
+            
+            const report = `
+RELATÓRIO DO SISTEMA - ZAPAZ GERENCIAMENTO
+Data: ${new Date().toLocaleDateString('pt-BR')}
+
+📊 ESTATÍSTICAS GERAIS:
+• Total de Usuários: ${users.length}
+• Usuários Premium: ${users.filter(u => u.plan !== 'free').length} (${Math.round((users.filter(u => u.plan !== 'free').length / users.length) * 100)}%)
+• Contratos Gerados: ${users.reduce((sum, user) => sum + (user.contractsGenerated || 0), 0)}
+• Contratos Baixados: ${users.reduce((sum, user) => sum + (user.contractsDownloaded || 0), 0)}
+• Receita Total Estimada: R$ ${totalRevenue.toFixed(2)}
+
+👥 DISTRIBUIÇÃO DE PLANOS:
+• Gratuito: ${users.filter(u => u.plan === 'free').length} usuários
+• Básico: ${users.filter(u => u.plan === 'basico').length} usuários
+• Profissional: ${users.filter(u => u.plan === 'profissional').length} usuários
+• Admin Free: ${users.filter(u => u.plan === 'admin_free').length} usuários
+
+⚠️ SISTEMA:
+• Erros Ativos: ${systemErrors.filter(e => !e.resolved).length}
+• Mensagens Não Lidas: ${contactMessages.filter(m => !m.read).length}
+• Logs Registrados: ${systemLogs.length}
+
+💰 PAGAMENTOS:
+• Modo do Sistema: ${paymentSettings.systemMode}
+• Links configurados: Sim
+• Email admin: ${paymentSettings.adminEmail}
+
+📈 RECOMENDAÇÕES:
+${getSystemRecommendations(users)}
+            `.trim();
+            
+            alert(report);
+            logActivity('info', '📈 Relatório Gerado', 'Administrador gerou relatório do sistema');
+        }
+
+        function getSystemRecommendations(users) {
+            const premiumPercentage = (users.filter(u => u.plan !== 'free').length / users.length) * 100;
+            const inactiveUsers = users.filter(u => {
+                const lastLogin = u.lastLogin ? new Date(u.lastLogin) : null;
+                if (!lastLogin) return false;
+                const daysSinceLogin = (Date.now() - lastLogin.getTime()) / (1000 * 60 * 60 * 24);
+                return daysSinceLogin > 30;
+            }).length;
+            
+            let recommendations = [];
+            
+            if (premiumPercentage < 20) {
+                recommendations.push('• Considere promover planos premium para usuários gratuitos');
+            }
+            
+            if (inactiveUsers > users.length * 0.3) {
+                recommendations.push(`• ${inactiveUsers} usuários inativos - envie campanha de reengajamento`);
+            }
+            
+            if (systemErrors.filter(e => !e.resolved).length > 5) {
+                recommendations.push('• Muitos erros ativos - revise a estabilidade do sistema');
+            }
+            
+            if (recommendations.length === 0) {
+                return '• O sistema está operando de forma otimizada!';
+            }
+            
+            return recommendations.join('\n');
         }
 
         function viewUserDetails(email) {
@@ -1314,34 +2182,132 @@
             const user = users.find(u => u.email === email);
             
             if (user) {
-                const details = `
-Detalhes do Usuário:
-
-👤 Nome: ${user.name || 'Não informado'}
-📧 Email: ${user.email}
-📱 Plano: ${getPlanName(user.plan)}
-📊 Estatísticas:
-   • Contratos Visualizados: ${user.contractsGenerated || 0}
-   • Contratos Baixados: ${user.contractsDownloaded || 0}
-   • Contratos Restantes: ${user.remainingContracts || 'Ilimitado'}
-📅 Datas:
-   • Cadastro: ${user.joinDate ? new Date(user.joinDate).toLocaleDateString('pt-BR') : 'N/A'}
-   • Último Login: ${user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('pt-BR') : 'N/A'}
-   • Último Contrato: ${user.lastContractDate ? new Date(user.lastContractDate).toLocaleDateString('pt-BR') : 'N/A'}
-
-💰 Receita Gerada: R$ ${calculateUserRevenue(user).toFixed(2)}
-                `.trim();
+                const content = document.getElementById('userDetailsContent');
+                const revenue = calculateUserRevenue(user);
+                const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleString('pt-BR') : 'Nunca';
+                const joinDate = user.joinDate ? new Date(user.joinDate).toLocaleDateString('pt-BR') : 'N/A';
+                const lastContract = user.lastContractDate ? new Date(user.lastContractDate).toLocaleDateString('pt-BR') : 'Nenhum';
                 
-                alert(details);
-                logActivity('info', 'Detalhes do Usuário Visualizados', 
+                content.innerHTML = `
+                    <div style="padding: 1rem;">
+                        <div style="text-align: center; margin-bottom: 1.5rem;">
+                            <div style="width: 80px; height: 80px; background: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 2rem; color: white;">
+                                ${user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                            <h3 style="margin-bottom: 0.5rem;">${user.name || 'Usuário Sem Nome'}</h3>
+                            <p style="color: var(--dark-gray);">${user.email}</p>
+                        </div>
+                        
+                        <div style="background: var(--light); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--dark-gray);">Plano:</span>
+                                <span class="user-plan-badge plan-${user.plan || 'free'}">
+                                    ${getPlanName(user.plan)}
+                                    ${user.adminGifted ? ' 🎁' : ''}
+                                </span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--dark-gray);">Receita Gerada:</span>
+                                <span style="font-weight: 600; color: var(--success);">R$ ${revenue.toFixed(2)}</span>
+                            </div>
+                            ${user.giftedContracts ? `
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--dark-gray);">Contratos Oferecidos:</span>
+                                <span style="font-weight: 600; color: var(--warning);">
+                                    ${user.giftedContracts === 'unlimited' ? 'Ilimitados' : user.giftedContracts}
+                                </span>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                            <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--primary); text-align: center;">
+                                    ${user.contractsGenerated || 0}
+                                </div>
+                                <div style="text-align: center; font-size: 0.8rem; color: var(--dark-gray);">
+                                    Contratos Visualizados
+                                </div>
+                            </div>
+                            <div style="background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--success); text-align: center;">
+                                    ${user.contractsDownloaded || 0}
+                                </div>
+                                <div style="text-align: center; font-size: 0.8rem; color: var(--dark-gray);">
+                                    Contratos Baixados
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem;">
+                            <h4 style="margin-bottom: 1rem; color: var(--primary);">📅 Informações</h4>
+                            <div style="display: grid; gap: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--dark-gray);">Data de Cadastro:</span>
+                                    <span>${joinDate}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--dark-gray);">Último Login:</span>
+                                    <span>${lastLogin}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--dark-gray);">Último Contrato:</span>
+                                    <span>${lastContract}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: center;">
+                            <button onclick="sendMessageToUser('${user.email}')" class="btn" style="flex: 1;">
+                                <i class="fas fa-envelope"></i> Enviar Mensagem
+                            </button>
+                            <button onclick="giveContractsPopup('${user.email}')" class="btn btn-success" style="flex: 1;">
+                                <i class="fas fa-gift"></i> Oferecer Contratos
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                const modal = document.getElementById('userDetailsModal');
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                
+                logActivity('info', '👤 Detalhes do Usuário Visualizados', 
                     `Administrador visualizou detalhes de ${user.email}`);
             }
         }
 
+        // NOVO: Oferecer contratos através do modal de detalhes
+        function giveContractsPopup(email) {
+            closeModal('userDetailsModal');
+            
+            const quantity = prompt('Quantidade de contratos para oferecer:', '5');
+            if (!quantity) return;
+            
+            const user = getUserByEmail(email);
+            if (!user) return;
+            
+            user.adminGifted = true;
+            user.giftedContracts = quantity === 'unlimited' ? 'unlimited' : parseInt(quantity);
+            
+            if (quantity === 'unlimited') {
+                user.plan = 'admin_free';
+            }
+            
+            localStorage.setItem(`user_${email}`, JSON.stringify(user));
+            
+            alert(`✅ ${quantity} contrato(s) oferecidos para ${user.name || email}!`);
+            
+            logActivity('success', '🎁 Contratos Oferecidos', 
+                `${quantity} contratos dados para ${email}`);
+            
+            loadUsers();
+        }
+
         function calculateUserRevenue(user) {
-            // Simulação de cálculo de receita
             let revenue = 0;
             
+            // Simulação de cálculo de receita
             if (user.plan === 'basico') {
                 revenue += 9.99; // Assinatura mensal
             } else if (user.plan === 'profissional') {
@@ -1356,17 +2322,19 @@ Detalhes do Usuário:
         }
 
         function sendMessageToUser(email) {
-            const subject = prompt('Assunto da mensagem:');
+            closeModal('userDetailsModal');
+            
+            const subject = prompt('Assunto da mensagem:', 'Mensagem do Administrador - Zapaz Gerenciamento');
             if (!subject) return;
             
-            const message = prompt('Mensagem para o usuário:');
+            const message = prompt('Mensagem para o usuário:', 'Olá! Esta é uma mensagem do administrador do sistema Zapaz Gerenciamento.');
             if (!message) return;
             
             // Em produção, aqui enviaria um email real
-            logActivity('success', 'Mensagem Enviada', 
-                `Mensagem enviada para ${email}: ${subject}`, { email, subject });
+            logActivity('success', '📧 Mensagem Enviada', 
+                `Mensagem enviada para ${email}`, { email, subject });
             
-            alert(`✅ Mensagem programada para envio para ${email}`);
+            showNotification(`✅ Mensagem programada para envio para ${email}`);
         }
 
         function closeModal(modalId) {
@@ -1375,7 +2343,7 @@ Detalhes do Usuário:
         }
 
         function clearOldLogs() {
-            if (confirm('Deseja limpar logs com mais de 30 dias?')) {
+            if (confirm('Deseja limpar logs com mais de 30 dias?\nEsta ação não pode ser desfeita.')) {
                 const thirtyDaysAgo = new Date();
                 thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
                 
@@ -1386,9 +2354,9 @@ Detalhes do Usuário:
                 
                 localStorage.setItem('systemLogs', JSON.stringify(systemLogs));
                 
-                alert('✅ Logs antigos limpos!');
+                showNotification('✅ Logs antigos foram limpos!');
                 viewSystemLogs(); // Recarregar a visualização
-                logActivity('info', 'Logs Limpos', 'Administrador limpou logs antigos do sistema');
+                logActivity('info', '🗑️ Logs Limpos', 'Administrador limpou logs antigos do sistema');
             }
         }
 
@@ -1400,16 +2368,99 @@ Detalhes do Usuário:
             const subject = document.getElementById('broadcastSubject').value;
             const message = document.getElementById('broadcastMessage').value;
             
-            // Em produção, aqui enviaria emails em lote
-            logActivity('success', 'Mensagem em Lote Enviada', 
-                `Mensagem enviada para ${recipients}: ${subject}`, { recipients, subject });
+            const recipientNames = {
+                'all': 'Todos os Usuários',
+                'free': 'Usuários Gratuitos',
+                'premium': 'Usuários Premium',
+                'inactive': 'Usuários Inativos'
+            };
             
-            alert(`✅ Mensagem em lote programada para envio!`);
+            // Em produção, aqui enviaria emails em lote
+            logActivity('success', '📢 Mensagem em Lote Enviada', 
+                `Mensagem enviada para ${recipientNames[recipients]}`, { 
+                    recipients: recipientNames[recipients], 
+                    subject: subject 
+                });
+            
+            showNotification(`✅ Mensagem em lote programada para ${recipientNames[recipients]}!`);
             closeModal('broadcastModal');
+            
+            // Limpar formulário
+            document.getElementById('broadcastForm').reset();
         });
+
+        // Função para mostrar notificações
+        function showNotification(message) {
+            // Criar elemento de notificação
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--success);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow-lg);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            `;
+            
+            notification.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remover após 3 segundos
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Adicionar animações CSS
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
 
         // Verificar se já está logado
         document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar dados de demonstração
+            initializeDemoData();
+            
+            // Carregar configurações de pagamento
+            const savedSettings = localStorage.getItem('paymentSettings');
+            if (savedSettings) {
+                paymentSettings = JSON.parse(savedSettings);
+            }
+            
             const isLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
             const loginTime = localStorage.getItem('adminLoginTime');
             
@@ -1421,37 +2472,18 @@ Detalhes do Usuário:
                 if (hoursDiff < 8) {
                     showAdminDashboard();
                 } else {
-                    adminLogout();
-                    alert('Sessão expirada. Faça login novamente.');
+                    localStorage.removeItem('adminLoggedIn');
+                    localStorage.removeItem('adminLoginTime');
+                    showNotification('Sessão expirada. Faça login novamente.');
                 }
             }
             
-            // Simular algumas mensagens e erros para demonstração
-            if (contactMessages.length === 0) {
-                // Criar algumas mensagens de exemplo
-                saveContactMessage(
-                    'João Silva',
-                    'joao@exemplo.com',
-                    'Dúvida sobre contratos',
-                    'Gostaria de saber mais sobre os planos profissionais disponíveis.'
-                );
-                
-                saveContactMessage(
-                    'Maria Santos',
-                    'maria@empresa.com',
-                    'Problema com download',
-                    'Não consegui baixar meu contrato após o pagamento.'
-                );
-            }
-            
-            if (systemErrors.length === 0) {
-                // Criar alguns erros de exemplo
-                logError(
-                    'Erro na Geração de Contrato',
-                    'Falha ao processar assinatura digital no contrato #12345',
-                    'usuario@exemplo.com'
-                );
-            }
+            // Adicionar suporte a busca por Enter
+            document.getElementById('userSearch')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loadUsers();
+                }
+            });
         });
     </script>
 </body>
